@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include infac *.css
+recursive-include infac *.csv
+recursive-include infac *.html
+recursive-include infac *.ico
+recursive-include infac *.js
+recursive-include infac *.json
+recursive-include infac *.md
+recursive-include infac *.png
+recursive-include infac *.py
+recursive-include infac *.svg
+recursive-include infac *.txt
+recursive-exclude infac *.pyc
