@@ -79,14 +79,14 @@ def mark_attendance(file_url,start_date,end_date):
                     attendance.submit()
                     frappe.db.commit()
                     day = day+1
-        # if int(pp[2])>0:
-        ts = frappe.new_doc("Timesheet")
-        ts.employee = pp[0]
-        ts.append("time_logs",{
-            "activity_type":"Overtime",
-            "from_time":start_date,
-            "hours":int(pp[2])
-        })
-        ts.save(ignore_permissions=True)
-        ts.submit()
-        frappe.db.commit()
+        if float(pp[2])>=1:
+            ts = frappe.new_doc("Timesheet")
+            ts.employee = pp[0]
+            ts.append("time_logs",{
+                "activity_type":"Overtime",
+                "from_time":start_date,
+                "hours":float(pp[2])
+            })
+            ts.save(ignore_permissions=True)
+            ts.submit()
+            frappe.db.commit()
