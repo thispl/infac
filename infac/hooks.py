@@ -102,7 +102,7 @@ app_license = "MIT"
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
+scheduler_events = {
 # 	"all": [
 # 		"infac.tasks.all"
 # 	],
@@ -115,10 +115,10 @@ app_license = "MIT"
 # 	"weekly": [
 # 		"infac.tasks.weekly"
 # 	]
-# 	"monthly": [
-# 		"infac.tasks.monthly"
-# 	]
-# }
+	"monthly": [
+		"infac.custom.el_leave_policy"
+	]
+}
 
 # Testing
 # -------
