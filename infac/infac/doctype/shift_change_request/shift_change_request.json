@@ -1,0 +1,82 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "SCT.####",
+ "creation": "2022-05-03 20:50:07.558762",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "employee",
+  "attendance_date",
+  "column_break_3",
+  "actual_shift",
+  "shift_change",
+  "shift_marked"
+ ],
+ "fields": [
+  {
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Employee",
+   "options": "Employee",
+   "reqd": 1
+  },
+  {
+   "fieldname": "attendance_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Attendance Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "actual_shift",
+   "fieldtype": "Data",
+   "label": "Actual Shift",
+   "read_only": 1
+  },
+  {
+   "fieldname": "shift_change",
+   "fieldtype": "Select",
+   "label": "Shift Change",
+   "options": "\nA\nB\nC\nG"
+  },
+  {
+   "fieldname": "shift_marked",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Shift Marked",
+   "options": "Shift Assignment"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2022-06-04 10:44:09.853749",
+ "modified_by": "Administrator",
+ "module": "Infac",
+ "name": "Shift Change Request",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

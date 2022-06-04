@@ -1,0 +1,150 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "MA.####",
+ "creation": "2022-01-07 13:38:24.336055",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "employee",
+  "employee_name",
+  "employee_category",
+  "column_break_4",
+  "department",
+  "designation",
+  "payroll_date",
+  "payroll_allowances_section",
+  "tds",
+  "other_allowances_1",
+  "other_allowances_2",
+  "column_break_12",
+  "other_allowances_3",
+  "other_allowances_4",
+  "night_allowance_days",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fetch_from": "employee.employee_category",
+   "fieldname": "employee_category",
+   "fieldtype": "Data",
+   "label": "Employee Category",
+   "read_only": 1
+  },
+  {
+   "fieldname": "payroll_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Payroll Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Monthly Allowance Application",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Employee",
+   "options": "Employee",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fetch_from": "employee.employee_name",
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "label": "Employee Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "employee.department",
+   "fieldname": "department",
+   "fieldtype": "Data",
+   "label": "Department",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "employee.designation",
+   "fieldname": "designation",
+   "fieldtype": "Data",
+   "label": "Designation",
+   "read_only": 1
+  },
+  {
+   "fieldname": "payroll_allowances_section",
+   "fieldtype": "Section Break",
+   "label": "Payroll Allowances"
+  },
+  {
+   "fieldname": "tds",
+   "fieldtype": "Currency",
+   "label": "TDS"
+  },
+  {
+   "fieldname": "other_allowances_1",
+   "fieldtype": "Currency",
+   "label": "Other Allowances 1"
+  },
+  {
+   "fieldname": "other_allowances_2",
+   "fieldtype": "Currency",
+   "label": "Other Allowances 2"
+  },
+  {
+   "fieldname": "other_allowances_3",
+   "fieldtype": "Currency",
+   "label": "Other Allowances 3"
+  },
+  {
+   "fieldname": "other_allowances_4",
+   "fieldtype": "Currency",
+   "label": "Other Allowances 4"
+  },
+  {
+   "fieldname": "night_allowance_days",
+   "fieldtype": "Currency",
+   "label": "Night Allowance Days"
+  },
+  {
+   "fieldname": "column_break_12",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2022-01-21 11:19:28.631754",
+ "modified_by": "Administrator",
+ "module": "Infac",
+ "name": "Monthly Allowance Application",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

@@ -1,0 +1,232 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "MP-.####",
+ "creation": "2022-01-05 11:06:33.026174",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "employee",
+  "employee_category",
+  "employee_name",
+  "column_break_4",
+  "department",
+  "designation",
+  "department_line",
+  "posting_date",
+  "section_break_8",
+  "approver",
+  "column_break_10",
+  "approver_name",
+  "section_break_12",
+  "date",
+  "in_time",
+  "out_time",
+  "column_break_15",
+  "shift",
+  "working_hours",
+  "twh",
+  "attendance",
+  "section_break_22",
+  "extra_hours",
+  "column_break_24",
+  "ot_hours",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Employee ",
+   "options": "Employee",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "employee.employee_name",
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Employee Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "attendance",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Attendance",
+   "options": "Attendance"
+  },
+  {
+   "fetch_from": "employee.department",
+   "fieldname": "department",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Department",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "employee.employee_category",
+   "fieldname": "employee_category",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Employee Category",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approver",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Approver",
+   "options": "User"
+  },
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "in_time",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "In Time",
+   "reqd": 1
+  },
+  {
+   "fieldname": "out_time",
+   "fieldtype": "Datetime",
+   "label": "Out Time",
+   "reqd": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Miss Punch Application",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fetch_from": "employee.designation",
+   "fieldname": "designation",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Designation ",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "employee.department_line",
+   "fieldname": "department_line",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Department Line",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_8",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fetch_from": "approver.full_name",
+   "fieldname": "approver_name",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Approver Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_10",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_12",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_15",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "shift",
+   "fieldtype": "Link",
+   "label": "Shift",
+   "options": "Shift Type"
+  },
+  {
+   "default": "Today",
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date",
+   "read_only": 1
+  },
+  {
+   "default": "00:00",
+   "fieldname": "twh",
+   "fieldtype": "Time",
+   "hidden": 1,
+   "label": "TWH",
+   "read_only": 1
+  },
+  {
+   "fieldname": "working_hours",
+   "fieldtype": "Float",
+   "label": "Working Hours",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_22",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "00:00",
+   "fieldname": "extra_hours",
+   "fieldtype": "Time",
+   "hidden": 1,
+   "label": "Extra Hours"
+  },
+  {
+   "fieldname": "ot_hours",
+   "fieldtype": "Float",
+   "hidden": 1,
+   "label": "OT Hours"
+  },
+  {
+   "fieldname": "column_break_24",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "hide_toolbar": 1,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2022-05-10 18:17:42.041824",
+ "modified_by": "Administrator",
+ "module": "Infac",
+ "name": "Miss Punch Application",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

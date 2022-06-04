@@ -1,0 +1,68 @@
+{
+ "add_total_row": 0,
+ "columns": [
+  {
+   "fieldname": "user_id",
+   "fieldtype": "Data",
+   "label": "User ID",
+   "width": 0
+  },
+  {
+   "fieldname": "application_date",
+   "fieldtype": "Date",
+   "label": "Application Date",
+   "width": 0
+  },
+  {
+   "fieldname": "employee",
+   "fieldtype": "Data",
+   "label": "Employee",
+   "width": 0
+  },
+  {
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "label": "Employee Name",
+   "width": 0
+  },
+  {
+   "fieldname": "employee_category",
+   "fieldtype": "Data",
+   "label": "Employee Category",
+   "width": 0
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Data",
+   "label": "Department",
+   "width": 0
+  }
+ ],
+ "creation": "2022-03-16 15:57:57.120961",
+ "disable_prepared_report": 0,
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [],
+ "idx": 0,
+ "is_standard": "Yes",
+ "letter_head": "Infac India Private Limited",
+ "modified": "2022-03-16 16:01:14.620888",
+ "modified_by": "Administrator",
+ "module": "Infac",
+ "name": "Daily Permission Request",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "query": "SELECT \n    owner,\n    posting_date,\n    employee_id,\n    employee_name,\n    employee_category,\n    department\nFROM\n    `tabPermission Request`\nWHERE\n    posting_date = CURDATE()\n",
+ "ref_doctype": "Permission Request",
+ "report_name": "Daily Permission Request",
+ "report_type": "Query Report",
+ "roles": [
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "HR Manager"
+  }
+ ]
+}

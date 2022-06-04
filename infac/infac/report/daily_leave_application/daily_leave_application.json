@@ -1,0 +1,72 @@
+{
+ "add_total_row": 0,
+ "columns": [
+  {
+   "fieldname": "user_id",
+   "fieldtype": "Data",
+   "label": "User ID",
+   "width": 0
+  },
+  {
+   "fieldname": "application_date",
+   "fieldtype": "Date",
+   "label": "Application Date",
+   "width": 0
+  },
+  {
+   "fieldname": "employee",
+   "fieldtype": "Data",
+   "label": "Employee",
+   "width": 0
+  },
+  {
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "label": "Employee Name",
+   "width": 0
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Data",
+   "label": "Department",
+   "width": 0
+  }
+ ],
+ "creation": "2022-03-16 13:18:41.497097",
+ "disable_prepared_report": 0,
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [],
+ "idx": 0,
+ "is_standard": "Yes",
+ "json": "{\"filters\":[],\"fields\":[[\"name\",\"Leave Application\"],[\"docstatus\",\"Leave Application\"],[\"employee_name\",\"Leave Application\"],[\"employee\",\"Leave Application\"],[\"leave_type\",\"Leave Application\"],[\"from_date\",\"Leave Application\"],[\"total_leave_days\",\"Leave Application\"],[\"status\",\"Leave Application\"],[\"to_date\",\"Leave Application\"],[\"half_day_date\",\"Leave Application\"],[\"leave_approver_name\",\"Leave Application\"],[\"leave_balance\",\"Leave Application\"],[\"department\",\"Leave Application\"],[\"naming_series\",\"Leave Application\"],[\"leave_approver\",\"Leave Application\"],[\"half_day\",\"Leave Application\"],[\"description\",\"Leave Application\"],[\"salary_slip\",\"Leave Application\"],[\"follow_via_email\",\"Leave Application\"],[\"company\",\"Leave Application\"],[\"amended_from\",\"Leave Application\"],[\"idx\",\"Leave Application\"],[\"modified\",\"Leave Application\"],[\"_user_tags\",\"Leave Application\"],[\"_comments\",\"Leave Application\"],[\"posting_date\",\"Leave Application\"],[\"color\",\"Leave Application\"],[\"letter_head\",\"Leave Application\"],[\"owner\",\"Leave Application\"],[\"creation\",\"Leave Application\"],[\"modified_by\",\"Leave Application\"],[\"_liked_by\",\"Leave Application\"],[\"_assign\",\"Leave Application\"]],\"order_by\":\"`tabLeave Application`.`modified` desc\",\"add_totals_row\":0,\"page_length\":20,\"column_widths\":{\"name\":120,\"employee_name\":120,\"employee\":120,\"leave_type\":120,\"from_date\":120,\"total_leave_days\":120,\"status\":120,\"to_date\":120,\"half_day_date\":120,\"leave_approver_name\":120,\"leave_balance\":120,\"department\":120,\"naming_series\":120,\"leave_approver\":120,\"half_day\":120,\"description\":120,\"salary_slip\":120,\"follow_via_email\":120,\"company\":120,\"amended_from\":120,\"idx\":120,\"modified\":120,\"_user_tags\":120,\"_comments\":120,\"posting_date\":120,\"color\":120,\"letter_head\":120,\"owner\":120,\"creation\":120,\"modified_by\":120,\"_liked_by\":120,\"_assign\":120},\"group_by\":null}",
+ "letter_head": "Infac India Private Limited",
+ "modified": "2022-03-16 14:43:56.096021",
+ "modified_by": "Administrator",
+ "module": "Infac",
+ "name": "Daily Leave Application",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "query": "SELECT \n    owner,\n    posting_date,\n    employee,\n    employee_name,\n    department\nFROM\n    `tabLeave Application`\nWHERE\n    posting_date = CURDATE()\n",
+ "ref_doctype": "Leave Application",
+ "report_name": "Daily Leave Application",
+ "report_type": "Query Report",
+ "roles": [
+  {
+   "role": "Employee"
+  },
+  {
+   "role": "Leave Approver"
+  },
+  {
+   "role": "HR User"
+  },
+  {
+   "role": "HR Manager"
+  },
+  {
+   "role": "Employee Self Service"
+  }
+ ]
+}

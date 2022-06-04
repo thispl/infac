@@ -1,0 +1,191 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "PR.####",
+ "creation": "2021-12-24 10:28:55.707938",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "employee_id",
+  "employee_name",
+  "employee_category",
+  "column_break_4",
+  "department",
+  "designation",
+  "department_line",
+  "approver_details_section",
+  "permission_approver",
+  "column_break_9",
+  "permission_approver_name",
+  "permission_details_section",
+  "permission_date",
+  "shift",
+  "reason",
+  "column_break_15",
+  "session",
+  "from_time",
+  "to_time",
+  "hours",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "employee_id",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Employee ID",
+   "options": "Employee",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "employee_id.employee_name",
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "label": "Employee Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "employee_id.department",
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "label": "Department",
+   "options": "Department",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "employee_id.designation",
+   "fieldname": "designation",
+   "fieldtype": "Data",
+   "label": "Designation",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approver_details_section",
+   "fieldtype": "Section Break",
+   "label": "Approver Details"
+  },
+  {
+   "fetch_from": "department.permission_approver",
+   "fieldname": "permission_approver",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Permission Approver",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_9",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "department.permission_approver_name",
+   "fieldname": "permission_approver_name",
+   "fieldtype": "Data",
+   "label": "Permission Approver Name"
+  },
+  {
+   "fieldname": "permission_details_section",
+   "fieldtype": "Section Break",
+   "label": "Permission Details"
+  },
+  {
+   "fieldname": "permission_date",
+   "fieldtype": "Date",
+   "label": "Permission Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "shift",
+   "fieldtype": "Link",
+   "label": "Shift",
+   "options": "Shift Type",
+   "reqd": 1
+  },
+  {
+   "fieldname": "reason",
+   "fieldtype": "Small Text",
+   "label": "Reason",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_15",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "session",
+   "fieldtype": "Select",
+   "label": "Session",
+   "options": "\nFirst Half\nSecond Half",
+   "reqd": 1
+  },
+  {
+   "fieldname": "from_time",
+   "fieldtype": "Time",
+   "label": "From Time",
+   "reqd": 1
+  },
+  {
+   "fieldname": "to_time",
+   "fieldtype": "Time",
+   "label": "To Time"
+  },
+  {
+   "fieldname": "hours",
+   "fieldtype": "Data",
+   "label": "Hours"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Permission Request",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fetch_from": "employee_id.employee_category",
+   "fieldname": "employee_category",
+   "fieldtype": "Data",
+   "label": "Employee Category",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "employee_id.department_line",
+   "fieldname": "department_line",
+   "fieldtype": "Data",
+   "label": "Department Line",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2022-01-27 11:00:10.626144",
+ "modified_by": "Administrator",
+ "module": "Infac",
+ "name": "Permission Request",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

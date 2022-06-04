@@ -1,0 +1,36 @@
+{
+ "add_total_row": 1,
+ "columns": [],
+ "creation": "2022-03-15 18:42:32.871871",
+ "disable_prepared_report": 1,
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [],
+ "idx": 0,
+ "is_standard": "Yes",
+ "letter_head": "Infac India Private Limited",
+ "modified": "2022-05-28 12:31:59.666137",
+ "modified_by": "Administrator",
+ "module": "Infac",
+ "name": "Wrong Shift Attendance Report",
+ "owner": "Administrator",
+ "prepared_report": 1,
+ "ref_doctype": "Attendance",
+ "report_name": "Wrong Shift Attendance Report",
+ "report_type": "Script Report",
+ "roles": [
+  {
+   "role": "HR User"
+  },
+  {
+   "role": "HR Manager"
+  },
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "Employee"
+  }
+ ]
+}

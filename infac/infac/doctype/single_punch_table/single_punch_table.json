@@ -1,0 +1,62 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "SPT.####",
+ "creation": "2022-03-14 10:03:29.790271",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "employee",
+  "attendance_date",
+  "in_time",
+  "out_time",
+  "attendance_marked"
+ ],
+ "fields": [
+  {
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Employee",
+   "options": "Employee"
+  },
+  {
+   "fieldname": "attendance_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Attendance Date"
+  },
+  {
+   "fieldname": "in_time",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "In Time"
+  },
+  {
+   "fieldname": "out_time",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Out Time"
+  },
+  {
+   "fieldname": "attendance_marked",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Attendance Marked",
+   "options": "Attendance"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2022-03-15 12:39:31.585685",
+ "modified_by": "Administrator",
+ "module": "Infac",
+ "name": "Single Punch Table",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

@@ -85,28 +85,34 @@ app_license = "MIT"
 # 	"ToDo": "custom_app.overrides.CustomToDo"
 # }
 
+override_doctype_class = {
+	"Salary Slip": "infac.overrides.CustomSalarySlip",
+	"Payroll Entry": "infac.overrides.CustomPayrollEntry"
+}
+
 # Document Events
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-#	}
-# }
+doc_events = {
+	"Attendance": {
+		# "on_update_on_submit": "infac.custom.set_late_hours_empty",
+		"on_update_before_save":"infac.custom.set_late_hours_empty",
+		# "on_cancel": "method",
+		# "on_trash": "method"
+	}
+}
 
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
+scheduler_events = {
 # 	"all": [
 # 		"infac.tasks.all"
 # 	],
-# 	"daily": [
-# 		"infac.tasks.daily"
-# 	],
+	"daily": [
+			"infac.mark_attendance.mark_att"
+	],
 # 	"hourly": [
 # 		"infac.tasks.hourly"
 # 	],
@@ -116,7 +122,12 @@ app_license = "MIT"
 # 	"monthly": [
 # 		"infac.tasks.monthly"
 # 	]
-# }
+"cron":{
+		"0 0 * * *" :[
+			'infac.mark_attendance.mark_att'
+						]
+	}
+}
 
 # Testing
 # -------

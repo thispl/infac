@@ -1,0 +1,63 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "SCTB.####",
+ "creation": "2022-03-20 16:13:09.408386",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "employee",
+  "attendance_date",
+  "shift_assign",
+  "shift_change",
+  "attendance_marked"
+ ],
+ "fields": [
+  {
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Employee",
+   "options": "Employee"
+  },
+  {
+   "fieldname": "attendance_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Attendance Date"
+  },
+  {
+   "fieldname": "shift_assign",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Shift Assign"
+  },
+  {
+   "fieldname": "shift_change",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Shift Change",
+   "options": "\nA\nB\nC\nG"
+  },
+  {
+   "fieldname": "attendance_marked",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Attendance Marked",
+   "options": "Attendance"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2022-03-20 16:13:09.408386",
+ "modified_by": "Administrator",
+ "module": "Infac",
+ "name": "Shift Correction Table",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}
