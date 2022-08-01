@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
  "autoname": "SCT.####",
  "creation": "2022-05-03 20:50:07.558762",
@@ -8,11 +9,20 @@
  "engine": "InnoDB",
  "field_order": [
   "employee",
-  "attendance_date",
+  "employee_name",
   "column_break_3",
-  "actual_shift",
-  "shift_change",
-  "shift_marked"
+  "assigned_shift",
+  "attended_shift",
+  "section_break_6",
+  "attendance_date",
+  "column_break_8",
+  "corrected_shift",
+  "section_break_10",
+  "shift_marked",
+  "checkin_marked",
+  "column_break_12",
+  "attendance_marked",
+  "amended_from"
  ],
  "fields": [
   {
@@ -24,40 +34,86 @@
    "reqd": 1
   },
   {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Shift Change Request",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fetch_from": "employee.employee_name",
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "label": "Employee Name"
+  },
+  {
+   "fieldname": "assigned_shift",
+   "fieldtype": "Link",
+   "label": "Assigned Shift",
+   "options": "Shift Type"
+  },
+  {
+   "fieldname": "attended_shift",
+   "fieldtype": "Link",
+   "label": "Attended Shift",
+   "options": "Shift Type"
+  },
+  {
+   "fieldname": "corrected_shift",
+   "fieldtype": "Link",
+   "label": "Corrected Shift",
+   "options": "Shift Type"
+  },
+  {
    "fieldname": "attendance_date",
    "fieldtype": "Date",
-   "in_list_view": 1,
-   "label": "Attendance Date",
-   "reqd": 1
+   "label": "Attendance Date"
   },
   {
    "fieldname": "column_break_3",
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "actual_shift",
-   "fieldtype": "Data",
-   "label": "Actual Shift",
-   "read_only": 1
+   "fieldname": "section_break_6",
+   "fieldtype": "Section Break"
   },
   {
-   "fieldname": "shift_change",
-   "fieldtype": "Select",
-   "label": "Shift Change",
-   "options": "\nA\nB\nC\nG"
+   "fieldname": "column_break_8",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_10",
+   "fieldtype": "Section Break"
   },
   {
    "fieldname": "shift_marked",
    "fieldtype": "Link",
-   "hidden": 1,
    "label": "Shift Marked",
    "options": "Shift Assignment"
+  },
+  {
+   "fieldname": "attendance_marked",
+   "fieldtype": "Link",
+   "label": "Attendance Marked",
+   "options": "Attendance"
+  },
+  {
+   "fieldname": "column_break_12",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "checkin_marked",
+   "fieldtype": "Link",
+   "label": "Checkin Marked",
+   "options": "Employee Checkin"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-06-04 10:44:09.853749",
+ "modified": "2022-07-04 22:35:15.624951",
  "modified_by": "Administrator",
  "module": "Infac",
  "name": "Shift Change Request",

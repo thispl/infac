@@ -96,8 +96,9 @@ override_doctype_class = {
 
 doc_events = {
 	"Attendance": {
+		'before_save':'infac.utils.get_attendance',
 		# "on_update_on_submit": "infac.custom.set_late_hours_empty",
-		"on_update_before_save":"infac.custom.set_late_hours_empty",
+		# "on_update_before_save":"infac.custom.set_late_hours_empty",
 		# "on_cancel": "method",
 		# "on_trash": "method"
 	}
@@ -110,9 +111,9 @@ scheduler_events = {
 # 	"all": [
 # 		"infac.tasks.all"
 # 	],
-	"daily": [
-			"infac.mark_attendance.mark_att"
-	],
+	# "daily": [
+	# 		"infac.mark_attendance.mark_att"
+	# ],
 # 	"hourly": [
 # 		"infac.tasks.hourly"
 # 	],
@@ -122,11 +123,11 @@ scheduler_events = {
 # 	"monthly": [
 # 		"infac.tasks.monthly"
 # 	]
-"cron":{
-		"0 0 * * *" :[
-			'infac.mark_attendance.mark_att'
-						]
-	}
+# "cron":{
+# 		"0 0 * * *" :[
+# 			'infac.mark_attendance.mark_att'
+# 						]
+# 	}
 }
 
 # Testing

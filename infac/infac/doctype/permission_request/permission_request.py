@@ -81,7 +81,6 @@ class PermissionRequest(Document):
 
 	def validate(self):
 		per_req = frappe.db.exists('Permission Request',{'permission_date':self.permission_date,'employee_id':self.employee_id,'name':('!=',self.name)})
-		frappe.errprint(per_req)
 		if per_req:
 			frappe.throw('Permission Date Already Applied')	
 
@@ -101,7 +100,6 @@ def get_time_difference(permission_date,from_time,to_time):
 	from_time = datetime.combine(permission_date, from_time)
 	to_time = datetime.combine(permission_date, to_time)
 	total_hours = to_time - from_time
-	# frappe.errprint(total_hours)
 	ftr = [3600,60,1]
 	hr = sum([a*b for a,b in zip(ftr, map(int,str(total_hours).split(':')))])
 	perm_hr = round(hr/3600,1)

@@ -47,7 +47,7 @@ def execute(filters=None):
 def get_columns(filters):
     columns = []
     columns += [
-        _("Employee ID") + ":Data/:150",_("Employee Name") + ":Data/:200",_("Department") + ":Data/:150",_("Employee Category") + ":Data/:150",_("DOJ") + ":Date/:100",_("") + ":Data/:150",
+        _("Employee ID") + ":Data/:150",_("Employee Name") + ":Data/:200",_('Employee Category') +':Data:100',_("Department") + ":Data/:150",_("DOJ") + ":Date/:100",_("Status") + ":Data/:150",
     ]
     dates = get_dates(filters.from_date,filters.to_date)
     for date in dates:
@@ -66,7 +66,7 @@ def get_columns(filters):
     columns.append(_('LOP')+ ':Data/:100')
     columns.append(_('COFF')+ ':Data/:100')
     columns.append(_('OT')+ ':Data/:100')
-    columns.append(_('Late')+ ':Data/:100')
+    columns.append(_('Actual Late')+ ':Data/:100')
     columns.append(_('Late Deduct')+ ':Data/:150')
     columns.append(_('Permission Hours')+ ':Data/:150')
     columns.append(_('Night Shift')+ ':Data/:150')
@@ -79,14 +79,14 @@ def get_data(filters):
     employees = get_employees(filters)
     for emp in employees:
         dates = get_dates(filters.from_date,filters.to_date)
-        row1 = [emp.name,emp.employee_name,emp.department,emp.employee_category,emp.date_of_joining,""]
-        row2 = ['',"","","","","In Time"]
-        row3 = ['',"","","","","Out Time"]
-        row4 = ['',"","","","","Shift"]
-        row5 = ['',"","","","","Late"]
-        row6 = ['',"","","","","Late Deduct"]
-        row7 = ['',"","","","","TWH"]
-        row8 = ['',"","","","","OT"]
+        row1 = [emp.name,emp.employee_name,emp.employee_category,emp.department,emp.date_of_joining,""]
+        row2 = ["","","","","","In Time"]
+        row3 = ["","","","","","Out Time"]
+        row4 = ["","","","","","Shift"]
+        row5 = ["","","","","","Late"]
+        row6 = ["","","","","","Late Deduct"]
+        row7 = ["","","","","","TWH"]
+        row8 = ["","","","","","OT"]
         total_present = 0
         total_half_day = 0
         total_absent = 0
@@ -108,7 +108,6 @@ def get_data(filters):
         for date in dates:
             att = frappe.db.get_value("Attendance",{'attendance_date':date,'employee':emp.name},['status','in_time','out_time','shift','total_wh','ot_hrs','late_hrs','leave_type','employee_category','on_duty_marked','permission_request','leave_type','late_hours','employee','attendance_date','name','late_deduct']) or ''
             if att:
-                frappe.errprint('Present')
                 status = status_map.get(att[0], "")
                 if att[9]:
                     hh = check_holiday(date,emp.name)
@@ -133,18 +132,18 @@ def get_data(filters):
                         row1.append('P/P')
                         total_present +=  1
                         total_permission += 1    
-                elif status == 'P':
+                elif att[0] == 'Present':
                     hh = check_holiday(date,emp.name)
                     if hh:
-                        # if hh == 'WW':
-                        #     total_weekoff +=1
+                        if hh == 'WW':
+                            total_weekoff +=1
                         if hh == 'HH':
                             total_holiday +=1   
                         row1.append(hh)   
                     else:  
-                        row1.append(status or '-')
-                        total_present = total_present + 1   
-                elif status == 'HD':
+                        row1.append(status)
+                        total_present = total_present + 1 
+                elif att[0] == 'Half Day':
                     hh = check_holiday(date,emp.name)
                     if hh:
                         if hh == 'WW':
@@ -161,7 +160,7 @@ def get_data(filters):
                             row1.append('P/A')
                             total_present = total_present + 0.5
                             total_half_day = total_half_day + 0.5
-                elif status == 'A':
+                elif att[0] == 'Absent':
                     hh = check_holiday(date,emp.name)
                     if hh:
                         if hh == 'WW':
@@ -192,11 +191,11 @@ def get_data(filters):
                         row1.append(status)
                 else:
                     row1.append('-')
-                if att[1] is not None and att[0] != 'Absent':
+                if att[1] is not None:
                     row2.append(att[1].strftime('%H:%M'))
                 else:
                     row2.append('-')
-                if att[2] is not None and att[0] != 'Absent':
+                if att[2] is not None :
                     row3.append(att[2].strftime('%H:%M'))
                 else:
                     row3.append('-')
@@ -211,6 +210,7 @@ def get_data(filters):
 
                 #This is the Late Hours Condition    
                 if att[12]:
+                    # frappe.errprint(att[15])
                     hh = check_holiday(date,emp.name)
                     if hh:
                         if hh == 'WW':
@@ -315,12 +315,12 @@ def get_employees(filters):
     if filters.employee:
         conditions += "and employee = '%s' " % (filters.employee)
     if filters.employee_category:
-        conditions += "and employee_category = '%s' " % (filters.employee_category)        
+        conditions += "and employee_category = '%s' " % (filters.employee_category)
 
     employees = frappe.db.sql("""select name, employee_name, department,employee_category,date_of_joining from `tabEmployee` where status = 'Active' %s """ % (conditions), as_dict=True)
     left_employees = frappe.db.sql("""select name, employee_name, department,employee_category, date_of_joining from `tabEmployee` where status = 'Left' and relieving_date >= '%s' %s """ %(filters.from_date,conditions),as_dict=True)
     employees.extend(left_employees)
-    frappe.errprint(employees)
+    # frappe.errprint(employees)
     return employees
   
 @frappe.whitelist()
@@ -344,4 +344,3 @@ def check_holiday(date,emp):
         #     return 'C-OFF'         
         else:
             return "HH"
-

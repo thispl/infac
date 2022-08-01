@@ -7,29 +7,33 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "department",
+  "shift_dates_section",
   "from_date",
+  "column_break_3",
   "to_date",
   "section_break_4",
-  "get_template",
+  "department",
+  "department_line",
+  "column_break_8",
+  "number_of_employees",
   "column_break_6",
-  "upload",
-  "section_break_8",
-  "summary",
-  "error_preview",
+  "employee_details",
   "amended_from"
  ],
  "fields": [
   {
    "fieldname": "department",
    "fieldtype": "Link",
+   "in_standard_filter": 1,
    "label": "Department",
-   "options": "Department"
+   "options": "Department",
+   "reqd": 1
   },
   {
    "fieldname": "from_date",
    "fieldtype": "Date",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "From Date",
    "reqd": 1
   },
@@ -54,38 +58,47 @@
    "fieldtype": "Section Break"
   },
   {
-   "fieldname": "get_template",
-   "fieldtype": "Button",
-   "label": "Get Template"
-  },
-  {
    "fieldname": "column_break_6",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "upload",
-   "fieldtype": "Attach",
-   "label": "Upload"
-  },
-  {
-   "fieldname": "section_break_8",
    "fieldtype": "Section Break"
   },
   {
-   "fieldname": "summary",
-   "fieldtype": "HTML",
-   "label": "Summary"
+   "bold": 1,
+   "fieldname": "shift_dates_section",
+   "fieldtype": "Section Break",
+   "label": "Shift Dates"
   },
   {
-   "fieldname": "error_preview",
-   "fieldtype": "HTML",
-   "label": "Error Preview"
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_8",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "employee_details",
+   "fieldtype": "Table",
+   "label": "Employee Details",
+   "options": "Employee Shift Schedule"
+  },
+  {
+   "fieldname": "number_of_employees",
+   "fieldtype": "Int",
+   "label": " Number Of Employees"
+  },
+  {
+   "depends_on": "eval:doc.department == 'Production - INFAC' || doc.department =='Quality - INFAC'",
+   "fieldname": "department_line",
+   "fieldtype": "Link",
+   "label": "Department Line",
+   "options": "Department Line"
   }
  ],
+ "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2021-11-23 17:16:16.975510",
+ "modified": "2022-07-29 20:09:18.915647",
  "modified_by": "Administrator",
  "module": "Infac",
  "name": "Shift Schedule",

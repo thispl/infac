@@ -18,7 +18,6 @@ frappe.ui.form.on('Single Punch Regularization', {
 				var c = 0
 				$.each(r.message,function(i,v){
 					var time = [v.in_time,v.out_time]
-					console.log(v.message)
 					if (time.includes(null)){
 						if(!frm.doc.permission_request){
 							if (v.in_time || v.out_time){

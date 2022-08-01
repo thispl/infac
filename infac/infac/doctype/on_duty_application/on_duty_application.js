@@ -16,4 +16,7 @@ frappe.ui.form.on('On Duty Application', {
 			}
 		})
 	},
+	// onload(frm){
+
+	// }
 });

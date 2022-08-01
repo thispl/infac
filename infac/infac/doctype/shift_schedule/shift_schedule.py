@@ -4,128 +4,112 @@
 from __future__ import unicode_literals
 from csv import writer
 from inspect import getfile
+from pickle import EMPTY_DICT
 from socket import fromfd
+from tracemalloc import start
 from unicodedata import name
+from wsgiref.util import shift_path_info
 import frappe
 from frappe.utils import cstr, add_days, date_diff, getdate
 from frappe import _
 from frappe.utils.csvutils import UnicodeWriter, read_csv_content
 from frappe.utils.file_manager import get_file, upload
 from frappe.model.document import Document
-from erpnext.hr.doctype.employee.employee import Employee, get_holiday_list_for_employee
-from erpnext.hr.utils import get_holidays_for_employee
 from datetime import datetime,timedelta,date,time
 from frappe.utils import cint,today,flt,date_diff,add_days,add_months,date_diff,getdate,formatdate,cint,cstr
-from numpy import unicode_
+from frappe.utils.background_jobs import enqueue
+
+
 
 
 class ShiftSchedule(Document):
+    
+    @frappe.whitelist()
+    def on_submit(self):
+        shift = self.name
+        workflow_state = self.workflow_state
+        enqueue(self.enqueue_submit_schedule, queue='default', timeout=6000, event='enqueue_submit_schedule',shift=shift,workflow_state=workflow_state)
 
-    def on_submit(self): 
-        if self.upload:
-            self.create_shift_assignment()
 
-    def create_shift_assignment(self):
-        filepath = get_file(self.upload)
-        pps = read_csv_content(filepath[1])
+    @frappe.whitelist()
+    def enqueue_submit_schedule(self,workflow_state):
+        if workflow_state == "Approved":
+            shift_assigned = frappe.get_all("Shift Assignment",{'shift_schedule':self.name,'docstatus':'0'})
+            for shift in shift_assigned:
+                doc = frappe.get_doc('Shift Assignment',shift.name)
+                doc.submit()
+                frappe.db.commit()
+            frappe.msgprint('Shift Schedule Approved Successfully')
+
+        elif workflow_state == 'Rejected':
+            shift_reject = frappe.db.get_all('Shift Assignment',{'shift_schedule':self.name,'docstatus':'0'})
+            for shift in shift_reject:
+                frappe.errprint(shift.name)
+                frappe.delete_doc('Shift Assignment',shift.name)
+            frappe.msgprint('Shift Schedule Rejected Successfully')    
+
+
+    # def on_cancel(self):
+    #     shift_cancel = frappe.db.get_all('Shift Assignment',{'shift_schedule':self.name,'docstatus':'1'})
+    #     for shift in shift_cancel:
+    #         frappe.delete_doc('Shift Assignment',shift.name)
+    #     frappe.msgprint('Shift Schedule Rejected Successfully')
+
+
+    def after_insert(self):
+        self.number_of_employees = len(self.employee_details) 
+        if(self.workflow_state == 'Pending For HR'):
+            shift = self.upload_shift()
+            frappe.msgprint('Shift Schedule Created')
+
+    def upload_shift(self):
         dates = self.get_dates(self.from_date,self.to_date)
         for date in dates:
-            for pp in pps:
-                frappe.errprint(pp[2])
-                if pp[2] != 'Shift':
-                    if pp[1]:
-                        if not frappe.db.exists("Shift Assignment",{'employee':pp[0],'start_date':date,'end_date':date,'docstatus':['in',[0,1]]}):
-                            doc = frappe.new_doc('Shift Assignment')
-                            doc.employee = pp[0]
-                            doc.shift_type = pp[2]
-                            doc.start_date = date
-                            doc.end_date = date
-                            doc.shift_schedule = self.name
-                            doc.submit()
-                            doc.save(ignore_permissions=True)
-                            frappe.db.commit()
+            for row in self.employee_details:
+                if not frappe.db.exists('Shift Assignment',{'employee':row.employee,'start_date':date,'end_date':date,'docstatus':['in',[0,1]]}):
+                    doc = frappe.new_doc('Shift Assignment')
+                    doc.employee = row.employee
+                    doc.shift_type = row.shift
+                    doc.start_date = date
+                    doc.end_date = date
+                    doc.shift_schedule = self.name
+                    doc.save(ignore_permissions=True)
+                    frappe.db.commit()  
 
-    # def validate():
-    #     pass                        
-    
+     
+               
+    @frappe.whitelist()
+    def get_employees(self):
+        datalist = []
+        data = {}
+        previous_day_shift = add_days(self.from_date,-2)
+        conditions = ''
+        if self.department_line:
+            conditions = "and department_line = '%s' " % self.department_line
+        employees = frappe.db.sql("""select name,employee_name,department,department_line from `tabEmployee` where department = '%s' and status = 'Active' %s """%(self.department,conditions),as_dict=1)
+        for emp in employees:
+            shift = frappe.db.get_value('Shift Assignment',{'start_date':previous_day_shift,'department_line':emp['department_line'],'employee':emp['name']},['shift_type'])    
+            if shift:
+                data.update({
+                    'employee':emp['name'],
+                    'employee_name':emp['employee_name'],
+                    'shift':shift
+                })
+                datalist.append(data.copy())
+            else:
+                data.update({
+                    'employee':emp['name'],
+                    'employee_name':emp['employee_name'],
+                    'shift':"G"
+                })
+                datalist.append(data.copy())
+        return datalist
+
+
+
     def get_dates(self,from_date,to_date):
         """get list of dates in between from date and to date"""
         no_of_days = date_diff(add_days(to_date, 1), from_date)
         dates = [add_days(from_date, i) for i in range(0, no_of_days)]
-        return dates 
+        return dates     
 
-    # @frappe.whitelist()
-    # def show_summary(self):
-    #     filepath = get_file(self.upload)
-    #     pps = read_csv_content(filepath[1]) 
-    #     data = ''
-    #     master_staff = 0
-    #     master_worker = 0
-    #     workers_grade_2 = 0
-    #     supporting_staff = 0
-    #     operating_staff = 0
-    #     management = 0
-    #     general_motors = 0
-    #     drivers = 0
-    #     hmi_trainess = 0
-    #     hirco_cook = 0
-    #     diploma_trainees = 0
-    #     classic_service = 0
-    #     classic_hk = 0
-    #     be_trainees = 0
-    #     naps_get = 0
-    #     naps_gat = 0
-    #     naps_det = 0
-    #     naps_dat = 0
-    #     for pp in pps:
-    #         if pp[4] == 'Master Staff':
-
-
-
-
-
-
-@frappe.whitelist()
-def get_template():
-    args = frappe.local.form_dict
-
-    if getdate(args.from_date) > getdate(args.to_date):
-        frappe.throw(_("To Date should be greater than From Date"))
-
-    w = UnicodeWriter()
-    w = add_header(w)
-    w = add_data(w, args)
-   
-    frappe.response['result'] = cstr(w.getvalue())
-    frappe.response['type'] = 'csv'
-    frappe.response['doctype'] = "Shift Assignment"
-
-def add_header(w):
-    w.writerow(["ID",'Employee Name','Shift'])
-    return w
-
-def add_data(w, args):
-    data = get_data(args)
-    writedata(w, data)
-    return w
-
-@frappe.whitelist()
-def get_data(args):
-    employees = frappe.get_all('Employee',{'status':'Active','department':args.department,},['name','employee_name'])
-    data = []
-    for employee in employees:
-        row = [
-            employee.name,employee.employee_name
-        ]
-        data.append(row)    
-    return data
-
-
-
-@frappe.whitelist()
-def writedata(w, data):
-    for row in data:
-        w.writerow(row)
-
-
-        
