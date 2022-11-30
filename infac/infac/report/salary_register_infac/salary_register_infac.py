@@ -21,7 +21,7 @@ def get_columns():
         _('Designation') +':Data:100',_('DOJ') +':Data:100',_('DOB') +':Data:100',_('Start Date') +':Data:100',_('End Date') +':Data:100',
         _('Fixed ') +':Data:100',_('Basic') +':Data:100',_('HRA') +':Data:100',_('SPL') +':Data:100',_('Conveyance') +':Data:100',_('Medical') +':Data:100',
         _('Performance Allowancce') +':Data:100',_('Performance Incentive') +':Data:100',_('Supervisior Allowance') +':Data:100',_('Welfare Allowance') +':Data:100',
-        _('Washing Allowance') +':Data:100',_('Grade Allowance') +':Data:100',_('Heat Allowance') +':Data:100',_('Attendance Bonus'),
+        _('Washing Allowance') +':Data:100',_('Grade Allowance') +':Data:100',_("Higher Education Allowance"),_('Heat Allowance') +':Data:100',_('Attendance Bonus'),
         _('Employer PF') +':Data:100',_('Employer ESI') +':Data:100',
         _('OT Amount') +':Data:100',_('Night Shift Allowance'),_('Gross') +':Data:100',_('Canteen') +':Data:100',_('EPF') +':Data:100',_('ESI') +':Data:100',
         _('LWF') +':Data:100',_('TDS') +':Data:100',_('Advance Contribution') +':Data:100',
@@ -35,16 +35,20 @@ def get_columns():
 
 def get_data(filters):
     data=[]
-    if filters.employee:
+    if filters.employee and filters.employee_category:
+        salary_slip = frappe.get_all("Salary Slip",{'employee':filters.employee,'start_date':filters.from_date,'employee_category':filters.employee_category},['*'])
+
+    elif filters.employee:
         salary_slip = frappe.get_all("Salary Slip",{'employee':filters.employee,'start_date':filters.from_date,},['*'])
-    else:
-        salary_slip = frappe.get_all('Salary Slip',{'start_date':filters.from_date,},['*'])
-    
-    if filters.department:
+
+    elif filters.department:
         salary_slip = frappe.get_all("Salary Slip",{'department':filters.department,'start_date':filters.from_date,},['*']) 
 
-    if filters.employee_category:
+    elif filters.employee_category:
         salary_slip = frappe.get_all('Salary Slip',{'employee_category':filters.employee_category,'start_date':filters.from_date},['*'])    
+
+    else:
+        salary_slip = frappe.get_all('Salary Slip',{'start_date':filters.from_date,},['*'])    
 
 
     for ss in salary_slip:
@@ -61,8 +65,8 @@ def get_data(filters):
         wla = frappe.db.get_value('Salary Detail',{'abbr':'WLA','parent':ss.name},'amount')
         wa = frappe.db.get_value('Salary Detail',{'abbr':'WA','parent':ss.name},'amount')
         ga = frappe.db.get_value('Salary Detail',{'abbr':'GA','parent':ss.name},'amount')
-        ea = frappe.db.get_value('Salary Detail',{'abbr':'HEA','parent':ss.name},'amount')
-        ha = frappe.db.get_value('Salary Detail',{'abbr':'HA','parent':ss.name},'amount')
+        hea = frappe.db.get_value('Salary Detail',{'abbr':'HEA','parent':ss.name},'amount')
+        ea = frappe.db.get_value('Salary Detail',{'abbr':'HA','parent':ss.name},'amount')
         ab = frappe.db.get_value('Salary Detail',{'abbr':'AB','parent':ss.name},'amount')
         pf = frappe.db.get_value('Salary Detail',{'abbr':'EEPF','parent':ss.name},'amount')
         eesi = frappe.db.get_value('Salary Detail',{'abbr':'EESI','parent':ss.name},'amount')
@@ -77,7 +81,7 @@ def get_data(filters):
     
         row = [
         ss.employee,ss.employee_name,ss.employee_category,ss.department,ss.designation,emp.date_of_joining,emp.date_of_birth,
-        ss.start_date,ss.end_date,fixed,basic,hra,spl_all,convey,ma,pa,pi,sa,wla,wa,ga,ha,ab,pf,eesi,ot,nsa,ss.gross_pay,cat,epf,esi,lwf,tds,ac,
+        ss.start_date,ss.end_date,fixed,basic,hra,spl_all,convey,ma,pa,pi,sa,wla,wa,ga,hea,ea,ab,pf,eesi,ot,nsa,ss.gross_pay,cat,epf,esi,lwf,tds,ac,
         ss.total_deduction,ss.net_pay,ss.total_working_days,ss.payment_days,ss.absent_days,ss.leave_without_pay,ss.leave_days
         ]
         data.append(row)

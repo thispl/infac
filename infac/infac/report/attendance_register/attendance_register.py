@@ -31,6 +31,7 @@ status_map = {
     "Emergency -2": 'EML-2',
     "Paternal Leave": 'PL',
     "Marriage Leave":'ML',
+    "Medical Leave" : 'MDL',
     "Paternity Leave":'PTL',
     "Education Leave":'EL',
     "Maternity Leave":'MTL',
@@ -106,16 +107,18 @@ def get_data(filters):
         twh = 0
         ot = 0
         for date in dates:
-            att = frappe.db.get_value("Attendance",{'attendance_date':date,'employee':emp.name},['status','in_time','out_time','shift','total_wh','ot_hrs','late_hrs','leave_type','employee_category','on_duty_marked','permission_request','leave_type','late_hours','employee','attendance_date','name','late_deduct']) or ''
+            att = frappe.db.get_value("Attendance",{'attendance_date':date,'employee':emp.name,'docstatus':('!=','2')},['status','in_time','out_time','shift','total_wh','ot_hrs','late_hrs','leave_type','employee_category','on_duty_marked','permission_request','leave_type','late_hours','employee','attendance_date','name','late_deduct']) or ''
             if att:
                 status = status_map.get(att[0], "")
                 if att[9]:
                     hh = check_holiday(date,emp.name)
                     if hh:
                         if hh == 'WW':
-                            total_weekoff +=1
+                            row1.append(hh)
+                            # total_weekoff +=1
                         elif hh == 'HH':
-                            total_holiday +=1   
+                            row1.append(hh)
+                            # total_holiday +=1   
                         row1.append(hh)
                     else:    
                         row1.append('OD')
@@ -124,10 +127,12 @@ def get_data(filters):
                     hh = check_holiday(date,emp.name)
                     if hh:
                         if hh == 'WW':
-                            total_weekoff +=1
+                            row1.append(hh)
+                            # total_weekoff +=1
                         elif hh == 'HH':
-                            total_holiday +=1   
-                        row1.append(hh)
+                            row1.append(hh)
+                            # total_holiday +=1   
+                        # row1.append(hh)
                     else:      
                         row1.append('P/P')
                         total_present +=  1
@@ -136,21 +141,30 @@ def get_data(filters):
                     hh = check_holiday(date,emp.name)
                     if hh:
                         if hh == 'WW':
-                            total_weekoff +=1
+                            frappe.errprint(att[13])
+                            frappe.errprint(att[15])
+                            row1.append(hh)
+                            # total_weekoff +=1
                         if hh == 'HH':
-                            total_holiday +=1   
-                        row1.append(hh)   
+                            row1.append(hh)
+                            # total_holiday +=1   
+                        # row1.append(hh)   
                     else:  
+                        # frappe.errprint(att[13])
+                        # frappe.errprint(att[15])
                         row1.append(status)
                         total_present = total_present + 1 
+
                 elif att[0] == 'Half Day':
                     hh = check_holiday(date,emp.name)
                     if hh:
                         if hh == 'WW':
-                            total_weekoff += 1
+                            row1.append(hh)
+                            # total_weekoff += 1
                         elif hh == 'HH':
-                            total_holiday += 1
-                        row1.append(hh)
+                            row1.append(hh)
+                            # total_holiday += 1
+                        # row1.append(hh)
                     else:
                         if att[11]:
                             row1.append('P/L')
@@ -164,10 +178,12 @@ def get_data(filters):
                     hh = check_holiday(date,emp.name)
                     if hh:
                         if hh == 'WW':
-                            total_weekoff += 1
+                            row1.append(hh)
+                            # total_weekoff += 1
                         elif hh == 'HH':
-                            total_holiday += 1
-                        row1.append(hh)
+                            row1.append(hh)
+                        #     total_holiday += 1
+                        # row1.append(hh)
                     else: 
                         row1.append(status)
                         total_absent = total_absent + 1                         
@@ -191,7 +207,7 @@ def get_data(filters):
                         row1.append(status)
                 else:
                     row1.append('-')
-                if att[1] is not None:
+                if att[1] is not None :
                     row2.append(att[1].strftime('%H:%M'))
                 else:
                     row2.append('-')
@@ -201,7 +217,10 @@ def get_data(filters):
                     row3.append('-')
                 
                 if att[3]:
-                    row4.append(att[3])
+                    if att[0] == 'Absent':
+                        row4.append('')
+                    else:
+                        row4.append(att[3])    
                 else:
                     row4.append('-')
 
@@ -210,7 +229,7 @@ def get_data(filters):
 
                 #This is the Late Hours Condition    
                 if att[12]:
-                    # frappe.errprint(att[15])
+                    frappe.errprint(att[15]) 
                     hh = check_holiday(date,emp.name)
                     if hh:
                         if hh == 'WW':
@@ -218,15 +237,18 @@ def get_data(filters):
                         elif hh == 'HH':
                             total_holiday += 1
                         row5.append('-')    
-                    else:    
-                        late = datetime.strptime(str(att[12]),'%H:%M:%S').strftime('%H:%M')
-                        row5.append(late)
-                        total_late = total_late + att[12]
+                    else:  
+                        if att[0] == 'Absent':
+                            row5.append('-')
+                        else:      
+                            late = datetime.strptime(str(att[12]),'%H:%M:%S').strftime('%H:%M')
+                            row5.append(late)
+                            total_late = total_late + att[12]
                 else:
                     row5.append('-')
 
                 #This is the Late Deduct condition        
-                if att[16]:
+                if att[16]: 
                     hh = check_holiday(date,emp.name)
                     if hh:
                         if hh == 'WW':
@@ -235,12 +257,14 @@ def get_data(filters):
                             total_holiday += 1
                         row6.append('-')
                     else:
-                        str_time = datetime.strptime(att[16],'%H:%M').time()
-                        time_time_delta = timedelta(hours=str_time.hour,minutes=str_time.minute,seconds=0)
-                        row6.append(att[16]) 
-                        #late_deduct column to add_time
-                        total_late_deduct = total_late_deduct + time_time_delta
-                    
+                        if att[0] == "Absent":
+                            row6.append('-')
+                        else:  
+                            str_time = datetime.strptime(att[16],'%H:%M').time()
+                            time_time_delta = timedelta(hours=str_time.hour,minutes=str_time.minute,seconds=0)
+                            row6.append(att[16]) 
+                            #late_deduct column to add_time
+                            total_late_deduct = total_late_deduct + time_time_delta 
                 else:
                     row6.append('-')      
 
@@ -252,14 +276,16 @@ def get_data(filters):
                 else:
                     row7.append('-')    
 
-                if att[5]:    
-                    row8.append(att[5])
-                    total_ot += att[5]
+                if att[5]: 
+                    if att[0] == "Absent":
+                        row8.append('')  
+                    else:     
+                        row8.append(att[5])
+                        total_ot += att[5]
                 else:
                     row8.append('-')
                                  
             else:
-                # frappe.errprint('No Present')
                 hh = check_holiday(date,emp.name)
                 if hh:
                     if hh == 'WW': 
@@ -320,7 +346,6 @@ def get_employees(filters):
     employees = frappe.db.sql("""select name, employee_name, department,employee_category,date_of_joining from `tabEmployee` where status = 'Active' %s """ % (conditions), as_dict=True)
     left_employees = frappe.db.sql("""select name, employee_name, department,employee_category, date_of_joining from `tabEmployee` where status = 'Left' and relieving_date >= '%s' %s """ %(filters.from_date,conditions),as_dict=True)
     employees.extend(left_employees)
-    # frappe.errprint(employees)
     return employees
   
 @frappe.whitelist()

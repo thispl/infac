@@ -1,4 +1,4 @@
-// Copyright (c) 2016, teampro and contributors
+	// Copyright (c) 2016, teampro and contributors
 // For license information, please see license.txt
 /* eslint-disable */
 
@@ -24,22 +24,15 @@ frappe.query_reports["Absentees Report"] = {
 			"label": __("Employee"),
 			"fieldtype": "Link",
 			"options": "Employee",
-			get_query: () => {
-				var company = frappe.query_report.get_filter_value('company');
-				return {
-					filters: {
-						'company': company
-					}
-				};
-			}
-		},
-		{
-			"fieldname":"company",
-			"label": __("Company"),
-			"fieldtype": "Link",
-			"options": "Company",
-			"default": frappe.defaults.get_user_default("Company"),
-			"reqd": 1
 		},
 ],
+onload: function (report) {
+	var to_date = frappe.query_report.get_filter('to_date');
+	to_date.refresh();
+	to_date.set_input(frappe.datetime.add_days(frappe.datetime.month_start(), 19))
+	var from_date = frappe.query_report.get_filter('from_date');
+	from_date.refresh();
+	var d = frappe.datetime.add_months(frappe.datetime.month_start(), -1)
+	from_date.set_input(frappe.datetime.add_days(d, 20))
+}
 }

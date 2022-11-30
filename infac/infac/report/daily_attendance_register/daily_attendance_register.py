@@ -1,4 +1,4 @@
-# Copyright (c) 2013, TEAMPRO and contributors
+    # Copyright (c) 2013, TEAMPRO and contributors
 # For license information, please see license.txt
 from __future__ import unicode_literals
 import frappe
@@ -26,8 +26,8 @@ def execute(filters=None):
 def get_columns(filters):
     columns = []
     columns += [
-        _("Emp.ID") + ":Data/:100",_("Employee Name") + ":Data/:200",_("Department") + ":Data/:150",_("DOJ") + ":Date/:100",_("Att. Date") + ":Date/:100",
-        _("Status") + ":Data/:80", _("In Time") + ":Data/:100",_("Out Time") + ":Data/:100",_("Shift") + ":Data/:80",_("TWH") + ":Float/:80",_("OT") + ":Float/:80"
+        _("Emp.ID") + ":Data/:100",_("Employee Name") + ":Data/:200",_("Employee Category"),_("Department") + ":Data/:150",_("DOJ") + ":Date/:100",_("Att. Date") + ":Date/:100",
+        _("In Time") + ":Data/:100",_("Out Time") + ":Data/:100",_("Shift") + ":Data/:80",_("TWH") + ":Float/:80",_("OT") + ":Float/:80"
     ]
     
     return columns
@@ -40,7 +40,7 @@ def get_data(filters):
     for date in dates:
         employees = get_employees(filters)
         for emp in employees:
-            row = [emp.name,emp.employee_name,emp.department,emp.date_of_joining]
+            row = [emp.name,emp.employee_name,emp.employee_category,emp.department,emp.date_of_joining]
             row.append(date)
             att = frappe.db.get_value("Attendance",{'attendance_date':date,'employee':emp.name},['status','in_time','out_time','shift','attendance_date','working_hours','ot_hrs']) or ''
             twh = 0
@@ -48,7 +48,7 @@ def get_data(filters):
             if att:
                 # attendance_date = status_map.get(att[0], "")
                 status = status_map.get(att[0], "")
-                row.append(status)
+                # row.append(status)
                 # frappe.errprint(status)
                 if att[1] is not None:
                     row.append(att[1].strftime('%H:%M:%S'))
@@ -95,9 +95,9 @@ def get_employees(filters):
         conditions += "and department = '%s' " % filters.department
     if filters.employee_category:
         conditions += "and employee_category = '%s' "%filters.employee_category
-    # if filters.department:
-    #     conditions += ' and department = '%s'  %'   
+    if filters.department:
+        conditions += " and department = '%s' "%filters.department   
     if filters.employee:
         conditions += "and employee = '%s' " % filters.employee
-    employees = frappe.db.sql("""select name, employee_name, department, date_of_joining from `tabEmployee` where status = 'Active' %s"""%(conditions),as_dict=True)
+    employees = frappe.db.sql("""select name, employee_name,employee_category, department, date_of_joining from `tabEmployee` where status = 'Active' %s"""%(conditions),as_dict=True)
     return employees

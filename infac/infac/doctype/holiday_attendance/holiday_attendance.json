@@ -1,0 +1,307 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "naming_series:",
+ "creation": "2022-11-08 11:33:52.074377",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "employee",
+  "status",
+  "leave_type",
+  "leave_application",
+  "data_6",
+  "employee_name",
+  "attendance_date",
+  "attendance_request",
+  "data_20",
+  "shift",
+  "in_time",
+  "out_time",
+  "data_21",
+  "total_wh",
+  "extra_hours",
+  "ot_hrs",
+  "column_break_18",
+  "late_hours",
+  "late_hrs",
+  "late_deduct",
+  "section_break_18",
+  "miss_punch_marked",
+  "on_duty_marked",
+  "column_break_21",
+  "permission_request",
+  "single_punch_regularization",
+  "section_break_24",
+  "shift_type",
+  "shift_in_time",
+  "shift_out_time",
+  "column_break_28",
+  "actual_shift",
+  "actual_in_time",
+  "actual_out_time",
+  "section_break_32",
+  "matched_status",
+  "attendance_regularize",
+  "attendance_name"
+ ],
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "options": "HR-ATT-.YYYY.-",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "employee.employee_name",
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "in_global_search": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Employee",
+   "options": "Employee",
+   "reqd": 1
+  },
+  {
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "in_global_search": 1,
+   "in_list_view": 1,
+   "label": "Employee Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "\nPresent\nAbsent\nOn Leave\nHalf Day",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval:in_list([\"On Leave\", \"Half Day\"], doc.status)",
+   "fieldname": "leave_type",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Leave Type",
+   "mandatory_depends_on": "eval:in_list([\"On Leave\", \"Half Day\"], doc.status)",
+   "options": "Leave Type"
+  },
+  {
+   "fieldname": "leave_application",
+   "fieldtype": "Link",
+   "label": "Leave Application",
+   "options": "Leave Application",
+   "read_only": 1
+  },
+  {
+   "fieldname": "attendance_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Attendance Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "attendance_request",
+   "fieldtype": "Link",
+   "label": "Attendance Request",
+   "options": "Attendance Request",
+   "read_only": 1
+  },
+  {
+   "fieldname": "shift",
+   "fieldtype": "Link",
+   "in_global_search": 1,
+   "in_list_view": 1,
+   "label": "Shift",
+   "options": "Shift Type"
+  },
+  {
+   "depends_on": "shift",
+   "fieldname": "in_time",
+   "fieldtype": "Datetime",
+   "label": "In Time"
+  },
+  {
+   "depends_on": "shift",
+   "fieldname": "out_time",
+   "fieldtype": "Datetime",
+   "label": "Out Time"
+  },
+  {
+   "default": "00:00",
+   "fieldname": "total_wh",
+   "fieldtype": "Time",
+   "label": "Working Hours"
+  },
+  {
+   "fieldname": "ot_hrs",
+   "fieldtype": "Float",
+   "label": "OT Hours",
+   "precision": "1"
+  },
+  {
+   "default": "00:00",
+   "fieldname": "extra_hours",
+   "fieldtype": "Time",
+   "label": "Extra Hours"
+  },
+  {
+   "fieldname": "miss_punch_marked",
+   "fieldtype": "Link",
+   "label": "Miss Punch Marked",
+   "options": "Miss Punch Application"
+  },
+  {
+   "fieldname": "on_duty_marked",
+   "fieldtype": "Link",
+   "label": "On Duty Marked",
+   "options": "On Duty Application"
+  },
+  {
+   "fieldname": "permission_request",
+   "fieldtype": "Link",
+   "label": "Permission Request",
+   "options": "Permission Request"
+  },
+  {
+   "fieldname": "single_punch_regularization",
+   "fieldtype": "Link",
+   "label": "Single Punch Regularization",
+   "options": "Single Punch Regularization"
+  },
+  {
+   "fieldname": "shift_type",
+   "fieldtype": "Data",
+   "label": "Shift Type"
+  },
+  {
+   "fieldname": "shift_in_time",
+   "fieldtype": "Data",
+   "label": "Shift In Time"
+  },
+  {
+   "fieldname": "shift_out_time",
+   "fieldtype": "Data",
+   "label": "Shift Out Time"
+  },
+  {
+   "fieldname": "actual_shift",
+   "fieldtype": "Data",
+   "label": "Actual Shift"
+  },
+  {
+   "fieldname": "actual_in_time",
+   "fieldtype": "Data",
+   "label": "Actual In Time"
+  },
+  {
+   "fieldname": "actual_out_time",
+   "fieldtype": "Data",
+   "label": "Actual Out Time"
+  },
+  {
+   "fieldname": "matched_status",
+   "fieldtype": "Select",
+   "label": "Matched Status",
+   "options": "\nMatched\nUnmatched"
+  },
+  {
+   "fieldname": "attendance_regularize",
+   "fieldtype": "Link",
+   "label": "Attendance Regularize",
+   "options": "Attendance Regularize"
+  },
+  {
+   "fieldname": "data_6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "bold": 1,
+   "fieldname": "data_20",
+   "fieldtype": "Section Break",
+   "label": "Shift Details"
+  },
+  {
+   "fieldname": "data_21",
+   "fieldtype": "Column Break"
+  },
+  {
+   "bold": 1,
+   "fieldname": "section_break_18",
+   "fieldtype": "Section Break",
+   "label": "Attendance Linked"
+  },
+  {
+   "fieldname": "column_break_21",
+   "fieldtype": "Column Break"
+  },
+  {
+   "bold": 1,
+   "fieldname": "section_break_24",
+   "fieldtype": "Section Break",
+   "label": "Details"
+  },
+  {
+   "fieldname": "column_break_28",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_32",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_18",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "late_hours",
+   "fieldtype": "Time",
+   "label": "Late Hours"
+  },
+  {
+   "fieldname": "late_hrs",
+   "fieldtype": "Data",
+   "label": "Late Hrs"
+  },
+  {
+   "fieldname": "late_deduct",
+   "fieldtype": "Data",
+   "label": "Late Deduct"
+  },
+  {
+   "fieldname": "attendance_name",
+   "fieldtype": "Data",
+   "label": "Attendance Name"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2022-11-12 11:42:09.202965",
+ "modified_by": "Administrator",
+ "module": "Infac",
+ "name": "Holiday Attendance",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "title_field": "employee_name",
+ "track_changes": 1
+}

@@ -1,5 +1,6 @@
 from __future__ import print_function
 from asyncio.proactor_events import _ProactorBaseWritePipeTransport
+from calendar import month_abbr
 from decimal import ROUND_UP
 from hmac import new
 from itertools import count
@@ -9,6 +10,7 @@ from operator import neg
 from pickle import TRUE
 from re import A
 import time
+from frappe.utils.data import month_diff
 from frappe.utils.file_manager import get_file
 from datetime import timedelta
 from time import strftime, strptime
@@ -30,7 +32,9 @@ from dateutil.relativedelta import relativedelta
 from frappe.utils.user import get_user_fullname
 import math
 import pandas as pd
-
+from frappe.utils import get_first_day, get_last_day, format_datetime, get_url_to_form
+import dateutil.relativedelta
+from frappe import _
 
 #Attendance Automatic to run method 
 def create_hooks():
@@ -56,204 +60,55 @@ def create_hooks():
 #         })
 #         sjt.save(ignore_permissions=True)
 
-
-
-@frappe.whitelist()
-def earned_leave():
-    given_date = datetime.today().date()
-    first_day_of_month = given_date.replace(day=1)
-    previous_month = add_months(first_day_of_month,-1)
-    from_date = add_days(previous_month,20)
-    to_date = add_days(first_day_of_month,19)
-    leave_allocation = frappe.db.get_all('Leave Allocation',{'leave_type':'Earned Leave'},['name','employee','new_leaves_allocated'])
-    for leave in leave_allocation:
-        att = frappe.db.get_all('Attendance',{'Status':'Present','attendance_date':('between',(from_date,to_date)),'employee':leave.employee},['employee','status'])
-        value = len(att) // 20
-        new_leave_allocate = leave.new_leaves_allocated + value
-        frappe.db.set_value('Leave Allocation',leave.name,'new_leaves_allocated',new_leave_allocate)
-
+# @frappe.whitelist()
+# def earned_leave():
+#     given_date = datetime.today().date()
+#     first_day_of_month = given_date.replace(day=1)
+#     previous_month = add_months(first_day_of_month,-1)
+#     from_date = add_days(previous_month,20)
+#     to_date = add_days(first_day_of_month,19)
+#     leave_allocation = frappe.db.get_all('Leave Allocation',{'leave_type':'Earned Leave'},['name','employee','new_leaves_allocated'])
+#     for leave in leave_allocation:
+#         att = frappe.db.get_all('Attendance',{'Status':'Present','attendance_date':('between',(from_date,to_date)),'employee':leave.employee},['employee','status'])
+#         value = len(att) // 20
+#         new_leave_allocate = leave.new_leaves_allocated + value
+#         frappe.db.set_value('Leave Allocation',leave.name,'new_leaves_allocated',new_leave_allocate)
         
-@frappe.whitelist()
-def bulk_shift_assignment_from_csv(filename):
-    # below is the method to get file from Frappe File manager
-    from frappe.utils.file_manager import get_file
-    # Method to fetch file using get_doc and stored as _file
-    _file = frappe.get_doc("File", {"file_name": filename})
-    # Path in the system
-    filepath = get_file(filename)
-    # CSV Content stored as pps
 
-    pps = read_csv_content(filepath[1])
-    for pp in pps:
-        print(pp[0])
-        # date = '2022-02-21'
-        # d = 1
-        # for i in range(31):
-        #     print(date)
-        #     print(pp[d])
-        #     if pp[d] not in ('-',None):
-        #         if not frappe.db.exists('Shift Assignment',{'employee':pp[0],'start_date':date}):
-        #             doc = frappe.new_doc('Shift Assignment')
-        #             doc.employee = pp[0]
-        #             doc.start_date = date,
-        #             doc.end_date = date
-        #             doc.shift_type  = pp[d]
-        #             doc.save(ignore_permissions=True)
-        #     date = add_days(date,1)
-            # d += 1
+# @frappe.whitelist()
+# def set_permission():
+#     date = '2022-08-20'
+#     d = 1
+#     for i in range(31):
+#         # per = frappe.db.get_all('Permission Request',{'permission_date':date},['employee_id','permission_date','name'])
+#         # for p in per:
+#         #     att = frappe.db.get_all('Attendance',{'employee':p.employee_id,'attendance_date':p.permission_date},['permission_request','employee','attendance_date'])
+#         #     for a in att:
+#         #         if a.permission_request is None:
+#         #             print(a.employee) 
+#         #             print(a.attendance_date)
+#         att = frappe.db.get_all('Attendance',{'attendance_date':date,},['name','employee','attendance_date','permission_request'])
+#         for a in att:
+#             per = frappe.db.get_all('Permission Request',{'permission_date':a.attendance_date,'employee_id':a.employee},['employee_id','permission_date','name'])
+#             for p in per:
+#                 if a.permission_request != p.name:
+#                     frappe.db.set_value('Attendance',a.name,'permission_request',p.name)
+#         date = add_days(date,1)
+#         d += 1
 
-
-@frappe.whitelist()
-def bulk_shift_assign_cancel(filename):
-    from frappe.utils.file_manager import get_file
-    _file = frappe.get_doc("File", {"file_name": filename})
-    filepath = get_file(filename)
-    pps = read_csv_content(filepath[1])
-    for pp in pps:
-        # print(pp[0])
-        # print(pp[1])
-        if pp[0] not in ('-',None):
-            checkin = frappe.db.sql(""" delete from `tabAttendance`  where attendance_date = '%s'  and employee = '%s'  """%(pp[1],pp[0]),as_dict=1)
-            print(checkin)
-            # shift = frappe.db.exists('Shift Assignment',{'employee':pp[0],'start_date':pp[1]},['shift_type'])
-            # if shift:
-            #     print('yes')  
-            #     cancel = frappe.db.set_value('Shift Assignment',shift,'docstatus',2)
-
-            # else:
-                # print('no')
-            #     doc = frappe.new_doc('Shift Assignment')
-            #     doc.employee = pp[0]
-            #     doc.start_date = pp[1]
-            #     doc.end_date = pp[1]
-            #     doc.shift_type = pp[2]
-            #     doc.save(ignore_permissions=TRUE)
-
-
-            # print(shift)
-
-
-#attendance Code Backup
-# def mark_wh_ot(from_date,to_date):
-#     # from_date = '2022-02-04'
-#     # to_date = '2022-02-13'
-#     attendance = frappe.db.get_all('Attendance',{'attendance_date':('between',(from_date,to_date)),'docstatus':('!=','2')},['name','shift','in_time','out_time','employee','attendance_date'])
-#     for att in attendance:
-#         if att.in_time and att.out_time:
-#             hh = check_holiday(att.attendance_date,att.employee)
-#             if not hh:  
-#                 total_wh = att.out_time - att.in_time
-#                 ftr = [3600,60,1]
-#                 hr = sum([a*b for a,b in zip(ftr, map(int,str(total_wh).split(':')))])
-#                 wh = round(hr/3600,1)
-#                 if wh < 4:
-#                     frappe.db.set_value('Attendance',att.name,'status','Absent')
-#                 elif wh >= 4 and wh < 8:
-#                    frappe.db.set_value('Attendance',att.name,'status','Half Day')   
-#                 elif  wh >= 8:
-#                     frappe.db.set_value('Attendance',att.name,'status','Present')
-#                 shift_end_time = frappe.db.get_value('Shift Type',att.shift,'end_time')
-#                 shift_end_time = pd.to_datetime(str(shift_end_time)).time()
-#                 total_late = frappe.db.get_value('Shift Type',att.shift,'start_time')
-#                 total_late = pd.to_datetime(str(total_late)).time()
-#                 total_shift_hours = frappe.db.get_value('Shift Type',att.shift,'total_hours')
-#                 in_date = att.in_time.date()
-#                 out_date = att.out_time.date()
-#                 shift_end_datetime = datetime.combine(out_date,shift_end_time)
-#                 shift_start_datetime = datetime.combine(in_date,total_late)
-#                 if shift_end_time:
-#                     extra_hrs =pd.to_datetime('00:00:00').time()
-#                     ot_hr = 0
-#                     if att.out_time > shift_end_datetime:
-#                         if total_wh > total_shift_hours:
-#                             extra_hrs = att.out_time - shift_end_datetime
-#                             hr = sum([a*b for a,b in zip(ftr, map(int,str(extra_hrs).split(':')))])
-#                             extras = round(hr/3600,1)
-#                             if extras > 1:
-#                                 ot_hr = math.floor(extras * 2) / 2
-#                     frappe.db.set_value('Attendance',att.name,'ot_hrs',ot_hr)
-#                     frappe.db.set_value('Attendance',att.name,'extra_hours',extra_hrs)
-#                     frappe.db.set_value('Attendance',att.name,'total_wh',total_wh)
-#                     frappe.db.set_value('Attendance',att.name,'working_hours',wh)
-#                 else:
-#                     none_time =pd.to_datetime('00:00:00').time()
-#                     frappe.db.set_value('Attendance',att.name,'ot_hrs',0)
-#                     frappe.db.set_value('Attendance',att.name,'extra_hours',none_time)
-#                     frappe.db.set_value('Attendance',att.name,'total_wh',none_time)
-#                     frappe.db.set_value('Attendance',att.name,'working_hours',0)
-#             else:
-#                 total_wh = att.out_time - att.in_time
-#                 ftr = [3600,60,1]
-#                 hr = sum([a*b for a,b in zip(ftr, map(int,str(total_wh).split(':')))])
-#                 wh = round(hr/3600,1)
-#                 if wh < 4:
-#                     frappe.db.set_value('Attendance',att.name,'status','Absent')
-#                 elif wh >= 4 and wh < 8:
-#                    frappe.db.set_value('Attendance',att.name,'status','Half Day')   
-#                 elif  wh >= 8:
-#                     frappe.db.set_value('Attendance',att.name,'status','Present')
-#                 if wh > 0:
-#                     ot_hr = (math.floor(wh * 2) / 2) - 0.5
-#                     frappe.db.set_value('Attendance',att.name,'ot_hrs',ot_hr)
-#                     none_time =pd.to_datetime('00:00:00').time()
-#                     frappe.db.set_value('Attendance',att.name,'extra_hours',none_time)
-#                     frappe.db.set_value('Attendance',att.name,'total_wh',total_wh)
-#                     frappe.db.set_value('Attendance',att.name,'working_hours',wh)
-#                 else:
-#                     none_time =pd.to_datetime('00:00:00').time()
-#                     frappe.db.set_value('Attendance',att.name,'ot_hrs',0)
-#                     frappe.db.set_value('Attendance',att.name,'extra_hours',none_time)
-#                     frappe.db.set_value('Attendance',att.name,'total_wh',none_time)
-#                     frappe.db.set_value('Attendance',att.name,'working_hours',0)
-#         else:
-#             none_time =pd.to_datetime('00:00:00').time()
-#             frappe.db.set_value('Attendance',att.name,'extra_hours',none_time)
-#             frappe.db.set_value('Attendance',att.name,'total_wh',none_time)
-
-
-@frappe.whitelist()
-def set_permission():
-    date = '2022-03-21'
-    d = 1
-    for i in range(31):
-        att = frappe.db.get_all('Attendance',{'attendance_date':date,},['name','employee','attendance_date','permission_request'])
-        for a in att:
-            on_duty = frappe.db.get_all('On Duty Application',{'od_date':date,},['employee','od_date'])
-            for on in on_duty:
-                if a.employee == on.employee:
-                    [print('yes')]
-        date = add_days(date,1)
-        d += 1
-
-
-@frappe.whitelist()
-def on_duty():
-    date = '2022-05-21'
-    d = 1
-    for i in range(31):
-        att = frappe.db.get_all('Attendance',{'attendance_date':date},['name','employee','attendance_date'])
-        for a in att:
-            on_duty = frappe.db.exists('On Duty Application',{'od_date':date,'employee':a.employee},['employee','od_date'])
-            if on_duty:
-                frappe.db.set_value('Attendance',a.name,'on_duty_marked',on_duty)
-                print(on_duty)
-        date = add_days(date,1)
-        d += 1  
-
-@frappe.whitelist()
-def attendance():
-# # # #     # att = frappe.db.sql(""" select employee,shift_type,actual_shift from `tabAttendance` where attendance_date = '2022-05-23' and matched_status = 'Unmatched' """)
-# # # #     # print(att)
-    checkins = frappe.db.sql("""  delete from `tabAttendance` where attendance_date between  '2022-06-20' and '2022-07-23' and status!= 'On Leave' """)
-    # print(checkins)
-    # checkin = frappe.db.sql("""update `tabAttendance` set late_hours = '00:00'    where attendance_date  between '2022-05-21' and '2022-06-20'  and status = 'On Leave' """);
-    # print(checkin)
-    # att_cancel = frappe.db.sql(""" select count(*) from `tabAttendance`  where attendance_date between '2022-05-21' and '2022-06-20' and status = 'On Leave'  and late_hours > '00:00' """)
-    # print(att_cancel)
-    # checkin = frappe.db.sql("""  update `tabEmployee Checkin` set attendance = '' where date(time) between  '2022-06-20'  and '2022-07-23' """)
-    # print(checkin)
-    # checkin_remove = frappe.db.sql(""" select count(*) from  `tabEmployee Checkin`  where date(time) between '2022-06-20' and  '2022-07-23' """)
-    # print(checkin_remove)
+# @frappe.whitelist()
+# def on_duty():
+#     date = '2022-05-21'
+#     d = 1
+#     for i in range(31):
+#         att = frappe.db.get_all('Attendance',{'attendance_date':date},['name','employee','attendance_date'])
+#         for a in att:
+#             on_duty = frappe.db.exists('On Duty Application',{'od_date':date,'employee':a.employee},['employee','od_date'])
+#             if on_duty:
+#                 frappe.db.set_value('Attendance',a.name,'on_duty_marked',on_duty)
+#                 print(on_duty)
+#         date = add_days(date,1)
+#         d += 1  
 
 # def delete_duplicate_checkins():
 #     atts = frappe.db.sql("""select name,time,employee from `tabEmployee Checkin` where date(time) between '2022-03-22' and '2022-03-22' """,as_dict=True)
@@ -293,12 +148,100 @@ def attendance():
 #                             frappe.db.set_value("Employee Checkin",checkin, "attendance", att)
 #                             frappe.db.set_value('Employee Checkin',checkin,'skip_auto_attendance','1')
 
+
 @frappe.whitelist()
-def previous_shift():
-    from_date = '2022-07-25'
-    week_start = add_days(from_date,-7)
-    week_end = add_days(week_start,5)
-    print(week_start)
-    print(week_end)
+def set_shift():
+    att_reg = frappe.db.get_all('Attendance Regularize',{'docstatus':'1'},['corrected_shift','attendance_date','employee'])
+    for att in att_reg:
+       attendance = frappe.db.exists('Attendance',{'attendance_date':att.attendance_date,'employee':att.employee})
+       if attendance:
+        status = frappe.db.get_value('Attendance',{'name':attendance},['matched_status'])
+        set_status = frappe.db.set_value('Attendance',attendance,'matched_status','Matched')
+        print(set_status)
+
+@frappe.whitelist()
+def get_month_time():
+    payroll_last_day = add_days(get_first_day(today()),19)
+    now = datetime.now()
+    day = now + dateutil.relativedelta.relativedelta(months=-1)
+    payroll_first_day = add_days(get_first_day(day),20)
+    print(payroll_first_day)
+    print(payroll_last_day)
    
-   
+@frappe.whitelist()
+def hd_att():
+    add_sal = frappe.db.sql(""" update `tabAttendance` set 5_hrs_amount = 0 where attendance_date between '2022-08-21' and '2022-09-20' and employee  = 'S248'   """) 
+    print(add_sal) 
+    # hd_att = frappe.db.sql(""" delete from  `tabHoliday Attendance` where attendance_date between '2022-11-06' and '2022-11-06' """) 
+    # print(hd_att) 
+
+@frappe.whitelist()
+def c_shift():
+    from_date = '2022-08-21'
+    to_date = '2022-09-20'
+    att = frappe.db.sql(""" select count(*) from `tabAttendance` where attendance_date between '2022-08-21' and '2022-09-20' and employee = 'CS256' and shift = 'C' """)
+    print(att)
+
+@frappe.whitelist()
+def holiday_att():
+    from_date = '2022-10-24'
+    to_date = '2022-10-24'
+    attendance = frappe.db.get_all('Attendance',{'attendance_date':('between',(from_date,to_date))},['*'])
+    for att in attendance:
+        hh = check_holiday(att.attendance_date,att.employee)
+        if hh:
+            hd_att = frappe.db.exists('Holiday Attendance',{'attendance_date':att.attendance_date,'employee':att.employee})
+            if not hd_att:
+                doc = frappe.new_doc('Holiday Attendance')
+                doc.employee = att.employee
+                doc.attendance_date = att.attendance_date
+                doc.status = att.status
+                doc.shift = att.shift
+                doc.in_time = att.in_time
+                doc.out_time = att.out_time
+                doc.total_wh = att.total_wh
+                doc.late_hours = att.late_hours
+                doc.leave_type = att.leave_type
+                doc.leave_application = att.leave_application
+                doc.employee_name = att.employee_name
+                doc.attendance_request = att.attendance_request
+                doc.extra_hours = att.extra_hours
+                doc.ot_hrs = att.ot_hrs
+                doc.late_hrs = att.late_hrs
+                doc.late_deduct = att.late_deduct
+                doc.miss_punch_marked = att.miss_punch_marked
+                doc.on_duty_marked = doc.on_duty_marked 
+                doc.permission_request = att.permission_request
+                doc.single_punch_regularization = att.single_punch_regularization
+                doc.shift_type = att.shift_type
+                doc.shift_in_time = att.shift_in_time
+                doc.shift_out_time = att.shift_out_time
+                doc.actual_shift = att.actual_shift
+                doc.actual_in_time = att.actual_in_time
+                doc.actual_out_time = att.actual_out_time
+                doc.matched_status = att.matched_status
+                doc.attendance_regularize = att.attendance_regularize
+                doc.attendance_name = att.name
+                doc.save(ignore_permissions=True)
+                frappe.db.commit()
+                attendance = frappe.db.sql(""" delete from `tabAttendance` where name '%s' """%(att.name))
+                    
+def check_holiday(date,emp):
+    holiday_list = frappe.db.get_value('Employee',emp,'holiday_list')
+    holiday = frappe.db.sql("""select `tabHoliday`.holiday_date,`tabHoliday`.weekly_off from `tabHoliday List` 
+    left join `tabHoliday` on `tabHoliday`.parent = `tabHoliday List`.name where `tabHoliday List`.name = '%s' and holiday_date = '%s' """%(holiday_list,date),as_dict=True)
+    if holiday:
+        if holiday[0].weekly_off == 1:
+            return "WW"
+        else:
+            return "HH"
+
+
+@frappe.whitelist()
+def salary_check():
+    salary = frappe.db.sql("""  delete from  `tabAttendance`  where  attendance_date between '2022-11-29' and '2022-11-30' and status != 'On Leave'  """)
+    # salary_component = frappe.db.sql(""" update `tabSalary Structure` set salary_component = '' where name = 'Diploma Trainees- Structure'  """)
+    # at_bonus = frappe.db.sql(""" update  `tabSalary Structure` set salary_slip_based_on_timesheet = 0  where name  = 'Diploma Trainees- Structure' """)
+    # print(at_bonus)
+    print(salary)
+    # print(salary_component)

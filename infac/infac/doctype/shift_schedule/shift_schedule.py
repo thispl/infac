@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 from csv import writer
 from inspect import getfile
 from pickle import EMPTY_DICT
-from socket import fromfd
+from socket import fromfd, timeout
 from tracemalloc import start
 from unicodedata import name
 from wsgiref.util import shift_path_info
@@ -24,15 +24,14 @@ from frappe.utils.background_jobs import enqueue
 
 class ShiftSchedule(Document):
     
-    @frappe.whitelist()
     def on_submit(self):
         shift = self.name
         workflow_state = self.workflow_state
         enqueue(self.enqueue_submit_schedule, queue='default', timeout=6000, event='enqueue_submit_schedule',shift=shift,workflow_state=workflow_state)
 
 
-    @frappe.whitelist()
-    def enqueue_submit_schedule(self,workflow_state):
+    def enqueue_submit_schedule(self,workflow_state,shift):
+        frappe.log_error('Shift Schedule')
         if workflow_state == "Approved":
             shift_assigned = frappe.get_all("Shift Assignment",{'shift_schedule':self.name,'docstatus':'0'})
             for shift in shift_assigned:
@@ -49,24 +48,29 @@ class ShiftSchedule(Document):
             frappe.msgprint('Shift Schedule Rejected Successfully')    
 
 
+
     # def on_cancel(self):
     #     shift_cancel = frappe.db.get_all('Shift Assignment',{'shift_schedule':self.name,'docstatus':'1'})
     #     for shift in shift_cancel:
     #         frappe.delete_doc('Shift Assignment',shift.name)
     #     frappe.msgprint('Shift Schedule Rejected Successfully')
+    def on_update(self):
+        enqueue(self.enqueue_draft_schedule, queue='default', timeout=6000, event='enqueue_draft_schedule')
 
 
-    def after_insert(self):
+    def enqueue_draft_schedule(self):
         self.number_of_employees = len(self.employee_details) 
-        if(self.workflow_state == 'Pending For HR'):
-            shift = self.upload_shift()
+        if(self.workflow_state == 'Pending For HOD'):
+            self.upload_shift()
             frappe.msgprint('Shift Schedule Created')
 
+    
     def upload_shift(self):
         dates = self.get_dates(self.from_date,self.to_date)
         for date in dates:
             for row in self.employee_details:
-                if not frappe.db.exists('Shift Assignment',{'employee':row.employee,'start_date':date,'end_date':date,'docstatus':['in',[0,1]]}):
+                get_shift =  frappe.db.exists('Shift Assignment',{'employee':row.employee,'start_date':date,'end_date':date,'docstatus':['in',[0,1]]})
+                if not get_shift:
                     doc = frappe.new_doc('Shift Assignment')
                     doc.employee = row.employee
                     doc.shift_type = row.shift
@@ -74,10 +78,10 @@ class ShiftSchedule(Document):
                     doc.end_date = date
                     doc.shift_schedule = self.name
                     doc.save(ignore_permissions=True)
-                    frappe.db.commit()  
-
-     
-               
+                    frappe.db.commit()
+                else:
+                    frappe.db.set_value('Shift Assignment',get_shift,'shift_type',row.shift)
+        
     @frappe.whitelist()
     def get_employees(self):
         datalist = []

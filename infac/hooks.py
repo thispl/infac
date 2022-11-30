@@ -87,7 +87,12 @@ app_license = "MIT"
 
 override_doctype_class = {
 	"Salary Slip": "infac.overrides.CustomSalarySlip",
-	"Payroll Entry": "infac.overrides.CustomPayrollEntry"
+	"Payroll Entry": "infac.overrides.CustomPayrollEntry",
+	"Leave Application":"infac.overrides.CustomLeaveApplication",
+	"Leave Allocation":"infac.overrides.CustomLeaveAllocation",
+	"Employee":"infac.overrides.CustomEmployee",
+
+
 }
 
 # Document Events
@@ -95,19 +100,23 @@ override_doctype_class = {
 # Hook on document methods and events
 
 doc_events = {
-	"Attendance": {
-		'before_save':'infac.utils.get_attendance',
+	"Leave Application":{
+		"on_submit":"infac.utils.leave_application"
+	}
+	# "Attendance": {
+	# 	'before_save':'infac.utils.get_attendance',
+		# 'after_save':'infac.utils.mark_status_absent',
 		# "on_update_on_submit": "infac.custom.set_late_hours_empty",
 		# "on_update_before_save":"infac.custom.set_late_hours_empty",
 		# "on_cancel": "method",
 		# "on_trash": "method"
-	}
+	# }
 }
 
 # Scheduled Tasks
 # ---------------
 
-scheduler_events = {
+# scheduler_events = {
 # 	"all": [
 # 		"infac.tasks.all"
 # 	],
@@ -128,7 +137,7 @@ scheduler_events = {
 # 			'infac.mark_attendance.mark_att'
 # 						]
 # 	}
-}
+# }
 
 # Testing
 # -------

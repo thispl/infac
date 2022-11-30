@@ -63,7 +63,7 @@ frappe.ui.form.on('Attendance Summary', {
                         to_date: frm.doc.to_date
                     },
                     callback(r) {
-                        frm.fields_dict.html.$wrapper.empty().append(r.message)
+                        frm.fields_dict.html.$wrapper.empty().append(frappe.render_template('attendance_summary',r.message))
                     }
                 })
             }

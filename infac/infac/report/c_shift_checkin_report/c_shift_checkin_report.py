@@ -9,45 +9,28 @@ from frappe.utils import get_first_day, today, get_last_day, format_datetime, ad
 
 
 def execute(filters=None):
-    columns = get_columns()
-    data = []
-    attendance = get_attendance(filters)
-    for att in attendance:
-        data.append(att)
+    columns = get_columns(filters)
+    data = get_data(filters)
+    return columns, data
     return columns, data
 
-def get_columns():
+def get_columns(filters):
     columns = [
-        _('Employee') +':Data:150',_('Employee Name') +':Data:150',_('Employee Category') +':Data:150',_('Department') +':Data:100',_('Attendance Date') +':Data:150',
+        _('Employee') +':Data:150',_('Employee Name') +':Data:150',_('Employee Category') +':Data:150',_('Department') +':Data:150',_('Attendance Date') +':Data:150',
         _('Check-in Time') +':Data:150',_('Check -Out Time') +':Data:200'
     ]
     return columns
 
-def get_attendance(filters):
+def get_data(filters):
     data = []
     employee = get_employees(filters)
     for emp in employee:
         attendance = frappe.db.get_all('Attendance',{'attendance_date':('between',(filters.from_date,filters.to_date)),'shift':'C','employee':emp.name},['*'])
         for att in attendance:
             if att:
-                row = [emp.name,emp.first_name,emp.employee_category,emp.department,format_date(att.attendance_date),att.in_time.strftime('%H:%M:%S'),att.out_time]
+                row = [emp.name,emp.employee_name,emp.employee_category,emp.department,format_date(att.attendance_date),format_datetime(att.in_time),format_datetime(att.out_time)]
                 data.append(row)
     return data			
-    # if filters.employee:
-    # 	frappe.db.get_all('Attendance',{'employee':filters.employee,'shift':'C','attendance_date':('between',(filters.from_date,filters.to_date))},['*'])
-
-    # elif filters.employee_category:
-    # 	frappe.db.get_all('Attendance',{'employee':filters.employee,'shift':'C','employee_category':filters.employee_category,'attendance_date':('between',(filters.from_date,filters.to_date))},['*'])	
-    # else:
-    # 	frappe.db.get_all('Attendance',{'attendance_date':('between',(filters.from_date,filters.to_date)),'shift':'C'},['*'])
-
-    # attendance = frappe.db.get_all('Attendance',{'attendance_date':('between',(filters.from_date,filters.to_date)),'shift':'C'},['*'])
-
-    # for att in attendance:
-    # 	if att:
-    # 		row = [att.employee,att.employee_name,att.employee_category,att.attendance_date.strftime('%d-%m-%Y'),att.in_time.strftime('%H:%M:%S'),att.out_time]
-    # 		data.append(row)
-    # return data		
 
 def get_employees(filters):
     conditions = ''

@@ -27,6 +27,7 @@ class WrongShiftCorrectionRequest(Document):
                 shift_assign.shift_type = self.corrected_shift
                 shift_assign.start_date = self.attendance_date
                 shift_assign.end_date = self.attendance_date
+                shift_assign.department_line = self.department_line
                 shift_assign.save(ignore_permissions=True)     
                 shift_assign.submit()
                 frappe.db.commit()   
@@ -157,118 +158,6 @@ class WrongShiftCorrectionRequest(Document):
                         time = datetime.strptime(str(late_deducted_time),'%H:%M:%S')
                         time_change = time.strftime('%H:%M')   
                         self.late_deduct = time_change 
-
-
-                # elif self.corrected_shift == 'B':    
-                #     actual_late_hour = self.late_hours 
-                #     if actual_late_hour:
-                #         late_deduct_hour = actual_late_hour.seconds //3600   
-                #         late_deduct_minute = ((actual_late_hour.seconds//60)%60)
-                #         deducted_minute = late_deduct_minute
-                #         deducted_hour = late_deduct_hour
-                #         if late_deduct_minute >= 1 and late_deduct_minute <= 5:
-                #             deducted_minute = 5
-                #         elif late_deduct_minute >= 6  and late_deduct_minute <=10:
-                #             deducted_minute = 10
-                #         elif late_deduct_minute >= 11 and late_deduct_minute <= 15:
-                #             deducted_minute = 15
-                #         elif late_deduct_minute >= 16 and late_deduct_minute <= 20:
-                #             deducted_minute = 20
-                #         elif late_deduct_minute >= 21 and late_deduct_minute <= 25:
-                #             deducted_minute = 25
-                #         elif late_deduct_minute >= 26 and late_deduct_minute <= 30:
-                #             deducted_minute = 30
-                #         elif late_deduct_minute >= 31 and late_deduct_minute <= 35:
-                #             deducted_minute = 35
-                #         elif late_deduct_minute >= 36 and late_deduct_minute <= 40:
-                #             deducted_minute = 40
-                #         elif late_deduct_minute >= 41 and late_deduct_minute <= 45:
-                #             deducted_minute = 45
-                #         elif late_deduct_minute >= 46 and late_deduct_minute <= 50:
-                #             deducted_minute = 50 
-                #         elif late_deduct_minute >= 51 and late_deduct_minute <= 55:
-                #             deducted_minute = 55    
-                #         elif late_deduct_minute >= 56 and late_deduct_minute <= 60:
-                #             deducted_hour = late_deduct_hour +1
-                #             deducted_minute = 00
-                #         late_deducted_time = str(deducted_hour) + ":" + str(deducted_minute)+':00'
-                #         time = datetime.strptime(str(late_deducted_time),'%H:%M:%S')
-                #         time_change = time.strftime('%H:%M')   
-                #         self.late_deduct = time_change 
-                        
-                # elif self.corrected_shift == 'G':    
-                #     actual_late_hour = self.late_hours 
-                #     if actual_late_hour:
-                #         late_deduct_hour = actual_late_hour.seconds //3600   
-                #         late_deduct_minute = ((actual_late_hour.seconds//60)%60)
-                #         deducted_minute = late_deduct_minute
-                #         deducted_hour = late_deduct_hour
-                #         if late_deduct_minute >= 1 and late_deduct_minute <= 5:
-                #             deducted_minute = 5
-                #         elif late_deduct_minute >= 6  and late_deduct_minute <=10:
-                #             deducted_minute = 10
-                #         elif late_deduct_minute >= 11 and late_deduct_minute <= 15:
-                #             deducted_minute = 15
-                #         elif late_deduct_minute >= 16 and late_deduct_minute <= 20:
-                #             deducted_minute = 20
-                #         elif late_deduct_minute >= 21 and late_deduct_minute <= 25:
-                #             deducted_minute = 25
-                #         elif late_deduct_minute >= 26 and late_deduct_minute <= 30:
-                #             deducted_minute = 30
-                #         elif late_deduct_minute >= 31 and late_deduct_minute <= 35:
-                #             deducted_minute = 35
-                #         elif late_deduct_minute >= 36 and late_deduct_minute <= 40:
-                #             deducted_minute = 40
-                #         elif late_deduct_minute >= 41 and late_deduct_minute <= 45:
-                #             deducted_minute = 45
-                #         elif late_deduct_minute >= 46 and late_deduct_minute <= 50:
-                #             deducted_minute = 50 
-                #         elif late_deduct_minute >= 51 and late_deduct_minute <= 55:
-                #             deducted_minute = 55    
-                #         elif late_deduct_minute >= 56 and late_deduct_minute <= 60:
-                #             deducted_hour = late_deduct_hour +1
-                #             deducted_minute = 00
-                #         late_deducted_time = str(deducted_hour) + ":" + str(deducted_minute)+':00'
-                #         time = datetime.strptime(str(late_deducted_time),'%H:%M:%S')
-                #         time_change = time.strftime('%H:%M')   
-                #         self.late_deduct = time_change               
-                # else:
-                #     actual_late_hour =  late_hour
-                #     if actual_late_hour:
-                #         late_deduct_hour = actual_late_hour.seconds //3600   
-                #         late_deduct_minute = ((actual_late_hour.seconds//60)%60)
-                #         deducted_minute = late_deduct_minute
-                #         deducted_hour = late_deduct_hour
-                #         if late_deduct_minute >= 1 and late_deduct_minute <= 5:
-                #             deducted_minute = 5
-                #         elif late_deduct_minute >= 6  and late_deduct_minute <=10:
-                #             deducted_minute = 10
-                #         elif late_deduct_minute >= 11 and late_deduct_minute <= 15:
-                #             deducted_minute = 15
-                #         elif late_deduct_minute >= 16 and late_deduct_minute <= 20:
-                #             deducted_minute = 20
-                #         elif late_deduct_minute >= 21 and late_deduct_minute <= 25:
-                #             deducted_minute = 25
-                #         elif late_deduct_minute >= 26 and late_deduct_minute <= 30:
-                #             deducted_minute = 30
-                #         elif late_deduct_minute >= 31 and late_deduct_minute <= 35:
-                #             deducted_minute = 35
-                #         elif late_deduct_minute >= 36 and late_deduct_minute <= 40:
-                #             deducted_minute = 40
-                #         elif late_deduct_minute >= 41 and late_deduct_minute <= 45:
-                #             deducted_minute = 45
-                #         elif late_deduct_minute >= 46 and late_deduct_minute <= 50:
-                #             deducted_minute = 50 
-                #         elif late_deduct_minute >= 51 and late_deduct_minute <= 55:
-                #             deducted_minute = 55    
-                #         elif late_deduct_minute >= 56 and late_deduct_minute <= 60:
-                #             deducted_hour = late_deduct_hour +1
-                #             deducted_minute = 00
-                #         late_deducted_time = str(deducted_hour) + ":" + str(deducted_minute)+':00'
-                #         time = datetime.strptime(str(late_deducted_time),'%H:%M:%S')
-                #         time_change = time.strftime('%H:%M')   
-                #         self.late_deduct = time_change  
-
         else:
             frappe.throw("Employee has not Out Time")    
 
@@ -307,13 +196,8 @@ class WrongShiftCorrectionRequest(Document):
         frappe.db.set_value('Attendance',self.attendance_marked,'matched_status','Matched')
         frappe.db.set_value('Attendance',self.attendance_marked,'out_time',self.actual_out_time)
         # if self.corrected_shift == 'C':
-        #     next_day_att = self.actual_out_time
-        # if self.corrected_shift == 'C':
-        #     frappe.db.set_value('Attendance',self.attendance_marked,'out_time',self.actual_out_time)
-        #     get_date = self.corrected_shift
-        #     day = get_date.date()
-        #     att = frappe.db.exists()
-
+        #     next_dat_att = add_days(self.attendance_date,1)
+        #     next_day_att = frappe.db.get_value('Attendace',{'employee':self.employee,'attendance_date':next_dat_att},['in_time','out_time'])
 
 @frappe.whitelist()
 def mark_attendance(attendance_date,emp,shift,out_time):
@@ -324,8 +208,8 @@ def mark_attendance(attendance_date,emp,shift,out_time):
                 data.append(out_time)
             else:    
                 next_day = add_days(attendance_date,1)
-                att_check = frappe.db.get_value('Attendance',{'employee':emp,'attendance_date':next_day},['in_time','out_time','name'])
-                if att_check:
+                if frappe.db.exists('Attendance',{'employee':emp,'attendance_date':next_day}):
+                    att_check = frappe.db.get_value('Attendance',{'employee':emp,'attendance_date':next_day},['in_time','out_time','name'])
                     data.append(att_check[0])
                     data.append(att_check[1])
                     data.append(att_check[2])

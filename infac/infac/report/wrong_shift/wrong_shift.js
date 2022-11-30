@@ -9,14 +9,14 @@ frappe.query_reports["Wrong Shift"] = {
 			"label": __("From Date"),
 			"fieldtype": "Date",
 			"reqd": 1,
-			"default": frappe.datetime.nowdate()
+			// "default": frappe.datetime.nowdate()
 		},
 		{
 			"fieldname": "to_date",
 			"label": __("To Date"),
 			"fieldtype": "Date",
 			"reqd": 1,
-			"default": frappe.datetime.nowdate()
+			// "default": frappe.datetime.nowdate()
 		},
 		{
 			"fieldname": "employee",
@@ -26,13 +26,19 @@ frappe.query_reports["Wrong Shift"] = {
 		},
 		
 	],
-	onload: function (report) {
-		var to_date = frappe.query_report.get_filter('to_date');
-		to_date.refresh();
-		to_date.set_input(frappe.datetime.add_days(frappe.datetime.month_start(), 19))
-		var from_date = frappe.query_report.get_filter('from_date');
-		from_date.refresh();
-		var d = frappe.datetime.add_months(frappe.datetime.month_start(), -1)
-		from_date.set_input(frappe.datetime.add_days(d, 20))
+	refresh:function(report){
+		frm.refresh()	
 	}
+	// onload:function(report){
+	// 	frm.refresh()
+	// }
+	// onload: function (report) {
+	// 	var to_date = frappe.query_report.get_filter('to_date');
+	// 	to_date.refresh();
+	// 	to_date.set_input(frappe.datetime.add_days(frappe.datetime.month_start(), 19))
+	// 	var from_date = frappe.query_report.get_filter('from_date');
+	// 	from_date.refresh();
+	// 	var d = frappe.datetime.add_months(frappe.datetime.month_start(), -1)
+	// 	from_date.set_input(frappe.datetime.add_days(d, 20))
+	// }
 };

@@ -6,7 +6,7 @@ from six import string_types
 import frappe
 import json
 from frappe.utils import (getdate, cint, add_months, date_diff, add_days,
-    nowdate, get_datetime_str, cstr, get_datetime, now_datetime, format_datetime)
+    nowdate, get_datetime_str, cstr, get_datetime, now_datetime, format_datetime,format_date)
 from datetime import datetime
 from calendar import monthrange
 from frappe import _, msgprint
@@ -44,7 +44,7 @@ def get_attendance(filters):
             shift_end_time = frappe.db.get_value("Shift Type",att.shift,"end_time")
             shift_end = pd.to_datetime(str(shift_end_time)).time()
             if att.out_time.time() < shift_end:
-                row = [att.employee,att.employee_name,att.attendance_date,att.shift,shift_end_time,att.out_time]
+                row = [att.employee,att.employee_name,format_date(att.attendance_date),att.shift,shift_end_time,format_datetime(att.out_time)]
                 data.append(row)
     return data
 
