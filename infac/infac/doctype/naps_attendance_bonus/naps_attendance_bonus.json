@@ -1,0 +1,97 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "allow_rename": 1,
+ "autoname": "NAPS-AT.####",
+ "creation": "2022-11-16 15:00:48.702087",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "informed_leave_days",
+  "column_break_2",
+  "absent_days",
+  "column_break_4",
+  "total_leave_days",
+  "column_break_6",
+  "final_amount",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "informed_leave_days",
+   "fieldtype": "Float",
+   "in_standard_filter": 1,
+   "label": "Informed Leave Days"
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "absent_days",
+   "fieldtype": "Float",
+   "in_standard_filter": 1,
+   "label": "Absent Days"
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "final_amount",
+   "fieldtype": "Currency",
+   "in_standard_filter": 1,
+   "label": "Final Amount"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "NAPS Attendance Bonus",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_leave_days",
+   "fieldtype": "Float",
+   "label": "Total Leave Days"
+  },
+  {
+   "fieldname": "column_break_6",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "hide_toolbar": 1,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2022-11-16 15:43:54.110004",
+ "modified_by": "Administrator",
+ "module": "Infac",
+ "name": "NAPS Attendance Bonus",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "import": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "select": 1,
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

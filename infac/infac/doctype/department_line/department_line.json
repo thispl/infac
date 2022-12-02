@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
  "autoname": "field:department_line",
  "creation": "2022-07-29 18:01:21.972365",
@@ -19,7 +20,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2022-07-29 18:01:36.392558",
+ "modified": "2022-08-04 09:37:55.414360",
  "modified_by": "Administrator",
  "module": "Infac",
  "name": "Department Line",

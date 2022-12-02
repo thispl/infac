@@ -17,16 +17,7 @@ frappe.query_reports["Late Entry Report"] = {
 			"fieldtype": "Date",
 			"reqd": 1,
 			"default": frappe.datetime.add_months(frappe.datetime.nowdate())
-		},
-		{
-			"fieldname":"company",
-			"label": __("Company"),
-			"fieldtype": "Link",
-			"options": "Company",
-			"reqd": 1,
-			"default": frappe.defaults.get_user_default("Company")
-		},
-	
+		},	
 		{
 			"fieldname":"employee",
 			"label": __("Employee"),

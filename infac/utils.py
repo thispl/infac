@@ -4,9 +4,10 @@ import datetime
 import pandas as pd
 import math
 from frappe.utils import (getdate, cint, add_months, date_diff, add_days,
-    nowdate, get_datetime_str, cstr, get_datetime, now_datetime, format_datetime)
+    nowdate, get_datetime_str, cstr, get_datetime, now_datetime, format_datetime,format_date)
 from frappe.utils import cstr, cint, getdate,get_first_day, get_last_day, today, time_diff_in_hours   
 from datetime import date, timedelta,time,datetime
+from frappe import _
 
 
 
@@ -158,8 +159,6 @@ def set_attendance(in_time,out_time,shift):
                 frappe.errprint(extras)
                 if extras > 1:
                     ot_hr = math.floor(extras * 2) / 2
-                    
-
 
     return data
     #This is the returning the output of wh,wh_time_change,late_hour_time,time_change,extra_hrs_time,ot_hr,late_hr
@@ -167,67 +166,159 @@ def set_attendance(in_time,out_time,shift):
 
 
 #While Attendance in Draft the below process working to compare the assign_shift and actual_shift
-@frappe.whitelist()
-def get_attendance(doc,method):
-    get_shift = frappe.db.get_value('Shift Assignment',{'employee':doc.employee,'start_date':doc.attendance_date},['shift_type'])
-    if get_shift:
-        doc.shift_type  = get_shift
-        get_shift_start_time = frappe.db.get_value('Shift Type',{'name':get_shift},['start_time',])
-        get_shift_end_time = frappe.db.get_value('Shift Type',{'name':get_shift},['end_time'])
-        doc.shift_in_time = get_shift_start_time
-        doc.shift_out_time = get_shift_end_time
-    else:
-        doc.shift_type = 'G'
-        doc.shift_in_time = frappe.db.get_value('Shift Type',{'name':'G'},['start_time'])
-        doc.shift_out_time = frappe.db.get_value('Shift Type',{'name':'G'},['end_time'])
-    #get the employee in_time in current day while checking is there any in_time or out_time is there
-    if doc.in_time:
-        doc.actual_in_time = doc.in_time
-        doc.actual_out_time = doc.out_time
-        datetime_to_time = datetime.strptime(str(doc.in_time),'%Y-%m-%d %H:%M:%S').time()
-        doc.actual_shift = get_actual_shift(datetime_to_time)
-    #the employee not having in_time and out_time,the employee should be absent and the actual in_time and out_time should be empty    
-    else:
-        doc.actual_in_time = '' 
-        # doc.actual_out_time = ''   
-        doc.actual_shift = 'NA' 
-    #checking the shift_type anAttendanced actual_shift is there in the field    
-    if doc.shift_type and doc.actual_shift:
-        if doc.shift_type == doc.actual_shift:
-            doc.matched_status = 'Matched'
-            doc.status = 'Present'
-        else:
-            doc.matched_status = 'Unmatched'
-            doc.status = 'Absent'    
-    else:
-        doc.matched_status = 'Unmatched'     
+# @frappe.whitelist()
+# def get_attendance(doc,method):
+#     get_shift = frappe.db.get_value('Shift Assignment',{'employee':doc.employee,'start_date':doc.attendance_date},['shift_type'])
+#     if get_shift:
+#         doc.shift_type  = frappe.db.get_value('Shift Assignment',{'start_date':doc.attendance_date,'employee':doc.employee},['shift_type'])
+#         get_shift_start_time = frappe.db.get_value('Shift Type',{'name':doc.shift_type},['start_time',])
+#         get_shift_end_time = frappe.db.get_value('Shift Type',{'name':doc.shift_type},['end_time'])
+#         doc.shift_in_time = get_shift_start_time
+#         doc.shift_out_time = get_shift_end_time
+#     else:
+#         doc.shift_type = 'G'
+#         doc.shift_in_time = frappe.db.get_value('Shift Type',{'name':'G'},['start_time'])
+#         doc.shift_out_time = frappe.db.get_value('Shift Type',{'name':'G'},['end_time'])
+
+#     if doc.in_time:
+#         doc.actual_in_time = doc.in_time
+#         doc.actual_out_time = doc.out_time
+#         datetime_to_time = datetime.strptime(str(doc.in_time),'%Y-%m-%d %H:%M:%S').time()
+#         doc.actual_shift = get_actual_shift(datetime_to_time)
+#     else:
+#         doc.actual_in_time = '' 
+#         doc.actual_out_time = ''   
+#         doc.actual_shift = 'NA' 
+#     #checking the shift_type anAttendanced actual_shift is there in the field    
+#     if doc.shift_type and doc.actual_shift:
+#         if doc.shift_type == doc.actual_shift:
+#             doc.matched_status = 'Matched'
+#             doc.status = 'Present'
+#         else:
+#             doc.status = 'Absent'
+#             frappe.errprint(doc.status)
+#             # frappe.db.set_value('Attendance',doc.name,'status','Absent')   
+#             doc.matched_status = 'Unmatched'
+            
+#     else:
+#         doc.matched_status = 'Unmatched'     
+
+
+# @frappe.whitelist()
+# def mark_status_absent(doc,method):
+#     if doc.matched_status ==  'Unmatched':
+#         doc.status = 'Absent'   
+#     doc.save(ignore_permissions=True)
+#     frappe.db.commit()
+    
+
 
 # this is the comparsion of time between 
-def is_between(time, time_range):
-    if time_range[1] < time_range[0]:
-        return time >= time_range[0] or time <= time_range[1]
-    return time_range[0] <= time <= time_range[1]
-#this is the getting the actual shift based on assuming the time period to call this method above get_attendance method to mark the actual_shift
-def get_actual_shift(datetime_to_time):
-    from datetime import datetime
-    from datetime import date, timedelta,time
-    nowtime = datetime.now()
-    #this is the shift_time_range between [0] and [1] 
-    shift_A_time = [time(hour=5, minute=0, second=0),time(hour=7, minute=30, second=0)]
-    shift_G_time = [time(hour=7, minute=31, second=0),time(hour=12, minute=00, second=0)]
-    shift_B_time = [time(hour=13, minute=00, second=0),time(hour=18, minute=30, second=0)]
-    shift_C_time = [time(hour=20, minute=0, second=1),time(hour=23, minute=59, second=0)]
-    shift = ''
-    if is_between(datetime_to_time,shift_A_time):
-        shift = 'A'
-    if is_between(datetime_to_time,shift_G_time):
-        shift = 'G'
-    if is_between(datetime_to_time,shift_B_time):
-        shift = 'B'
-    if is_between(datetime_to_time,shift_C_time):
-        shift = 'C'
-    return shift
+# def is_between(time, time_range):
+#     if time_range[1] < time_range[0]:
+#         return time >= time_range[0] or time <= time_range[1]
+#     return time_range[0] <= time <= time_range[1]
+# #this is the getting the actual shift based on assuming the time period to call this method above get_attendance method to mark the actual_shift
+# def get_actual_shift(datetime_to_time):
+#     from datetime import datetime
+#     from datetime import date, timedelta,time
+#     nowtime = datetime.now()
+#     #this is the shift_time_range between [0] and [1] 
+#     shift_A_time = [time(hour=5, minute=0, second=0),time(hour=7, minute=30, second=0)]
+#     shift_G_time = [time(hour=7, minute=31, second=0),time(hour=12, minute=00, second=0)]
+#     shift_B_time = [time(hour=13, minute=00, second=0),time(hour=18, minute=30, second=0)]
+#     shift_C_time = [time(hour=20, minute=0, second=1),time(hour=23, minute=59, second=0)]
+#     shift = ''
+#     if is_between(datetime_to_time,shift_A_time):
+#         shift = 'A'
+#     if is_between(datetime_to_time,shift_G_time):
+#         shift = 'G'
+#     if is_between(datetime_to_time,shift_B_time):
+#         shift = 'B'
+#     if is_between(datetime_to_time,shift_C_time):
+#         shift = 'C'
+#     return shift
+
+
+#validate Leave Type in Maternity & Paternity in leave_application
+# @frappe.whitelist()
+# def validate_leave_type(employee,leave_type):
+#     if leave_type == 'Maternity Leave' or leave_type == 'Paternity Leave':
+#         kids_count = frappe.db.get_value('Employee',{'status':'Active','name':employee},['number_of_kids'])
+#         if kids_count > 2:
+#             frappe.throw(_('As Per Policy %s limit has been reached'%leave_type))
 
 
 
-            
+#validate coff working_hour greater than 8
+@frappe.whitelist()
+def validate_coff(emp,att_date):
+    data = []
+    attendance = frappe.db.get_value('Attendance',{'attendance_date':att_date,'employee':emp},['in_time','out_time','working_hours','on_duty_marked'])
+    if attendance[0] and attendance[1]:
+        if attendance[2] < 8:
+            data.append(frappe.throw(_('Employee Working Hours less than 8')))
+        else:
+            frappe.log_error('Employee Working Hours greater than 8')   
+    elif attendance [3]:
+        on_duty = frappe.db.get_value('On Duty Application',{'name':attendance[3]},['hours'])
+        if on_duty:
+            ftr = [3600,60,1]
+            hr = sum([a*b for a,b in zip(ftr, map(int,str(on_duty).split(':')))])
+            wh = round(hr/3600,1)
+            if wh < 8:
+                data.append(frappe.throw(_('Employee Working Hours less than 8')))
+            else:
+                frappe.log_error('Employee Working Hours greater than 8')     
+    return data             
+
+
+# @frappe.whitelist()
+# def leave_validation(emp,from_date):
+#     attendance = frappe.db.sql(""" select permission_request from `tabAttendance` where employee = '%s' and attendance_date = '%s' and permission_request is not null """%(emp,from_date))
+#     return "Permission Marked"
+
+@frappe.whitelist()
+def emp_trainee_complete():
+    employee = frappe.db.sql(""" select name,employee_name,date_of_joining,employment_type from `tabEmployee` where status = 'Active' and name = 'BSA0014'  """,as_dict=1)
+    data = ''
+    data+='<table class = table table-bordered >' 
+    data += '<table class="table table-bordered"><tr rowspan = 3 ><th style="padding:1px;border: 1px solid black;" colspan=6><center><b>Employee on Training Period</b></center></th></tr>'
+    data += '<table class="table table-bordered"><tr rowspan = 3 ><td style="padding:1px;border: 1px solid black;" colspan=4><center><b>Employee</b></center></td><td style="padding:1px;border: 1px solid black;" colspan=5><center><b>Eemployee Name</b></center></td><td style="padding:1px;border: 1px solid black;" colspan=5><center><b>Employment Type</b></center></td><td style="padding:1px;border: 1px solid black;" colspan=2><center><b>Training End Date</b></center></td></tr>'
+    for emp in employee:
+        current_date = datetime.today().date()
+        training_end_date = add_months(emp.date_of_joining,12)
+        mail_Sent_date = add_months(training_end_date,-1)
+        if emp.employment_type:
+            if training_end_date:
+                data += '<tr><td colspan=4 style="border: 1px solid black;overflow-wrap: anywhere;"><center>%s</center></td><td colspan=4 style="border: 1px solid black;overflow-wrap: anywhere;"><center>%s</center></td><td colspan=4 style="border: 1px solid black;overflow-wrap: anywhere;"><center>%s</center></td><td colspan=4 style="border: 1px solid black;overflow-wrap: anywhere;"><center>%s</center></td></tr>'%(emp.name,emp.employee_name,emp.employment_type,format_date(training_end_date))
+            else:
+                frappe.log_error('Employee {0} has no Complete {0}  One Year'.format(emp.name,emp.employment_type))    
+        else:
+            frappe.log_error('Employee {0} has no Employment Type'.format(emp.name)) 
+        if current_date == mail_Sent_date:
+            print(emp.name)    
+    data += '</table>' 
+    if current_date ==  mail_Sent_date:
+        frappe.sendmail(
+            recipients=['jagadeesan.a@groupteampro.com'],
+            subject=('Employee Trainee Completion'),
+            message = """
+                    Dear Sir,<br><br>
+                    Kindly find the below Employee list whose Training date is going to be end <br>%s""" % (data)
+        )          
+
+@frappe.whitelist()
+def leave_application(doc,method):
+    if doc.half_day == 1:
+        att =  frappe.db.exists('Attendance',{'employee':doc.employee,'attendance_date':doc.from_date})
+        if att:
+            att_status = frappe.db.get_value('Attendance',{'name':att},['status'])
+            if att_status == 'Half Day':
+                leave = frappe.get_doc('Attendance',att)
+                leave.leave_type = doc.leave_type
+                leave.leave_application = doc.name
+                leave.save(ignore_permissions=True)
+                leave.submit()
+                frappe.db.commit()
+

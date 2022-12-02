@@ -3,8 +3,8 @@
 
 frappe.ui.form.on('Miss Punch Application', {
 	date:function(frm) {
-		if (frm.doc.__islocal){
-			frappe.call({
+			if (frm.doc.__islocal){
+				frappe.call({
 				'method':'frappe.client.get_value',
 				'args':{
 					'doctype':'Attendance',

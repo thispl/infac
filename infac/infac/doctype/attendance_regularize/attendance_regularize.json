@@ -1,0 +1,151 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "ATR.####",
+ "creation": "2022-08-04 15:52:53.580170",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "employee",
+  "column_break_2",
+  "attendance_date",
+  "section_break_4",
+  "assigned_shift",
+  "shift_in_time",
+  "shift_out_time",
+  "column_break_7",
+  "first_in_time",
+  "last_out_time",
+  "column_break_11",
+  "corrected_in",
+  "corrected_out",
+  "corrected_shift",
+  "section_break_15",
+  "attendance_marked",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Employee",
+   "options": "Employee"
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "attendance_date",
+   "fieldtype": "Date",
+   "in_standard_filter": 1,
+   "label": "Attendance Date"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Attendance Regularize",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_4",
+   "fieldtype": "Section Break",
+   "label": "Attendance Details"
+  },
+  {
+   "fieldname": "assigned_shift",
+   "fieldtype": "Data",
+   "label": "Assigned Shift",
+   "read_only": 1
+  },
+  {
+   "fieldname": "shift_in_time",
+   "fieldtype": "Data",
+   "label": "Shift In Time",
+   "read_only": 1
+  },
+  {
+   "fieldname": "shift_out_time",
+   "fieldtype": "Data",
+   "label": "Shift Out Time",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_7",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "first_in_time",
+   "fieldtype": "Data",
+   "label": "First In Time",
+   "read_only": 1
+  },
+  {
+   "fieldname": "last_out_time",
+   "fieldtype": "Data",
+   "label": "Last Out Time",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_11",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "corrected_in",
+   "fieldtype": "Datetime",
+   "label": "Corrected In"
+  },
+  {
+   "fieldname": "corrected_out",
+   "fieldtype": "Datetime",
+   "label": "Corrected Out"
+  },
+  {
+   "fieldname": "corrected_shift",
+   "fieldtype": "Link",
+   "label": "Corrected Shift",
+   "options": "Shift Type"
+  },
+  {
+   "fieldname": "section_break_15",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "attendance_marked",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Attendance Marked",
+   "options": "Attendance"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2022-08-22 15:22:18.746421",
+ "modified_by": "Administrator",
+ "module": "Infac",
+ "name": "Attendance Regularize",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

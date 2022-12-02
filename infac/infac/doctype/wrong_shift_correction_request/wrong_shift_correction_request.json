@@ -10,9 +10,13 @@
   "employee",
   "employee_name",
   "employee_category",
+  "department",
+  "department_line",
   "column_break_4",
   "attendance_date",
   "section_break_6",
+  "column_break_9",
+  "shift_assigned_section",
   "assigned_shift",
   "shift_in_time",
   "shift_out_time",
@@ -193,13 +197,38 @@
   {
    "fieldname": "attend_shift",
    "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "employee.department_line",
+   "fieldname": "department_line",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Department Line",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "employee.department",
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "label": "Department",
+   "options": "Department",
+   "read_only": 1
+  },
+  {
+   "fieldname": "shift_assigned_section",
+   "fieldtype": "Section Break",
+   "label": "Shift Assigned"
+  },
+  {
+   "fieldname": "column_break_9",
+   "fieldtype": "Column Break"
   }
  ],
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-07-19 16:30:36.426459",
+ "modified": "2022-08-04 15:28:36.335970",
  "modified_by": "Administrator",
  "module": "Infac",
  "name": "Wrong Shift Correction Request",
