@@ -8,7 +8,6 @@ from frappe import _
 from frappe.utils.csvutils import UnicodeWriter, read_csv_content
 from frappe.utils.file_manager import get_file
 from frappe.model.document import Document
-from erpnext.hr.doctype.employee.employee import get_holiday_list_for_employee
 from erpnext.hr.utils import get_holidays_for_employee
 from datetime import datetime,timedelta,date,time
 from frappe.utils import cint,today,flt,date_diff,add_days,add_months,date_diff,getdate,formatdate,cint,cstr
