@@ -28,7 +28,7 @@ def get_columns():
     columns = [
         _("Employee") + ":Data:120",
         _("Employee Name") + ":Data:120",
-        _("Attendance Dsate") + ":Data:120",
+        _("Attendance Date") + ":Data:120",
         _("Shift") + ":Data:100",
         _("Shift Time") + ":Data:120",
         _("Out Time") + ":Data:170",

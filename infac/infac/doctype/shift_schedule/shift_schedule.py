@@ -57,13 +57,11 @@ class ShiftSchedule(Document):
     def on_update(self):
         enqueue(self.enqueue_draft_schedule, queue='default', timeout=6000, event='enqueue_draft_schedule')
 
-
     def enqueue_draft_schedule(self):
         self.number_of_employees = len(self.employee_details) 
         if(self.workflow_state == 'Pending For HOD'):
             self.upload_shift()
             frappe.msgprint('Shift Schedule Created')
-
     
     def upload_shift(self):
         dates = self.get_dates(self.from_date,self.to_date)
@@ -116,4 +114,14 @@ class ShiftSchedule(Document):
         no_of_days = date_diff(add_days(to_date, 1), from_date)
         dates = [add_days(from_date, i) for i in range(0, no_of_days)]
         return dates     
-
+    
+# @frappe.whitelist()
+# def department_line(dept):
+#     data = []
+#     user = frappe.db.get_value('User',{'name':frappe.session.user},['email'])
+#     if user == 'arunpandiyan@infacindia.com':
+#         if dept == 'IQC':
+#             frappe.throw(_('You will allow to Schedule the IQC Department Line'))
+#             data.append('IQC')
+#     return data      
+        

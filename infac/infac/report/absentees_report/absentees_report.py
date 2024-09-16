@@ -7,7 +7,7 @@ import frappe
 import json
 from frappe.utils import (getdate, cint, add_months, date_diff, add_days,
     nowdate, get_datetime_str, cstr, get_datetime, now_datetime, format_datetime)
-from datetime import datetime
+from datetime import datetime,date
 from calendar import monthrange
 from frappe import _, msgprint
 from frappe.utils import flt
@@ -39,15 +39,19 @@ def get_attendance(filters):
     row = []
     attendance = frappe.db.sql("""Select * From `tabAttendance` Where status in ('Absent','On Leave') and attendance_date between '%s' and '%s and %s order by employee'"""% (filters.from_date,filters.to_date,filters.employee), as_dict=1)
     if not filters.employee:
-        employee = frappe.get_all("Employee",{'status':'Active'},['*'])
+        employee = frappe.get_all("Employee",{'status':'Active','employee_category':('not in',['Management','Hirco Cook','General Motors','Driver'])},['*'])
     else:
-        employee = frappe.get_all("Employee",{'employee':filters.employee,'status':'Active'},['*'])
+        employee = frappe.get_all("Employee",{'name':filters.employee,'status':'Active'},['*'])
     for emp in employee:
         att_date = []
         for att in attendance:
             if emp.name == att.employee:
-                
-                att_date += [att.attendance_date.strftime("%d-%m-%Y")]
+                if att.attendance_date  == date.today():
+                    today_in_time = frappe.get_value('Attendance',{'employee':att.employee,'attendance_date':att.attendance_date},'in_time')
+                    if not today_in_time:
+                        att_date += [att.attendance_date.strftime("%d-%m-%Y")]
+                else:
+                    att_date += [att.attendance_date.strftime("%d-%m-%Y")]
                 att_list = (','.join(att_date))
         count = len(att_date)
         if count:

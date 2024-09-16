@@ -21,7 +21,6 @@ class OnDutyApplication(Document):
 
 	def on_submit(self):
 		att = frappe.db.exists('Attendance',{'attendance_date':self.od_date,'employee':self.employee})
-		# frappe.errprint(att)
 		if att:
 			frappe.db.set_value('Attendance',att,'status','Present')
 			frappe.db.set_value('Attendance',att,'on_duty_marked',self.name)
@@ -38,11 +37,22 @@ class OnDutyApplication(Document):
 			attendance.attendance_date = self.od_date
 			attendance.status = "Present"
 			attendance.on_duty_marked = self.name
+			attendance.total_wh = '00:00'
+			attendance.extra_hours = '00:00'
+			attendance.late_hours = '00:00'
 			attendance.save(ignore_permissions = True)
 			frappe.db.commit()
+
+	def on_cancel(self):
+		if self.docstatus == 2:
+			att = frappe.db.exists('Attendance',{'attendance_date':self.od_date,'employee':self.employee,'on_duty_marked':self.name})
+			if att:
+				frappe.db.set_value('Attendance',att,'on_duty_marked','')
+
 		
 @frappe.whitelist()
 def get_time_difference(od_date,in_time,out_time):
+	frappe.errprint('TEST CHECK')
 	od_date = datetime.strptime(od_date,'%Y-%m-%d')
 	in_time = datetime.strptime(in_time,'%H:%M:%S').time()
 	out_time = datetime.strptime(out_time,'%H:%M:%S').time()

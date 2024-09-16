@@ -23,6 +23,19 @@ frappe.ui.form.on('Shift Schedule', {
             })    
         }
     },
+    // department_line(frm){
+    //     frappe.call({
+    //         method:"infac.infac.doctype.shift_schedule.shift_schedule.department_line",
+    //         args:{
+    //             dept:frm.doc.department_line
+    //         },
+    //         callback(r){
+    //             if (r.message == 'IQC'){
+    //                 frm.disable_save()
+    //             }
+    //         }
+    //     })
+    // },
     // from_date(frm){
     //     if(frm.doc.from_date){
     //         if (frm.doc.from_date < frappe.datetime.now_date()) {

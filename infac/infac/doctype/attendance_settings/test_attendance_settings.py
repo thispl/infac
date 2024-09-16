@@ -4,5 +4,5 @@
 # import frappe
 import unittest
 
-class TestMonthlyAllowanceBulkupload(unittest.TestCase):
+class TestAttendanceSettings(unittest.TestCase):
 	pass

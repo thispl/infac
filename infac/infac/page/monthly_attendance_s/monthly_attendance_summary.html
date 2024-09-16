@@ -1,0 +1,37 @@
+<div class="row">
+    <div class="col-xs-12">
+        <table border="1px solid" width="100%">
+            <tr>
+                <td style ="background-color:#a4a8a8;font-size:10px;" colspan=1><b><center>EMP ID</center></b></td>
+                <td style ="background-color:#a4a8a8;font-size:10px;"colspan=1><b><center>{{data["emp_id"]}}</center></b></td>
+                <td style ="background-color:#a4a8a8;font-size:10px;" colspan="1"><b><center>EMP Name</center></b></td>
+                <td style ="background-color:#a4a8a8;font-size:10px;"colspan=1><b><center>{{data["emp_name"]}}</center></b></td>
+                <td style ="background-color:#a4a8a8;font-size:10px;" colspan="1"><b><center>DEPT</center></b></td>
+                <td style ="background-color:#a4a8a8;font-size:10px;"colspan=4><b><center>{{data["dept"]}}</center></b></td>    
+            </tr>
+            <tr>
+                <td style ="background-color:#a4a8a8;font-size:10px;" colspan="1"><b><center>Date</center></b></td>
+                <td style ="background-color:#a6a8a8;font-size:10px;" colspan="1"><b><center>In Time</center></b></td>
+                <td style ="background-color:#a6a8a8;font-size:10px;" colspan="1"><b><center>Out Time</center></b></td>
+                <td style ="background-color:#a6a8a8;font-size:10px;" colspan="1"><b><center>Shift</center></b></td>
+                <td style ="background-color:#a6a8a8;font-size:10px;" colspan="1"><b><center>Status</center></b></td>
+                <td style ="background-color:#a6a8a8;font-size:10px;" colspan="1"><b><center>TWH</center></b></td>
+                <td style ="background-color:#a6a8a8;font-size:10px;" colspan="1"><b><center>OT Hours</center></b></td>
+                <td style ="background-color:#a6a8a8;font-size:10px;" colspan="1"><b><center>Late</center></b></td>
+            </tr>
+            {{ data["att"] }}
+            {% for atten in data["att"] %}
+            <tr>
+                <td style ="background-color:#a4a8a8;font-size:10px;" colspan="1"><b><center>{{atten}}</center></b></td>
+                <!-- <td style ="background-color:#a6a8a8;font-size:10px;" colspan="1"><b><center>{{atten[0]["attendance_date"]}}</center></b></td>
+                <td style ="background-color:#a6a8a8;font-size:10px;" colspan="1"><b><center>{{atten[0]["attendance_date"]}}</center></b></td>
+                <td style ="background-color:#a6a8a8;font-size:10px;" colspan="1"><b><center>{{atten[0]["attendance_date"]}}</center></b></td>
+                <td style ="background-color:#a6a8a8;font-size:10px;" colspan="1"><b><center>{{atten[0]["attendance_date"]}}</center></b></td>
+                <td style ="background-color:#a6a8a8;font-size:10px;" colspan="1"><b><center>{{atten[0]["attendance_date"]}}</center></b></td>
+                <td style ="background-color:#a6a8a8;font-size:10px;" colspan="1"><b><center>{{atten[0]["attendance_date"]}}</center></b></td>
+                <td style ="background-color:#a6a8a8;font-size:10px;" colspan="1"><b><center>{{atten[0]["attendance_date    "]}}</center></b></td> -->
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>

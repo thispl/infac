@@ -17,19 +17,16 @@ def execute(filters=None):
 
 def get_columns():
     columns =[
-        _('Employee') +":Data:100",_('Employee Name') +":Data:100",_('Employee Category') +'Data:100',_('Department') +'Data:100',
+        _('Employee') +":Data:100",_('Employee Name') +":Data:100",_('Employee Category') +':Data:100',_('Department') +'Data:100',
         _('Designation') +':Data:100',_('DOJ') +':Data:100',_('DOB') +':Data:100',_('Start Date') +':Data:100',_('End Date') +':Data:100',
         _('Fixed ') +':Data:100',_('Basic') +':Data:100',_('HRA') +':Data:100',_('SPL') +':Data:100',_('Conveyance') +':Data:100',_('Medical') +':Data:100',
         _('Performance Allowancce') +':Data:100',_('Performance Incentive') +':Data:100',_('Supervisior Allowance') +':Data:100',_('Welfare Allowance') +':Data:100',
         _('Washing Allowance') +':Data:100',_('Grade Allowance') +':Data:100',_("Higher Education Allowance"),_('Heat Allowance') +':Data:100',_('Attendance Bonus'),
         _('Employer PF') +':Data:100',_('Employer ESI') +':Data:100',
-        _('OT Amount') +':Data:100',_('Night Shift Allowance'),_('Gross') +':Data:100',_('Canteen') +':Data:100',_('EPF') +':Data:100',_('ESI') +':Data:100',
+        _('OT Amount') +':Data:100',_('Night Shift Allowance'),_('Late Penality') +':Data:100',_('Gross') +':Data:100',_('Canteen') +':Data:100',_('EPF') +':Data:100',_('ESI') +':Data:100',
         _('LWF') +':Data:100',_('TDS') +':Data:100',_('Advance Contribution') +':Data:100',
         _('Total Deduction') +':Data:100',_('Net Salary') +':Data:100',_('Working Days') +':Data:100',_('Payment Days') +':Data:100',_('Absent Days') +':Data:100',
         _('LOP Days') +':Data:100',_('Leave Days') +':Data:100'
-    
-    
-    
     ]
     return columns
 
@@ -64,6 +61,7 @@ def get_data(filters):
         sa = frappe.db.get_value('Salary Detail',{'abbr':'SPA','parent':ss.name},'amount')
         wla = frappe.db.get_value('Salary Detail',{'abbr':'WLA','parent':ss.name},'amount')
         wa = frappe.db.get_value('Salary Detail',{'abbr':'WA','parent':ss.name},'amount')
+        late_penality = frappe.db.get_value('Salary Detail',{'abbr':'LP','parent':ss.name},'amount')
         ga = frappe.db.get_value('Salary Detail',{'abbr':'GA','parent':ss.name},'amount')
         hea = frappe.db.get_value('Salary Detail',{'abbr':'HEA','parent':ss.name},'amount')
         ea = frappe.db.get_value('Salary Detail',{'abbr':'HA','parent':ss.name},'amount')
@@ -81,7 +79,7 @@ def get_data(filters):
     
         row = [
         ss.employee,ss.employee_name,ss.employee_category,ss.department,ss.designation,emp.date_of_joining,emp.date_of_birth,
-        ss.start_date,ss.end_date,fixed,basic,hra,spl_all,convey,ma,pa,pi,sa,wla,wa,ga,hea,ea,ab,pf,eesi,ot,nsa,ss.gross_pay,cat,epf,esi,lwf,tds,ac,
+        ss.start_date,ss.end_date,fixed,basic,hra,spl_all,convey,ma,pa,pi,sa,wla,wa,ga,hea,ea,ab,pf,eesi,ot,nsa,late_penality,ss.gross_pay,cat,epf,esi,lwf,tds,ac,
         ss.total_deduction,ss.net_pay,ss.total_working_days,ss.payment_days,ss.absent_days,ss.leave_without_pay,ss.leave_days
         ]
         data.append(row)
@@ -89,56 +87,4 @@ def get_data(filters):
 
 
 
-
-
-
-# def execute(filters=None):
-    
-#     columns = get_columns(filters)
-#     data = get_data(filters)
-#     return columns ,data
-
-# def get_dates(filters):
-#     no_of_days = date_diff(filters.to_date,filters.from_date)
-#     dates = [add_days(filters.from_date,i) for i in range(0,no_of_days) ]
-
-
-# def get_columns(filters):
-#     columns = [
-#     _("Employee Name") + ":Data/:100",
-#     ]
-#     return columns
-
-# def get_data(filters):
-#     data =[]
-#     row = []
-
-#     if filters.department:
-#         salary_slips = frappe.get_all("Salary Slip",{'department':filters.department,'start_date':filters.from_date,'end_date':filters.to_date},['*'])	
-
-#     if filters.employee:
-#         salary_slips = frappe.get_all("Salary Slip",{'employee':filters.employee,'start_date':filters.from_date,'end_date':filters.to_date},['*'])	
-    
-#     else:
-#         salary_slips = frappe.get_all("Salary Slip",{'start_date':filters.from_date,'end_date':filters.to_date},['*'])	
-
-#     for ss in salary_slips:
-#         row = []
-#         emp = frappe.get_doc("Employee",ss.employee)
-#         row += [emp.name]
-#         frappe.errprint(row)
-#         data.append(row) 
-#         frappe.errprint(row)
-#     return data
-
-            
-
    
-# @frappe.whitelist()
-
-# def get_to_date(from_date):
-#     day = from_date[-2:]
-#     if int(day) > 25:
-#         return add_days(get_last_day(from_date),25)
-#     if int(day) <= 25:
-#         return add_days(get_first_day(from_date),25)

@@ -37,6 +37,11 @@ class MissPunchApplication(Document):
             # frappe.db.set_value('Attendance',att,'late_hrs','')
             # frappe.db.set_value('Attendance',att,'late_deduct','00:00')
             self.attendance = att
+    
+    def on_cancel(self):
+        if self.docstatus == 2:
+            att = frappe.db.exists('Attendance',{'attendance_date':self.date,'employee':self.employee,'miss_punch_marked':self.name})
+            frappe.db.set_value('Attendance',att,'miss_punch_marked','')
 
     #while After Save the document the below process is working
     def validate(self):
@@ -81,4 +86,36 @@ class MissPunchApplication(Document):
     def on_cancel(self):
         att = frappe.db.exists('Attendance',{'attendance_date':self.date,'employee':self.employee})
         if att:
-            frappe.db.set_value('Attendance',att,'miss_punch_marked','')             
+            frappe.db.set_value('Attendance',att,'miss_punch_marked','')      
+
+@frappe.whitelist()
+def get_attendance(emp,att_date):
+    datalist = []
+    data = {}
+    if frappe.db.exists('Attendance',{'employee':emp,'attendance_date':att_date}):
+        if frappe.db.get_value('Attendance',{'employee':emp,'attendance_date':att_date},['in_time']):
+            in_time = frappe.db.get_value('Attendance',{'employee':emp,'attendance_date':att_date},['in_time'])
+        else:
+            in_time = ''    
+        if frappe.db.get_value('Attendance',{'employee':emp,'attendance_date':att_date},['out_time']):
+            out_time = frappe.db.get_value('Attendance',{'employee':emp,'attendance_date':att_date},['out_time'])
+        else:
+            out_time = ''
+        if frappe.db.get_value('Attendance',{'employee':emp,'attendance_date':att_date},['shift']):
+            shift = frappe.db.get_value('Attendance',{'employee':emp,'attendance_date':att_date},['shift'])
+        else:
+            shift = '' 
+        data.update({
+            'in_time':in_time,
+            'out_time':out_time,
+            'shift':shift
+        })
+        datalist.append(data.copy())
+    else:
+        frappe.throw(_("Employee has No Attendance on %s"%(formatdate(att_date))))
+        data.update({
+            'in_time':'',
+            'out_time':'',
+        })
+        datalist.append(data.copy())
+    return datalist    

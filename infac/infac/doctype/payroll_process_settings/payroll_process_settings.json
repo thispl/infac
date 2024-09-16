@@ -6,48 +6,10 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "overtime_section",
-  "employee_category",
-  "column_break_3",
-  "payroll_start_date",
-  "column_break_5",
-  "payroll_end_date",
-  "column_break_7",
-  "ot_process",
   "salary_calculation_section",
-  "performance_allowance_calculation",
-  "column_break_9"
+  "performance_allowance_calculation"
  ],
  "fields": [
-  {
-   "fieldname": "overtime_section",
-   "fieldtype": "Section Break",
-   "hidden": 1,
-   "label": "Overtime"
-  },
-  {
-   "fieldname": "payroll_start_date",
-   "fieldtype": "Date",
-   "label": "Payroll Start Date"
-  },
-  {
-   "fieldname": "column_break_3",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "payroll_end_date",
-   "fieldtype": "Date",
-   "label": "Payroll End Date"
-  },
-  {
-   "fieldname": "column_break_5",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "ot_process",
-   "fieldtype": "Button",
-   "label": "OT Process"
-  },
   {
    "fieldname": "salary_calculation_section",
    "fieldtype": "Section Break",
@@ -57,27 +19,13 @@
    "fieldname": "performance_allowance_calculation",
    "fieldtype": "Percent",
    "label": "Master Staff Performance Allowance Calculation "
-  },
-  {
-   "fieldname": "column_break_9",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "employee_category",
-   "fieldtype": "Link",
-   "label": "Employee Category",
-   "options": "Employee Category"
-  },
-  {
-   "fieldname": "column_break_7",
-   "fieldtype": "Column Break"
   }
  ],
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2022-11-11 13:18:13.918539",
+ "modified": "2023-02-15 12:45:09.584290",
  "modified_by": "Administrator",
  "module": "Infac",
  "name": "Payroll Process Settings",

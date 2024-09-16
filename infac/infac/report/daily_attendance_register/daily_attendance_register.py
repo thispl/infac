@@ -2,7 +2,7 @@
 # For license information, please see license.txt
 from __future__ import unicode_literals
 import frappe
-from frappe.utils import cstr, cint, getdate, get_last_day, get_first_day, add_days
+from frappe.utils import cstr, cint, getdate, get_last_day, get_first_day, add_days,time_diff_in_hours
 from frappe.utils import cstr, add_days, date_diff, getdate, format_date
 from math import floor
 from frappe import msgprint, _
@@ -42,46 +42,51 @@ def get_data(filters):
         for emp in employees:
             row = [emp.name,emp.employee_name,emp.employee_category,emp.department,emp.date_of_joining]
             row.append(date)
-            att = frappe.db.get_value("Attendance",{'attendance_date':date,'employee':emp.name},['status','in_time','out_time','shift','attendance_date','working_hours','ot_hrs']) or ''
-            twh = 0
-            ot = 0
-            if att:
-                # attendance_date = status_map.get(att[0], "")
-                status = status_map.get(att[0], "")
-                # row.append(status)
-                # frappe.errprint(status)
-                if att[1] is not None:
-                    row.append(att[1].strftime('%H:%M:%S'))
+            hh = check_holiday(date,emp.name)
+            if not hh:
+                att = frappe.db.get_value("Attendance",{'attendance_date':date,'employee':emp.name},['status','in_time','out_time','shift','attendance_date','working_hours','ot_hrs']) or ''
+                twh = 0
+                ot = 0
+                if att:
+                    status = status_map.get(att[0], "")
+                    if att[1] is not None:
+                        row.append(att[1].strftime('%H:%M:%S'))
+                    else:
+                        row.append('-')
+                    if att[2] is not None:
+                        row.append(att[2].strftime('%H:%M:%S'))
+                    else:
+                        row.append('-')
+                    row.append(att[3])
+                    row.append(att[5])
+                    row.append(att[6])
                 else:
-                    row.append('-')
-                if att[2] is not None:
-                    row.append(att[2].strftime('%H:%M:%S'))
-                else:
-                    row.append('-')
-                row.append(att[3])
-                row.append(att[5])
-                row.append(att[6])
-                
-                # if att[1] and att[2]:
-                #     twh = att[2] - att[1]
-                # row.append(twh)
-                # actual_hours = frappe.get_value("Shift Type",att[3],"total_hours")
-                # shift_end_time = frappe.get_value("Shift Type",att[3],"end_time")
-                # if att[2]:
-                #     actual_out_time = timedelta(hours=att[2].hour, minutes=att[2].minute, seconds=att[2].second)
-                #     if actual_out_time > shift_end_time:
-                #         if twh > actual_hours:
-                #             ot = twh - actual_hours
-                #             row.append(ot)
-                #         else:
-                #             row.append('-')
-                #     else:
-                #         row.append('-')
-                # else:
-                #         row.append('-')
+                    row += ['-','-','-','-','-','-','-']
+                data.append(row)
             else:
-                row += ['-','-','-','-','-','-','-']
-            data.append(row)
+                hd_att = frappe.db.get_value("Holiday Attendance",{'attendance_date':date,'employee':emp.name},['status','in_time','out_time','shift','attendance_date','ot_hrs']) or '' 
+                twh = 0
+                ot = 0
+                if hd_att:
+                    status = status_map.get(hd_att[0], "")
+                    if hd_att[1] is not None:
+                        row.append(hd_att[1].strftime('%H:%M:%S'))
+                    else:
+                        row.append('-')
+                    if hd_att[2] is not None:
+                        row.append(hd_att[2].strftime('%H:%M:%S'))
+                    else:
+                        row.append('-')
+                    row.append(hd_att[3])
+                    working_hours = time_diff_in_hours(hd_att[2],hd_att[1])
+                    if working_hours:
+                        row.append(working_hours)
+                    else:
+                        row.append(0.0)
+                    row.append(hd_att[5])
+                else:
+                    row += ['-','-','-','-','-','-','-']
+                data.append(row) 
     return data
 
 def get_dates(from_date,to_date):
@@ -101,3 +106,14 @@ def get_employees(filters):
         conditions += "and employee = '%s' " % filters.employee
     employees = frappe.db.sql("""select name, employee_name,employee_category, department, date_of_joining from `tabEmployee` where status = 'Active' %s"""%(conditions),as_dict=True)
     return employees
+
+
+def check_holiday(date,emp):
+    holiday_list = frappe.db.get_value('Company','Infac India Private Limited','default_holiday_list')
+    holiday = frappe.db.sql("""select `tabHoliday`.holiday_date,`tabHoliday`.weekly_off from `tabHoliday List` 
+    left join `tabHoliday` on `tabHoliday`.parent = `tabHoliday List`.name where `tabHoliday List`.name = '%s' and holiday_date = '%s' """%(holiday_list,date),as_dict=True)
+    if holiday:
+        if holiday[0].weekly_off == 1:
+            return "WW"
+        else:
+            return "HH"    

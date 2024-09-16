@@ -1,0 +1,22 @@
+{
+ "content": null,
+ "creation": "2023-03-29 10:55:56.353837",
+ "docstatus": 0,
+ "doctype": "Page",
+ "idx": 0,
+ "modified": "2023-03-29 10:56:11.047221",
+ "modified_by": "Administrator",
+ "module": "Infac",
+ "name": "monthly-attendance-s",
+ "owner": "Administrator",
+ "page_name": "Monthly Attendance Summary",
+ "roles": [
+  {
+   "role": "System Manager"
+  }
+ ],
+ "script": null,
+ "standard": "Yes",
+ "style": null,
+ "system_page": 0
+}

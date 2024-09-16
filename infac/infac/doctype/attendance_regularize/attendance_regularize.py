@@ -5,7 +5,6 @@ from __future__ import unicode_literals
 from email import message
 import re
 from frappe import _
-from wsgiref import validate
 import frappe
 from frappe.model.document import Document
 from datetime import date, timedelta, datetime,time
@@ -13,12 +12,16 @@ from frappe.utils import (getdate, cint, add_months, date_diff, add_days,
     nowdate, get_datetime_str, cstr, get_datetime, now_datetime, format_datetime,today, format_date)
 import pandas as pd
 import math
+from frappe.utils import add_months, cint, flt, getdate, time_diff_in_hours
+
 
 
 
 class AttendanceRegularize(Document):
 
     def on_submit(self):
+        status = self.validate_total_wh()
+        att_status = status[0]['status']
         att_working_hours = self.validate_total_wh()
         working_hours = att_working_hours[0]['att_wh']
         att_total_wh = self.validate_total_wh()
@@ -40,68 +43,109 @@ class AttendanceRegularize(Document):
 
         hh = self.validate_check_holiday()
         if not hh:
-            attendance = frappe.get_doc('Attendance',{'name':self.attendance_marked})
-            attendance.in_time = self.corrected_in
-            attendance.out_time = self.corrected_out
-            attendance.shift = self.corrected_shift
-            attendance.working_hours = working_hours
-            attendance.total_wh = total_wh
-            attendance.extra_hours = extra_hours
-            attendance.ot_hrs = ot_hr
-            attendance.late_hours = late_hour
-            attendance.late_hrs = late_hr
-            attendance.late_deduct = late_deduct
-            attendance.shift_type = self.corrected_shift
-            attendance.shift_in_time = shift_in_time
-            attendance.shift_out_time = shift_out_time
-            attendance.actual_shift = self.corrected_shift
-            attendance.actual_in_time = self.corrected_in
-            attendance.actual_out_time = self.corrected_out
-            attendance.save(ignore_permissions=True)
-            frappe.db.commit()
-
-            frappe.db.set_value('Attendance',self.attendance_marked,'status','Present')
-            frappe.db.set_value('Attendance',self.attendance_marked,'matched_status','Matched')
-            frappe.db.set_value('Attendance',self.attendance_marked,'attendance_regularize',self.name)
-            # frappe.db.set_value('Attendance',self.attendance_marked,'regularize_marked','1')
+            att = frappe.db.exists('Attendance',{'employee':self.employee,'attendance_date':self.attendance_date,'docstatus':('!=','2')})
+            if att:
+                leave_application = frappe.db.get_value('Attendance',{'name':att,'docstatus':('!=','2')},['leave_application'])
+                if not leave_application:
+                    attendance = frappe.get_doc('Attendance',{'name':att})
+                    attendance.status = att_status
+                    attendance.in_time = self.corrected_in
+                    attendance.out_time = self.corrected_out
+                    attendance.shift = self.corrected_shift
+                    attendance.working_hours = working_hours
+                    attendance.total_wh = total_wh
+                    attendance.extra_hours = extra_hours
+                    attendance.ot_hrs = ot_hr
+                    attendance.late_hours = late_hour
+                    attendance.late_hrs = late_hr
+                    attendance.late_deduct = late_deduct
+                    attendance.shift_type = self.corrected_shift
+                    attendance.shift_in_time = shift_in_time
+                    attendance.shift_out_time = shift_out_time
+                    attendance.actual_shift = self.corrected_shift
+                    attendance.actual_in_time = self.corrected_in
+                    attendance.actual_out_time = self.corrected_out
+                    attendance.save(ignore_permissions=True)
+                    frappe.db.commit()
+                    frappe.db.set_value('Attendance',att,'matched_status','Matched')
+                    frappe.db.set_value('Attendance',att,'attendance_regularize',self.name)
+                else:
+                    frappe.throw(_('Employee %s Applied Leave on %s'%(self.employee,format_date(self.attendance_date))))    
         else:
-            total_working_hour = self.validate_total_wh()
-            total_wh = total_working_hour[0]['total_wh']
-            ftr = [3600,60,1]
-            hr = sum([a*b for a,b in zip(ftr, map(int,str(total_wh).split(':')))])
-            wh = round(hr/3600,1)
-            if wh > 0:
-                none_time =pd.to_datetime('00:00:00').time()
-                holiday_ot_hr = (math.floor(wh * 2) / 2) - 0.5
-                attendance = frappe.get_doc('Attendance',{'name':self.attendance_marked})
-                attendance.in_time = self.corrected_in
-                attendance.out_time = self.corrected_out
-                attendance.shift = self.corrected_shift
-                attendance.working_hours = working_hours
-                attendance.total_wh = total_wh
-                attendance.extra_hours = total_wh
-                attendance.ot_hrs = holiday_ot_hr
-                attendance.late_hours = late_hour
-                attendance.late_hrs = late_hr
-                attendance.late_deduct = late_deduct
-                attendance.shift_type = self.corrected_shift
-                attendance.shift_in_time = shift_in_time
-                attendance.shift_out_time = shift_out_time
-                attendance.actual_shift = self.corrected_shift
-                attendance.actual_in_time = self.corrected_in
-                attendance.actual_out_time = self.corrected_out
-                attendance.save(ignore_permissions=True)
-                frappe.db.commit()
+            att = frappe.db.exists('Attendance',{'name':self.attendance_marked})
+            if att:
+                total_working_hour = self.validate_total_wh()
+                total_wh = total_working_hour[0]['total_wh']
+                ftr = [3600,60,1]
+                hr = sum([a*b for a,b in zip(ftr, map(int,str(total_wh).split(':')))])
+                wh = round(hr/3600,1)
+                if wh > 0:
+                    none_time =pd.to_datetime('00:00:00').time()
+                    holiday_ot_hr = (math.floor(wh * 2) / 2) - 0.5
+                    attendance = frappe.get_doc('Attendance',{'name':self.attendance_marked})
+                    attendance.status = 'Present'
+                    attendance.in_time = self.corrected_in
+                    attendance.out_time = self.corrected_out
+                    attendance.shift = self.corrected_shift
+                    attendance.working_hours = working_hours
+                    attendance.total_wh = total_wh
+                    attendance.extra_hours = total_wh
+                    attendance.ot_hrs = holiday_ot_hr
+                    attendance.shift_type = self.corrected_shift
+                    attendance.shift_in_time = shift_in_time
+                    attendance.shift_out_time = shift_out_time
+                    attendance.actual_shift = self.corrected_shift
+                    attendance.actual_in_time = self.corrected_in
+                    attendance.actual_out_time = self.corrected_out
+                    attendance.save(ignore_permissions=True)
+                    frappe.db.commit()
+                    frappe.db.set_value('Attendance',self.attendance_marked,'status','Present')
+                    frappe.db.set_value('Attendance',self.attendance_marked,'matched_status','Matched')
+                    frappe.db.set_value('Attendance',self.attendance_marked,'attendance_regularize',self.name)
+                    frappe.db.set_value('Attendance',self.attendance_marked,'regularize_marked','1')
+            else:
+                holidat_att = frappe.db.exists('Holiday Attendance',{'employee':self.employee,'attendance_date':self.attendance_date})
+                if holidat_att:
+                    total_working_hour = self.validate_total_wh()
+                    total_wh = total_working_hour[0]['total_wh']
+                    ftr = [3600,60,1]
+                    hr = sum([a*b for a,b in zip(ftr, map(int,str(total_wh).split(':')))])
+                    wh = round(hr/3600,1)
+                    if wh > 0:
+                        none_time =pd.to_datetime('00:00:00').time()
+                        holiday_ot_hr = (math.floor(wh * 2) / 2) - 0.5
+                        attendance = frappe.get_doc('Holiday Attendance',{'name':holidat_att})
+                        attendance.status = 'Present'
+                        attendance.in_time = self.corrected_in
+                        attendance.out_time = self.corrected_out
+                        attendance.shift = self.corrected_shift
+                        attendance.working_hours = working_hours
+                        attendance.total_wh = total_wh
+                        attendance.extra_hours = total_wh
+                        attendance.ot_hrs = holiday_ot_hr
+                        attendance.shift_type = self.corrected_shift
+                        attendance.shift_in_time = shift_in_time
+                        attendance.shift_out_time = shift_out_time
+                        attendance.actual_shift = self.corrected_shift
+                        attendance.actual_in_time = self.corrected_in
+                        attendance.actual_out_time = self.corrected_out
+                        attendance.save(ignore_permissions=True)
+                        frappe.db.commit()
+                        frappe.db.set_value('Holiday Attendance',self.attendance_marked,'status','Present')
+                        frappe.db.set_value('Holiday Attendance',self.attendance_marked,'matched_status','Matched')
+                        frappe.db.set_value('Holiday Attendance',self.attendance_marked,'attendance_regularize',self.name)
+                else:
+                    frappe.throw(_("Employee has Attendance for the date %s"%(self.attendance_date)))
 
-                frappe.db.set_value('Attendance',self.attendance_marked,'status','Present')
-                frappe.db.set_value('Attendance',self.attendance_marked,'matched_status','Matched')
-                frappe.db.set_value('Attendance',self.attendance_marked,'attendance_regularize',self.name)
-                frappe.db.set_value('Attendance',self.attendance_marked,'regularize_marked','1')
+                        
     
-        # if self.corrected_out >  self.attendance_date:      
-        #     self.validate_next_day_attendance()     
-        # else:
-        #     frappe.msgprint('Attedance Submitted')       
+    def on_cancel(self):
+        att = frappe.db.exists('Attendance',{'employee':self.employee,'attendance_date':self.attendance_date})
+        if att:
+            att_reg = frappe.db.get_value('Attendance',{'name':att},['attendance_regularize'])
+            if att_reg == self.name:
+                frappe.db.sql(""" update `tabAttendance` set attendance_regularize = '' where name = '%s' and docstatus != 2 """%(att))
+                frappe.db.sql(""" update `tabAttendance` set matched_status = 'Unmatched' where name = '%s' and docstatus != 2 """%(att))
 
     def updated_shift(self):
         datalist = []
@@ -115,44 +159,31 @@ class AttendanceRegularize(Document):
         datalist.append(data.copy())
         return datalist
 
-    # def check_next_day_week_off(self):
-    #     hh = self.validate_check_holiday()
-    #     if not hh:
-
-    # def validate_next_day_attendance(self):
-    #     att_next_day = datetime.strptime(str(self.corrected_out),'%Y-%m-%d %H:%M:%S')
-    #     next_day = att_next_day.date()
-    #     if self.corrected_out >  self.attendance_date:
-    #         att = frappe.db.exists('Attendance',{'employee':self.employee,'attendance_date':next_day})
-    #         if att:
-    #             attendance = frappe.db.get_value('Attendance',{'name':att},['in_time'])
-    #             if attendance:
-    #                 attendance = frappe.get_doc('Attendance',{'name':att})
-    #                 attendance.in_time = ''
-    #                 attendance.matched_status = 'Matched'
-    #                 attendance.actual_in_time = ''
-    #                 attendance.save(ignore_permissions=True)
-    #                 frappe.db.commit()
-
-
     def validate_total_wh(self):
         datalist = []
         data = {}
+        work_hour = time_diff_in_hours(self.corrected_out,self.corrected_in)
         str_in_time = datetime.strptime(str(self.corrected_in),'%Y-%m-%d %H:%M:%S')
         str_out_time = datetime.strptime(str(self.corrected_out),'%Y-%m-%d %H:%M:%S')
         total_wh = str_out_time - str_in_time
+        if work_hour < 4.0:
+            status = 'Absent'
+        elif work_hour >= 4.0 and work_hour < 5.99:
+            status = 'Half Day'
+        elif work_hour >= 6.0:
+            status = 'Present'	
         total_wh_att = datetime.strptime(str(total_wh),'%H:%M:%S').strftime('%H:%M')
         ftr = [3600,60,1]
         hr = sum([a*b for a,b in zip(ftr, map(int,str(total_wh).split(':')))])
         att_wh = round(hr/3600,1)
         data.update({
+            'status':status,
             'total_wh':total_wh,
             'att_wh':att_wh,
             'total_wh_att':total_wh_att,
         })
         datalist.append(data.copy())
         return datalist  
-
 
     def validate_late_hour(self):
         datalist = []
@@ -163,7 +194,48 @@ class AttendanceRegularize(Document):
         str_in_date = att_in_time.date()
         shift_start_datetime = datetime.combine(str_in_date,shift_start_time)
         attendance = frappe.db.get_value('Attendance',{'employee':self.employee,'attendance_date':self.attendance_date},['permission_request'])
-        if not attendance:
+        if attendance:
+            check_per_shift = frappe.db.get_value('Permission Request',{'name':attendance},['shift'])
+            if check_per_shift != self.corrected_shift:
+                if shift_start_datetime:
+                    late_hour = pd.to_datetime('00:00:00').time()
+                    late_hr = 0
+                    ftr = [3600,60,1]
+                    if att_in_time > shift_start_datetime:
+                        late_hour = att_in_time - shift_start_datetime
+                        late_hour_time = datetime.strptime(str(late_hour),'%H:%M:%S').strftime('%H:%M') 
+                        hr = sum([a*b for a,b in zip(ftr, map(int,str(late_hour).split(':')))])
+                        late_hr = round(hr/3600,1)
+                        try:
+                            actual_late_hour = late_hour_time
+                            late_deduct = self.validate_late_deduct(actual_late_hour)
+                        except:
+                            actual_late_hour = late_hour
+                            late_deduct = self.validate_late_deduct(actual_late_hour)
+                        data.update({
+                            'late_hour_time':late_hour_time,
+                            'late_hr':late_hr,
+                            'late_deduct':late_deduct
+                        })
+                        datalist.append(data.copy())
+                    else:
+                        data.update({
+                            'late_hour_time':'',
+                            'late_hr':'',
+                            'late_deduct':''
+                        })
+                        datalist.append(data.copy())
+            else:
+                message = 'Employee Permission Applied so late will not be calculated'
+                error_log = frappe.log_error('Permission Applied',message)
+                data.update({
+                    'error_log':error_log,
+                    'late_hour_time':'',
+                    'late_hr':'',
+                    'late_deduct':''
+                })
+                datalist.append(data.copy())   
+        else:
             if shift_start_datetime:
                 late_hour = pd.to_datetime('00:00:00').time()
                 late_hr = 0
@@ -192,16 +264,6 @@ class AttendanceRegularize(Document):
                         'late_deduct':''
                     })
                     datalist.append(data.copy())
-        else:
-            message = 'Employee Permission Applied so late will not be calculated'
-            error_log = frappe.log_error('Permission Applied',message)
-            data.update({
-                'error_log':error_log,
-                'late_hour_time':'',
-                'late_hr':'',
-                'late_deduct':''
-            })
-            datalist.append(data.copy())            
         return datalist
 
     def validate_late_deduct(self,actual_late_hour):
@@ -249,7 +311,8 @@ class AttendanceRegularize(Document):
         att_out_time = datetime.strptime(str(self.corrected_out),'%Y-%m-%d %H:%M:%S')
         str_out_date = att_out_time.date()
         previous_day = add_days(str_out_date,-1)
-        if str(str_out_date) > self.attendance_date:
+        if getdate(str_out_date) > getdate(self.attendance_date):
+        # if str(str_out_date) > self.attendance_date:
             if self.corrected_shift == 'B':
                 shift_end_date_time = datetime.combine(previous_day,shift_end_time)
                 if shift_end_date_time:
@@ -276,7 +339,7 @@ class AttendanceRegularize(Document):
                             extra_hrs = att_out_time - shift_end_date_time
                             hr = sum([a*b for a,b in zip(ftr, map(int,str(extra_hrs).split(':')))])
                             extras = round(hr/3600,1)
-                            if extras > 1.0:
+                            if extras >= 1.0:
                                 ot_hr = math.floor(extras * 2) / 2     
             elif self.corrected_shift == 'A':  
                 shift_end_date_time = datetime.combine(previous_day,shift_end_time)
@@ -290,7 +353,7 @@ class AttendanceRegularize(Document):
                             extra_hrs = att_out_time - shift_end_date_time
                             hr = sum([a*b for a,b in zip(ftr, map(int,str(extra_hrs).split(':')))])
                             extras = round(hr/3600,1)
-                            if extras > 1:
+                            if extras >= 1:
                                 ot_hr = math.floor(extras * 2) / 2                                      
             else:
                 shift_end_date_time = datetime.combine(str_out_date,shift_end_time)
@@ -301,10 +364,15 @@ class AttendanceRegularize(Document):
                         total_wh_method = self.validate_total_wh()
                         total_wh = total_wh_method[0]['total_wh']
                         if total_wh > total_shift_hours:
+                            frappe.errprint(att_out_time)
+                            frappe.errprint(shift_end_date_time)
                             extra_hrs = att_out_time - shift_end_date_time
                             hr = sum([a*b for a,b in zip(ftr, map(int,str(extra_hrs).split(':')))])
                             extras = round(hr/3600,1)
-                            if extras > 1:
+                            # frappe.errprint(extra_hrs)
+                            # frappe.errprint(extras)
+                            if extras >= 1:
+                                frappe.errprint(shift_end_date_time)
                                 ot_hr = math.floor(extras * 2) / 2
         else:
             shift_end_date_time = datetime.combine(str_out_date,shift_end_time)
@@ -318,7 +386,7 @@ class AttendanceRegularize(Document):
                         extra_hrs = att_out_time - shift_end_date_time
                         hr = sum([a*b for a,b in zip(ftr, map(int,str(extra_hrs).split(':')))])
                         extras = round(hr/3600,1)
-                        if extras > 1:
+                        if extras >= 1:
                             ot_hr = math.floor(extras * 2) / 2
     
                                     
@@ -385,11 +453,26 @@ def get_attendance(emp,att_date):
             'out_time':out_time,
         })
         datalist.append(data.copy())
+
+    elif frappe.db.exists('Holiday Attendance',{'employee':emp,'attendance_date':att_date}):
+        if frappe.db.get_value('Holiday Attendance',{'employee':emp,'attendance_date':att_date},['in_time']):
+            in_time = frappe.db.get_value('Holiday Attendance',{'employee':emp,'attendance_date':att_date},['in_time']).strftime('%H:%M:%S') 
+        else:
+            in_time = '-'    
+        if frappe.db.get_value('Holiday Attendance',{'employee':emp,'attendance_date':att_date},['out_time']):
+            out_time = frappe.db.get_value('Holiday Attendance',{'employee':emp,'attendance_date':att_date},['out_time']).strftime('%H:%M:%S')   
+        else:
+            out_time = '-'
+        data.update({
+            'in_time':in_time,
+            'out_time':out_time,
+        })
+        datalist.append(data.copy())
     else:
         frappe.throw(_("Employee has No Checkins for the day"))
         data.update({
-            'in_time':'-',
-            'out_time':'-',
+            'in_time':'No In Time',
+            'out_time':'',
         })
         datalist.append(data.copy())
     return datalist    
@@ -403,13 +486,13 @@ def attendance_marked(emp,att_date):
     if frappe.db.exists('Attendance',{'employee':emp,'attendance_date':att_date}):
         if frappe.db.get_value('Attendance',{'employee':emp,'attendance_date':att_date},['in_time']):
             in_time = frappe.db.get_value('Attendance',{'employee':emp,'attendance_date':att_date},['in_time'])
-            actual_shift = frappe.db.get_value('Attendance',{'employee':emp,'attendance_date':att_date},['actual_shift'])
+            actual_shift = frappe.db.get_value('Attendance',{'employee':emp,'attendance_date':att_date},['shift'])
             att_id = frappe.db.get_value('Attendance',{'employee':emp,'attendance_date':att_date},['name'])
         else:
             in_time = ''   
         if frappe.db.get_value('Attendance',{'employee':emp,'attendance_date':att_date},['out_time']):
             out_time = frappe.db.get_value('Attendance',{'employee':emp,'attendance_date':att_date},['out_time'])
-            actual_shift = frappe.db.get_value('Attendance',{'employee':emp,'attendance_date':att_date},['actual_shift'])
+            actual_shift = frappe.db.get_value('Attendance',{'employee':emp,'attendance_date':att_date},['shift'])
             att_id = frappe.db.get_value('Attendance',{'employee':emp,'attendance_date':att_date},['name'])
         else:
             out_time = ''
@@ -420,6 +503,26 @@ def attendance_marked(emp,att_date):
             'att_id':att_id
         })
         datalist.append(data.copy())
+    elif frappe.db.exists('Holiday Attendance',{'employee':emp,'attendance_date':att_date}):
+        if frappe.db.get_value('Holiday Attendance',{'employee':emp,'attendance_date':att_date},['in_time']):
+            in_time = frappe.db.get_value('Holiday Attendance',{'employee':emp,'attendance_date':att_date},['in_time'])
+            actual_shift = frappe.db.get_value('Holiday Attendance',{'employee':emp,'attendance_date':att_date},['actual_shift'])
+            # att_id = frappe.db.get_value('Holiday Attendance',{'employee':emp,'attendance_date':att_date},['name'])
+        else:
+            in_time = ''   
+        if frappe.db.get_value('Holiday Attendance',{'employee':emp,'attendance_date':att_date},['out_time']):
+            out_time = frappe.db.get_value('Holiday Attendance',{'employee':emp,'attendance_date':att_date},['out_time'])
+            actual_shift = frappe.db.get_value('Holiday Attendance',{'employee':emp,'attendance_date':att_date},['actual_shift'])
+            # att_id = frappe.db.get_value('Holiday Attendance',{'employee':emp,'attendance_date':att_date},['name'])
+        else:
+            out_time = ''
+        data.update({
+            'in_time':in_time,
+            'out_time':out_time,
+            'actual_shift':actual_shift,
+            # 'att_id':att_id
+        })
+        datalist.append(data.copy())   
     else:
         # frappe.throw(_("Employee has No Checkins for the day"))
         data.update({

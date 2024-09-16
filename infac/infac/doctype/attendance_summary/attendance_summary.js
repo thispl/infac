@@ -10,8 +10,22 @@ frappe.ui.form.on('Attendance Summary', {
                 frm.set_value('employee_name',r.employee_name)
             }
         })
-        frm.set_value('from_date',frappe.datetime.add_days(frappe.datetime.month_start(), -10))
-        frm.set_value('to_date',frappe.datetime.add_days(frappe.datetime.month_start(), 19))
+		frappe.call({
+            'method': 'frappe.client.get_value',
+            'args': {
+                'doctype': 'Payroll Dates Automatic',
+                'filters': {
+                    'name': 'PAYDATE0001',
+                },
+                'fieldname': ['payroll_start_date','payroll_end_date']
+            },
+            callback(r) {
+                if (r.message) {
+                    frm.set_value('from_date',r.message.payroll_start_date)
+                    frm.set_value('to_date',r.message.payroll_end_date)
+                }
+            }
+        })        
     },
     employee_id(frm){
 		frm.trigger('get_data')
@@ -59,11 +73,12 @@ frappe.ui.form.on('Attendance Summary', {
                     method: "infac.infac.doctype.attendance_summary.attendance_summary.get_data_mobile",
                     args: {
                         emp:frm.doc.employee_id,
-                        from_date: frm.doc.from_date,
-                        to_date: frm.doc.to_date
+                        start_date: frm.doc.from_date,
+                        end_date: frm.doc.to_date
                     },
                     callback(r) {
-                        frm.fields_dict.html.$wrapper.empty().append(frappe.render_template('attendance_summary',r.message))
+                        frm.fields_dict.html.$wrapper.empty().append(r.message)
+                        // frm.fields_dict.html.$wrapper.empty().append(frappe.render_template('attendance_summary',r.message))
                     }
                 })
             }
@@ -71,6 +86,6 @@ frappe.ui.form.on('Attendance Summary', {
                 frm.fields_dict.html.$wrapper.empty().append("<center><h2>Attendance Not Found</h2></center>")
             }
         })
-    }
+    },
         
 });

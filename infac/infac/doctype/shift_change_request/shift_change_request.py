@@ -12,8 +12,6 @@ from frappe import _
 
 class ShiftChangeRequest(Document):
 
-    
-
     def on_submit(self):
         get_shift = frappe.db.get_all('Shift Assignment',{'start_date':('between',(self.from_date,self.to_date)),'employee':self.employee},['name','shift_type'])
         for shift in get_shift:

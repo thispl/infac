@@ -22,7 +22,7 @@ def execute(filters=None):
 
 def get_columns(filters):
     columns = [
-        _("Employee") + ":Data:120",_("Employee Name") + ":Data:150",_("Attendance Date") + ":Data:150",_("Shift") + ":Data:80",
+        _("Employee") + ":Data:120",_("Employee Name") + ":Data:150",_("Department") + ":Data:120",_("Attendance Date") + ":Data:150",_("Shift") + ":Data:80",
         _("OT Hours") + ":Data:100",
     ]
     return columns
@@ -32,6 +32,6 @@ def get_data(filters):
     attendance = frappe.get_all('Attendance',{'status':'Present','attendance_date':('between',(filters.from_date,filters.to_date))},['*'])
     for att in attendance:
         if att.ot_hrs:
-            row = [att.employee,att.employee_name,format_date(att.attendance_date),att.shift,att.ot_hrs]
+            row = [att.employee,att.employee_name,att.department,format_date(att.attendance_date),att.shift,att.ot_hrs]
             data.append(row)
     return data

@@ -1,0 +1,322 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2022-12-18 12:15:31.610849",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "all_settings_section",
+  "shift_incetive_amount_settings",
+  "holiday_attendance_settings",
+  "column_break_3",
+  "attendance_submit_settings",
+  "deleted_attendance",
+  "column_break_5",
+  "ot_incentive_settings",
+  "ot_incentive_process_section",
+  "mark_ot",
+  "employee_id",
+  "payroll_start_date",
+  "update_ot_incentive_process",
+  "column_break_11",
+  "mark_ot_incentive",
+  "payroll_end_date",
+  "staff_ot_incentive_settings_section",
+  "e_slap_ot_incentive_amount",
+  "e_slap_ot_start",
+  "e_slap_ot_end",
+  "update_ot_incentive",
+  "column_break_21",
+  "t_slap_ot_incentive_amount",
+  "t_slap_ot_start",
+  "t_slap_ot_end",
+  "column_break_10",
+  "m_slap_ot_incentive_amount",
+  "m_slap_ot_start",
+  "m_slap_ot_end",
+  "attendance_submit_section",
+  "employee_category",
+  "submit_attendance",
+  "column_break_33",
+  "att_from_date",
+  "column_break_23",
+  "att_to_date",
+  "holiday_attendance_process_section",
+  "start_date",
+  "update_holiday_attendance",
+  "column_break_48",
+  "end_date",
+  "attendance_delete_section",
+  "employee",
+  "delete_attendance",
+  "column_break_40",
+  "attendance_date"
+ ],
+ "fields": [
+  {
+   "depends_on": "eval:doc.mark_ot == 1 || doc.mark_ot_incentive == 1",
+   "fieldname": "payroll_start_date",
+   "fieldtype": "Date",
+   "label": "OT Start Date"
+  },
+  {
+   "depends_on": "eval:doc.mark_ot == 1 || doc.mark_ot_incentive == 1",
+   "fieldname": "payroll_end_date",
+   "fieldtype": "Date",
+   "label": "OT End Date"
+  },
+  {
+   "depends_on": "eval:doc.shift_incetive_amount_settings == 1",
+   "fieldname": "staff_ot_incentive_settings_section",
+   "fieldtype": "Section Break",
+   "label": "Staff OT Incentive"
+  },
+  {
+   "fieldname": "e_slap_ot_start",
+   "fieldtype": "Float",
+   "label": "E Slap OT Start"
+  },
+  {
+   "fieldname": "column_break_10",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "e_slap_ot_end",
+   "fieldtype": "Float",
+   "label": "E Slap OT End"
+  },
+  {
+   "fieldname": "t_slap_ot_start",
+   "fieldtype": "Float",
+   "label": "T Slap OT Start"
+  },
+  {
+   "fieldname": "m_slap_ot_start",
+   "fieldtype": "Float",
+   "label": "M Slap OT Start"
+  },
+  {
+   "fieldname": "t_slap_ot_end",
+   "fieldtype": "Float",
+   "label": "T Slap OT End"
+  },
+  {
+   "fieldname": "m_slap_ot_end",
+   "fieldtype": "Float",
+   "label": "M Slap OT End"
+  },
+  {
+   "fieldname": "update_ot_incentive",
+   "fieldtype": "Button",
+   "label": "Update Amount and Slap Period"
+  },
+  {
+   "fieldname": "e_slap_ot_incentive_amount",
+   "fieldtype": "Currency",
+   "label": "E Slap OT Incentive Amount"
+  },
+  {
+   "fieldname": "t_slap_ot_incentive_amount",
+   "fieldtype": "Currency",
+   "label": "T Slap OT Incentive Amount"
+  },
+  {
+   "fieldname": "m_slap_ot_incentive_amount",
+   "fieldtype": "Currency",
+   "label": "M Slap OT Incentive Amount"
+  },
+  {
+   "depends_on": "eval:doc.mark_ot == 1 || doc.mark_ot_incentive == 1",
+   "fieldname": "update_ot_incentive_process",
+   "fieldtype": "Button",
+   "label": "Update OT Incentive Process"
+  },
+  {
+   "depends_on": "eval:doc.attendance_submit_settings == 1",
+   "fieldname": "attendance_submit_section",
+   "fieldtype": "Section Break",
+   "label": "Attendance Submit"
+  },
+  {
+   "fieldname": "submit_attendance",
+   "fieldtype": "Button",
+   "label": "Submit Attendance"
+  },
+  {
+   "fieldname": "column_break_21",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "att_from_date",
+   "fieldtype": "Date",
+   "label": "FROM DATE"
+  },
+  {
+   "fieldname": "column_break_23",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "att_to_date",
+   "fieldtype": "Date",
+   "label": "TO DATE"
+  },
+  {
+   "fieldname": "employee_category",
+   "fieldtype": "Link",
+   "label": "Employee Category",
+   "options": "Employee Category"
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "all_settings_section",
+   "fieldtype": "Section Break",
+   "label": "All Settings"
+  },
+  {
+   "fieldname": "column_break_33",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_5",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.ot_incentive_settings == 1",
+   "fieldname": "ot_incentive_process_section",
+   "fieldtype": "Section Break",
+   "label": "OT Incentive and Mark OT Process"
+  },
+  {
+   "default": "0",
+   "fieldname": "ot_incentive_settings",
+   "fieldtype": "Check",
+   "label": "OT Incentive Settings"
+  },
+  {
+   "default": "0",
+   "fieldname": "shift_incetive_amount_settings",
+   "fieldtype": "Check",
+   "label": "Shift Incetive Amount Settings"
+  },
+  {
+   "default": "0",
+   "fieldname": "attendance_submit_settings",
+   "fieldtype": "Check",
+   "label": "Attendance Submit Settings"
+  },
+  {
+   "depends_on": "eval:doc.holiday_attendance_settings == 1",
+   "fieldname": "holiday_attendance_process_section",
+   "fieldtype": "Section Break",
+   "label": "Holiday Attendance Process"
+  },
+  {
+   "fieldname": "start_date",
+   "fieldtype": "Date",
+   "label": "Start Date"
+  },
+  {
+   "fieldname": "update_holiday_attendance",
+   "fieldtype": "Button",
+   "label": "Update Holiday Attendance"
+  },
+  {
+   "fieldname": "column_break_48",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "end_date",
+   "fieldtype": "Date",
+   "label": "End Date"
+  },
+  {
+   "default": "0",
+   "fieldname": "holiday_attendance_settings",
+   "fieldtype": "Check",
+   "label": "Holiday Attendance Settings"
+  },
+  {
+   "depends_on": "eval:doc.deleted_attendance == 1",
+   "fieldname": "attendance_delete_section",
+   "fieldtype": "Section Break",
+   "label": "Attendance Delete"
+  },
+  {
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "label": "Employee",
+   "options": "Employee"
+  },
+  {
+   "fieldname": "column_break_40",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "attendance_date",
+   "fieldtype": "Date",
+   "label": "Attendance Date"
+  },
+  {
+   "fieldname": "delete_attendance",
+   "fieldtype": "Button",
+   "label": "Delete Attendance"
+  },
+  {
+   "default": "0",
+   "fieldname": "deleted_attendance",
+   "fieldtype": "Check",
+   "label": "Deleted Attendance"
+  },
+  {
+   "default": "0",
+   "fieldname": "mark_ot",
+   "fieldtype": "Check",
+   "label": "Mark OT"
+  },
+  {
+   "fieldname": "column_break_11",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "mark_ot_incentive",
+   "fieldtype": "Check",
+   "label": "Mark OT Incentive"
+  },
+  {
+   "depends_on": "eval:doc.mark_ot == 1",
+   "fieldname": "employee_id",
+   "fieldtype": "Link",
+   "label": "Employee ID",
+   "options": "Employee"
+  }
+ ],
+ "hide_toolbar": 1,
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2023-01-23 15:53:07.461043",
+ "modified_by": "Administrator",
+ "module": "Infac",
+ "name": "Attendance Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

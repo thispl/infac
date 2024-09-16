@@ -2,29 +2,20 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('Miss Punch Application', {
-	date:function(frm) {
-			if (frm.doc.__islocal){
-				frappe.call({
-				'method':'frappe.client.get_value',
-				'args':{
-					'doctype':'Attendance',
-					'filters':{
-						'employee':frm.doc.employee,
-						'attendance_date':frm.doc.date
-					},
-					'fieldname':['in_time','out_time','shift']
-				},
-				callback(r){
-					if(r.message){
-						// console.log(r.message)
-						frm.set_value('in_time',r.message.in_time)
-						frm.set_value('out_time',r.message.out_time)
-						frm.set_value('shift',r.message.shift)
-					
-						
-					}
-				}
-			})
-		}
+	date(frm){
+		frappe.call({
+			'method':'infac.infac.doctype.miss_punch_application.miss_punch_application.get_attendance',
+			'args':{
+				emp:frm.doc.employee,
+				att_date:frm.doc.date,
+			},
+			callback(r){
+				$.each(r.message,function(i,v){
+					frm.set_value('in_time',v.in_time)
+					frm.set_value('out_time',v.out_time)
+					frm.set_value('shift',v.shift)
+				})
+			}
+		})
 	},
 });

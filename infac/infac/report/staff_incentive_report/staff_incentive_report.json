@@ -1,0 +1,31 @@
+{
+ "add_total_row": 0,
+ "columns": [],
+ "creation": "2023-01-31 16:31:19.381166",
+ "disable_prepared_report": 0,
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [],
+ "idx": 0,
+ "is_standard": "Yes",
+ "json": "{\"filters\":[[\"Attendance\",\"attendance_date\",\"Between\",[\"2023-02-21\",\"2023-03-20\"],false]],\"fields\":[[\"name\",\"Attendance\"],[\"employee\",\"Attendance\"],[\"attendance_date\",\"Attendance\"],[\"e_slap_ot_hrs\",\"Attendance\"],[\"e_slap_incentive_amount\",\"Attendance\"],[\"t_slap_ot_hrs\",\"Attendance\"],[\"t_slap_incentive_amount\",\"Attendance\"],[\"m_slap_ot_hrs\",\"Attendance\"],[\"m_slap_incentive_amount\",\"Attendance\"]],\"order_by\":\"`tabAttendance`.`modified` desc\",\"add_totals_row\":0,\"page_length\":20,\"column_widths\":{\"name\":120,\"employee\":120,\"attendance_date\":120,\"e_slap_ot_hrs\":120,\"e_slap_incentive_amount\":120,\"t_slap_ot_hrs\":120,\"t_slap_incentive_amount\":120,\"m_slap_ot_hrs\":120,\"m_slap_incentive_amount\":120},\"group_by\":null}",
+ "letter_head": "Infac India Private Limited",
+ "modified": "2023-03-11 15:58:22.279264",
+ "modified_by": "Administrator",
+ "module": "Infac",
+ "name": "Staff Incentive Report",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "ref_doctype": "Attendance",
+ "report_name": "Staff Incentive Report",
+ "report_type": "Report Builder",
+ "roles": [
+  {
+   "role": "HR Manager"
+  },
+  {
+   "role": "System Manager"
+  }
+ ]
+}

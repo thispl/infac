@@ -91,6 +91,7 @@ override_doctype_class = {
 	"Leave Application":"infac.overrides.CustomLeaveApplication",
 	"Leave Allocation":"infac.overrides.CustomLeaveAllocation",
 	"Employee":"infac.overrides.CustomEmployee",
+	"Holiday List":"infac.overrides.CustomHolidayList",
 
 
 }
@@ -102,7 +103,10 @@ override_doctype_class = {
 doc_events = {
 	"Leave Application":{
 		"on_submit":"infac.utils.leave_application"
-	}
+	},
+	"Employee":{
+		"validate": "infac.custom.inactive_employee"
+	},
 	# "Attendance": {
 	# 	'before_save':'infac.utils.get_attendance',
 		# 'after_save':'infac.utils.mark_status_absent',
@@ -116,7 +120,7 @@ doc_events = {
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
+scheduler_events = {
 # 	"all": [
 # 		"infac.tasks.all"
 # 	],
@@ -132,12 +136,19 @@ doc_events = {
 # 	"monthly": [
 # 		"infac.tasks.monthly"
 # 	]
-# "cron":{
-# 		"0 0 * * *" :[
-# 			'infac.mark_attendance.mark_att'
-# 						]
-# 	}
-# }
+"cron":{
+		"*/20 * * * *" :[
+			'infac.shift_attendance.mark_att'
+		],
+		"0 7 21 * *" :[
+			'infac.infac.doctype.payroll_dates_automatic.payroll_dates_automatic.payroll_date_automatic'
+		],
+		"0 12 * * *" :[
+			'infac.doctype.payroll_process_settings.payroll_process_settings.payroll_date_change_automatic'
+		]
+
+	}
+}
 
 # Testing
 # -------

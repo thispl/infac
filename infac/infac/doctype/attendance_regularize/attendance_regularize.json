@@ -29,9 +29,11 @@
   {
    "fieldname": "employee",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Employee",
-   "options": "Employee"
+   "options": "Employee",
+   "reqd": 1
   },
   {
    "fieldname": "column_break_2",
@@ -40,8 +42,10 @@
   {
    "fieldname": "attendance_date",
    "fieldtype": "Date",
+   "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Attendance Date"
+   "label": "Attendance Date",
+   "reqd": 1
   },
   {
    "fieldname": "amended_from",
@@ -96,20 +100,28 @@
    "fieldtype": "Column Break"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "corrected_in",
    "fieldtype": "Datetime",
-   "label": "Corrected In"
+   "in_list_view": 1,
+   "label": "Corrected In",
+   "reqd": 1
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "corrected_out",
    "fieldtype": "Datetime",
-   "label": "Corrected Out"
+   "in_list_view": 1,
+   "label": "Corrected Out",
+   "reqd": 1
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "corrected_shift",
    "fieldtype": "Link",
    "label": "Corrected Shift",
-   "options": "Shift Type"
+   "options": "Shift Type",
+   "reqd": 1
   },
   {
    "fieldname": "section_break_15",
@@ -126,7 +138,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-08-22 15:22:18.746421",
+ "modified": "2023-06-23 20:50:24.378030",
  "modified_by": "Administrator",
  "module": "Infac",
  "name": "Attendance Regularize",
@@ -147,5 +159,7 @@
  ],
  "sort_field": "modified",
  "sort_order": "DESC",
- "track_changes": 1
+ "track_changes": 1,
+ "track_seen": 1,
+ "track_views": 1
 }

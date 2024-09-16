@@ -3,6 +3,7 @@
 
 frappe.ui.form.on('Permission Request', {
 	validate(frm){
+		frm.trigger('employee_id')
 		frappe.call({
 			'method':'infac.infac.doctype.permission_request.permission_request.get_time_difference',
 			'args':{
@@ -65,19 +66,6 @@ frappe.ui.form.on('Permission Request', {
 				})
 			}	
 		}
-		// if (frm.doc.permission_hour){
-		// 	frappe.call({
-		// 		'method':'infac.infac.doctype.permission_request.permission_request.validate_time',
-		// 		'args':{
-		// 			hour:frm.doc.permission_hour,
-		// 			from_time:frm.doc.from_time,
-		// 		},
-		// 		callback(r){
-		// 			frm.set_value('to_time',r.message)
-		// 		}
-		// 	})
-
-		// }
 	},
 	permission_date(frm){
 		if (frm.doc.employee_id){
@@ -97,31 +85,23 @@ frappe.ui.form.on('Permission Request', {
 				})
 			}	
 		}
-	}
-	// on_cancel(frm){
-	// 	frappe.call({
-	// 		'method':'infac.infac.doctype.permission_request.permission_request.remove_per_id',
-	// 		'args':{
-	// 			employee_id:frm.doc.employee_id,
-	// 			permission_date : frm.doc.permission_date,
-	// 		},
-	// 		callback(r){
-	// 			console.log(r.message)
-	// 		}
-
-	// 	})
-	// }
-	// from_time:function(frm) {
-	// 	if(frm.doc.from_time){
+	},
+	// employee_id(frm){
+	// 	if (frm.doc.employee_id){
 	// 		frappe.call({
-	// 			'method':'infac.infac.doctype.permission_request.permission_request.to_time',
-	// 			'args':{
-	// 				from_time:frm.doc.from_time
+	// 			method:'infac.infac.doctype.permission_request.permission_request.get_employee_validation',
+	// 			args:{
+	// 				emp:frm.doc.employee_id
 	// 			},
 	// 			callback(r){
-	// 				console.log(r.message)
-	// 				frm.set_value('to_time',r.message)
 	// 			}
 	// 		})
-	// }
+	// 	}
+	// },
+	from_time(frm){
+		frm.call('get_session').then((r)=>{
+			frm.set_value('session',r.message)
+		})	
+	}
+	
 });

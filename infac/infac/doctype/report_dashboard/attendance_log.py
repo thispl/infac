@@ -10,12 +10,9 @@ from frappe.utils.data import format_date
 from frappe.utils.file_manager import get_file
 from frappe.model.document import Document
 from frappe.utils.background_jobs import enqueue
-
 from datetime import date, timedelta, datetime
 import openpyxl
 from openpyxl import Workbook
-
-
 import openpyxl
 import xlrd
 import re
@@ -36,123 +33,131 @@ def make_xlsx(data, sheet_name=None, wb=None, column_widths=None):
     if wb is None:
         wb = openpyxl.Workbook()
     ws = wb.create_sheet(sheet_name, 0)	
-    ws.append(['INFAC ATTEDANCE LOG','','','','','Present-Total Strength = Absent','','','','Present Percentage'])
-    header_1 = ['Production','Quality','Indirect (Expect Quality)','Moved to  Production from Indirect','Customer Representatives','MALE']
-    days = get_dates(args)
-    for d in days:
-        total_male = frappe.db.count('Employee',{'status':'Active','gender':'Male'})
-        present_male = frappe.db.sql('''SELECT  count(*) as count FROM `tabAttendance` LEFT JOIN `tabEmployee` ON `tabAttendance`.employee = `tabEmployee`.name where `tabEmployee`.gender = 'Male' and `tabAttendance`.attendance_date = '%s' and `tabAttendance`.status = 'Present' '''%(d),as_dict=True)[0]
-        absent_male = frappe.db.sql('''SELECT  count(*) as count FROM `tabAttendance` LEFT JOIN `tabEmployee` ON `tabAttendance`.employee = `tabEmployee`.name where `tabEmployee`.gender = 'Male' and `tabAttendance`.attendance_date = '%s' and `tabAttendance`.status = 'Absent' '''%(d),as_dict=True)[0]
-        # male = total_male
-        # present = present_male.count()
-        # absent = absent_male.count()
-        # total = male - present
-        # diff_male = total_male - present_male
-        # print(diff_male)
-        frappe.errprint(total_male)
-        header_1.append('')
-        header_1.append(str(present_male.count)+'-'+str(total_male)+'='+str(absent_male.count))
-    ws.append(header_1)
-#total female count of attendance
-    header_2 = ['','','','','','FEMALE']
-    days = get_dates(args)
-    for d in days:
-        total_female = frappe.db.count('Employee',{'status':'Active','gender':'Female'})
-        present_female = frappe.db.sql('''SELECT  count(*) as count FROM `tabAttendance` LEFT JOIN `tabEmployee` ON `tabAttendance`.employee = `tabEmployee`.name where `tabEmployee`.gender = 'Female' and `tabAttendance`.attendance_date = '%s' and `tabAttendance`.status = 'Present' '''%(d),as_dict=True)[0]
-        absent_female = frappe.db.sql('''SELECT  count(*) as count FROM `tabAttendance` LEFT JOIN `tabEmployee` ON `tabAttendance`.employee = `tabEmployee`.name where `tabEmployee`.gender = 'Female' and `tabAttendance`.attendance_date = '%s' and `tabAttendance`.status = 'Absent' '''%(d),as_dict=True)[0]
-        header_2.append('')
-        header_2.append(str(present_female.count)+'-'+str(total_female)+'='+str(absent_female.count ))
-    ws.append(header_2)
-#total over all strength of attendance
-    header_3 = ['','','','','','Over all Strength']
-    days = get_dates(args)
-    for d in days:
-        total_employees = frappe.db.count('Employee',{'status':'Active'})
-        present_total = frappe.db.count('Attendance',{'status':'Present','attendance_date':d})
-        absent_total_ = frappe.db.count('Attendance',{'status':'Absent','attendance_date':d})
-        header_3.append('')
-        header_3.append(str(present_total)+'-'+str(total_employees)+'='+str(absent_total_))
-    ws.append(header_3)
-#total production strength of attendance
-    production_strength = ['','','','','','Total in Production']
-    days = get_dates(args)
-    for d in days:
-        total_employees = frappe.db.count('Employee',{'status':'Active','department':'Production - INFAC'})
-        present_total = frappe.db.count('Attendance',{'status':'Present','attendance_date':d})
-        present_production_employee = frappe.db.count('Attendance',{'status':'Present','attendance_date':d,'department':'Production - INFAC'})
-        absent_production_employee = frappe.db.count('Attendance',{'status':'Absent','department':'Production - INFAC','attendance_date':d})
-        production_strength.append('')
-        production_strength.append(str(present_production_employee)+'-'+str(total_employees)+'='+str(absent_production_employee))
-        production_strength.append('')
-        production_strength.append(present_production_employee/present_total*100)
-    ws.append(production_strength)   
-#total indirect except quality
-    present_quality_strength = (['','','','','','Total in Indirect (Except Quality)'])
-    days = get_dates(args)
-    for d in days:
-        total_employees = frappe.db.count('Employee',{'status':'Active','department':'Production - INFAC'})
-        present_total = frappe.db.count('Attendance',{'status':'Present','attendance_date':d})
-        present_quality_employee = frappe.db.count('Attendance',{'status':'Present','attendance_date':d,'department':('not in', ('Production - INFAC','Quality - INFAC'))})
-        absent_quality_employee = frappe.db.count('Attendance',{'status':'Absent','department':'Production - INFAC','attendance_date':d})
-        present_quality_strength.append('')
-        present_quality_strength.append(str(present_quality_employee )+'-'+str(total_employees)+'='+str(absent_quality_employee))
-        present_quality_strength.append('')
-        present_quality_strength.append(present_quality_employee/present_total*100)
-    ws.append(present_quality_strength)
-#total quality    
-    quality = ['','','','','','Total in Quality']
-    days = get_dates(args)
-    for d in days:
-        total_employees = frappe.db.count('Employee',{'status':'Active','department':'Quality - INFAC'})
-        present_total = frappe.db.count('Attendance',{'status':'Present','attendance_date':d})
-        present_quality_employee = frappe.db.count('Attendance',{'status':'Present','attendance_date':d,'department':'Quality - INFAC'})
-        absent_quality_employee = frappe.db.count('Attendance',{'status':'Absent','department':'Quality - INFAC'})
-        quality.append('')
-        quality.append(str(present_quality_employee)+'-'+str(total_employees)+'='+str(absent_quality_employee))
-        quality.append('')
-        quality.append(present_quality_employee/present_total*100)
-    ws.append(quality)    
-    ws.append(['','','','','','',''])   
-    ws.append(['','','','','','',''])
-    ws.append(['','','','','','',''])
-    header = ['DEPARTMENT','CATEGORY','EMP CODE','NAME','DEPARTMENT LINE','GENDER','RE']
-    dates = get_dates(args) 
-    for d in dates:
-        day = datetime.strptime(str(d),'%Y-%m-%d').strftime('%d/%m')
-        header.append(day)
-        s = ['SHIFT','IN TIME','OUT TIME']
-        header.extend(s)
+#     ws.append(['INFAC ATTEDANCE LOG','','','','','Present-Total Strength = Absent','','','','Present Percentage'])
+#     header_1 = ['Production','Quality','Indirect (Expect Quality)','Moved to  Production from Indirect','Customer Representatives','MALE']
+#     days = get_dates(args)
+#     for d in days:
+#         total_male = frappe.db.count('Employee',{'status':'Active','gender':'Male'})
+#         present_male = frappe.db.sql('''SELECT  count(*) as count FROM `tabAttendance` LEFT JOIN `tabEmployee` ON `tabAttendance`.employee = `tabEmployee`.name where `tabEmployee`.gender = 'Male' and `tabAttendance`.attendance_date = '%s' and `tabAttendance`.status = 'Present' '''%(d),as_dict=True)[0]
+#         absent_male = frappe.db.sql('''SELECT  count(*) as count FROM `tabAttendance` LEFT JOIN `tabEmployee` ON `tabAttendance`.employee = `tabEmployee`.name where `tabEmployee`.gender = 'Male' and `tabAttendance`.attendance_date = '%s' and `tabAttendance`.status = 'Absent' '''%(d),as_dict=True)[0]
+#         frappe.errprint(total_male)
+#         header_1.append('')
+#         header_1.append(str(present_male.count)+'-'+str(total_male)+'='+str(absent_male.count))
+#     ws.append(header_1)
+#     header_2 = ['','','','','','FEMALE']
+#     days = get_dates(args)
+#     for d in days:
+#         total_female = frappe.db.count('Employee',{'status':'Active','gender':'Female'})
+#         present_female = frappe.db.sql('''SELECT  count(*) as count FROM `tabAttendance` LEFT JOIN `tabEmployee` ON `tabAttendance`.employee = `tabEmployee`.name where `tabEmployee`.gender = 'Female' and `tabAttendance`.attendance_date = '%s' and `tabAttendance`.status = 'Present' '''%(d),as_dict=True)[0]
+#         absent_female = frappe.db.sql('''SELECT  count(*) as count FROM `tabAttendance` LEFT JOIN `tabEmployee` ON `tabAttendance`.employee = `tabEmployee`.name where `tabEmployee`.gender = 'Female' and `tabAttendance`.attendance_date = '%s' and `tabAttendance`.status = 'Absent' '''%(d),as_dict=True)[0]
+#         header_2.append('')
+#         header_2.append(str(present_female.count)+'-'+str(total_female)+'='+str(absent_female.count ))
+#     ws.append(header_2)
+#     header_3 = ['','','','','','Over all Strength']
+#     days = get_dates(args)
+#     for d in days:
+#         total_employees = frappe.db.count('Employee',{'status':'Active'})
+#         present_total = frappe.db.count('Attendance',{'status':'Present','attendance_date':d})
+#         absent_total_ = frappe.db.count('Attendance',{'status':'Absent','attendance_date':d})
+#         header_3.append('')
+#         header_3.append(str(present_total)+'-'+str(total_employees)+'='+str(absent_total_))
+#     ws.append(header_3)
+# #total production strength of attendance
+#     production_strength = ['','','','','','Total in Production']
+#     days = get_dates(args)
+#     for d in days:
+#         total_employees = frappe.db.count('Employee',{'status':'Active','department':'Production - INFAC'})
+#         present_total = frappe.db.count('Attendance',{'status':'Present','attendance_date':d})
+#         present_production_employee = frappe.db.count('Attendance',{'status':'Present','attendance_date':d,'department':'Production - INFAC'})
+#         absent_production_employee = frappe.db.count('Attendance',{'status':'Absent','department':'Production - INFAC','attendance_date':d})
+#         production_strength.append('')
+#         production_strength.append(str(present_production_employee)+'-'+str(total_employees)+'='+str(absent_production_employee))
+#         production_strength.append('')
+#         production_strength.append(present_production_employee/present_total*100)
+#     ws.append(production_strength)   
+# #total indirect except quality
+#     present_quality_strength = (['','','','','','Total in Indirect (Except Quality)'])
+#     days = get_dates(args)
+#     for d in days:
+#         total_employees = frappe.db.count('Employee',{'status':'Active','department':'Production - INFAC'})
+#         present_total = frappe.db.count('Attendance',{'status':'Present','attendance_date':d})
+#         present_quality_employee = frappe.db.count('Attendance',{'status':'Present','attendance_date':d,'department':('not in', ('Production - INFAC','Quality - INFAC'))})
+#         absent_quality_employee = frappe.db.count('Attendance',{'status':'Absent','department':'Production - INFAC','attendance_date':d})
+#         present_quality_strength.append('')
+#         present_quality_strength.append(str(present_quality_employee )+'-'+str(total_employees)+'='+str(absent_quality_employee))
+#         present_quality_strength.append('')
+#         present_quality_strength.append(present_quality_employee/present_total*100)
+#     ws.append(present_quality_strength)
+# #total quality    
+#     quality = ['','','','','','Total in Quality']
+#     days = get_dates(args)
+#     for d in days:
+#         total_employees = frappe.db.count('Employee',{'status':'Active','department':'Quality - INFAC'})
+#         present_total = frappe.db.count('Attendance',{'status':'Present','attendance_date':d})
+#         present_quality_employee = frappe.db.count('Attendance',{'status':'Present','attendance_date':d,'department':'Quality - INFAC'})
+#         absent_quality_employee = frappe.db.count('Attendance',{'status':'Absent','department':'Quality - INFAC'})
+#         quality.append('')
+#         quality.append(str(present_quality_employee)+'-'+str(total_employees)+'='+str(absent_quality_employee))
+#         quality.append('')
+#         quality.append(present_quality_employee/present_total*100)
+#     ws.append(quality)    
+#     ws.append(['','','','','','',''])   
+#     ws.append(['','','','','','',''])
+#     ws.append(['','','','','','',''])
+    header = ['Departmnet','Category','Department Line','Employee','Name','Gender','Re']
+    # dates = get_dates(args) 
+    # for d in dates:
+    day = datetime.strptime(str(args.date),'%Y-%m-%d').strftime('%d/%m')
+    header.append(day)
+    s = ['Shift']
+    header.extend(s)
+    date_string = args.date  # Assuming args.date is a string in a valid format
+    date_format = '%Y-%m-%d'
+    try:
+        date_object = datetime.strptime(date_string, date_format)
+    except ValueError:
+        print("Invalid date format")
+    yesterday = date_object - timedelta(days=1)
+    yesterday_str = yesterday.strftime('%Y-%m-%d')
+    # q = [ (day - 1) + 'In',(day - 1)+'Out Time']
+    header.extend(yesterday_str)
+    r = [day + 'In']
+    header.extend(r)
     ws.append(header)
-
-    # total_present_employee = ['Total','','','','','','']
-    # present_employee = frappe.db.sql("select count(*) as count from `tabAttendance` where status = 'Present' and attendance_date between '%s' and '%s' "%(args.from_date,args.to_date),as_dict=True)[0].count
-    # total_present_employee.append(present_employee)
-
-    # ws.append(total_present_employee)  
-
     department = frappe.db.get_all('Department')
     for dept in department:
         employees = frappe.get_all("Employee",{'department':dept.name,'status':'Active'},['*']) 
         if employees:
             ws.append(['','','','','','','','','','','','','','','','','','','','','',''])
             total_row = ['Total','','','','','','']
-            for date in dates:
-                present_employee = frappe.db.sql("select count(*) as count from `tabAttendance` where status = 'Present' and attendance_date = '%s' and department = '%s' "%(date,dept.name),as_dict=True)[0].count
-                total_row.extend([present_employee,'','',''])
+            # for date in dates:
+            present_employee = frappe.db.sql("select count(*) as count from `tabAttendance` where status = 'Present' and attendance_date = '%s' and department = '%s' "%(args.date,dept.name),as_dict=True)[0].count
+            total_row.extend([present_employee,'','',''])
             ws.append(total_row)  
             for emp in employees:
-                row = [emp.department,emp.employee_category,emp.name,emp.employee_name,emp.department_line,emp.gender,""] or 0
-                for date in dates:
-                    att = frappe.db.get_value('Attendance',{'employee':emp.name,'attendance_date':date},['status','shift','in_time','out_time'],as_dict=True)
-                    if att:
-                        if att.status == 'Present':
-                            status = 1
-                        else:
-                            status = 0
-                        row.append(status)
-                        row.append(att.shift)
-                        row.append(att.in_time)
-                        row.append(att.out_time)
+                row = [emp.department,emp.employee_category,emp.department_line,emp.name,emp.employee_name] or 0
+                if emp.gender == "Male":
+                    row.append("M")
+                elif emp.gender == "Female":
+                    row.append("F")
+                if emp.employee_category == "Master Staff":
+                    row.append("사무")
+                elif emp.employee_category == "Workers Grade 2" or "Master Worker" or "Supporting Staff" or "Operating Staff":
+                    row.append("현장")
+                else:
+                    row.append("용역")
+                # for date in dates:
+                att = frappe.db.get_value('Attendance',{'employee':emp.name,'attendance_date':args.date},['status','shift','in_time','out_time'],as_dict=True)
+                if att:
+                    if att.status == 'Present':
+                        status = 1
+                    else:
+                        status = 0
+                    row.append(status)
+                    row.append(att.shift)
+                    row.append(att.in_time)
+                    row.append(att.out_time)
+                    row.append("")
                 ws.append(row)
     ws['A2'].fill = PatternFill(fgColor="0EC31E", fill_type = "solid")
     ws['B2'].fill = PatternFill(fgColor="E9D50D", fill_type = "solid")
@@ -169,7 +174,6 @@ def make_xlsx(data, sheet_name=None, wb=None, column_widths=None):
         for cell in header:
             cell.fill = PatternFill(fgColor='E9D50D', fill_type = "solid")
             
-
     ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=4)
     ws.merge_cells(start_row=1, start_column=6, end_row=1, end_column=9)
     ws.merge_cells(start_row=2, start_column=6, end_row=2, end_column=7)
@@ -228,9 +232,6 @@ def make_xlsx(data, sheet_name=None, wb=None, column_widths=None):
                         cell.fill = PatternFill(fgColor='0096FF', fill_type = "solid")
                         minrow = maxrow + 2
         
-
-        
-
     border = Border(left=Side(border_style='thin', color='000000'),
         right=Side(border_style='thin', color='000000'),
         top=Side(border_style='thin', color='000000'),
@@ -250,20 +251,6 @@ def make_xlsx(data, sheet_name=None, wb=None, column_widths=None):
             for cell in rows:
                 cell.border = border
 
-
-    # department = frappe.db.get_all('Department')
-    # start = 13
-    # end = 0
-    # for dept in department:
-    #     employees = frappe.db.count("Employee",{'department':dept.name})
-    #     end += employees + 14
-    #     ws.merge_cells(start_row=start,start_column=1,end_row=end,end_column=1)
-    #     start += end + 1
-        # end += employees
-
-    # frappe.db.count('Employee',{'status':'Active','department'})
-    # ws.merge_cells(start_row=1,start_column=8,end_row=1,end_column=11)
-
     xlsx_file = BytesIO()
     wb.save(xlsx_file)
     return xlsx_file
@@ -273,8 +260,6 @@ def build_xlsx_response(filename):
     frappe.response['filename'] = filename + '.xlsx'
     frappe.response['filecontent'] = xlsx_file.getvalue()
     frappe.response['type'] = 'binary'	
-
-
 
 def get_dates(args):
     no_of_days = date_diff(add_days(args.to_date, 1), args.from_date)

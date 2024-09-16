@@ -1,138 +1,33 @@
+{% extends "templates/web.html" %}
+{%- block content -%}
 <div class="row">
     <div class="col-xs-12">
         <table border="1px solid" width="100%">
             <tr>
-                <td style ="background-color:#a4a8a8;font-size:6px;"><b><center>ID</center></b></td>
-                <td style ="background-color:#a4a8a8;font-size:6px;"colspan=2><b><center>{{emp}}</center></b></td>
-                <td style ="background-color:#a4a8a8;font-size:6px;"><b><center>Name</center></b></td>
-                <td style ="background-color:#a4a8a8;font-size:6px;"colspan=2><b><center>{{emp_name}}</center></b></td>
-                <td style ="background-color:#a4a8a8;font-size:6px;"><b><center>Department</center></b></td>
-                <td style ="background-color:#a4a8a8;font-size:6px;"colspan=2><b><center>{{emp_dept}}</center></b></td>
+                <td style ="background-color:#a4a8a8;font-size:6px;width:17%;" colspan=1><b><center>EMP ID</center></b></td>
+                <td style ="background-color:#a4a8a8;font-size:6px;"colspan=1><b><center>{{emp}}</center></b></td>
+                <td style ="background-color:#a4a8a8;font-size:6px;" colspan="1"><b><center>EMP Name</center></b></td>
+                <td style ="background-color:#a4a8a8;font-size:6px;"colspan=1><b><center>{{emp_name}}</center></b></td>
+                <td style ="background-color:#a4a8a8;font-size:6px;" colspan="1"><b><center>DEPT</center></b></td>
+                <td style ="background-color:#a4a8a8;font-size:6px;"colspan=4><b><center>{{emp_dept}}</center></b></td>
             </tr>
             <tr>
-                <td style ="font-size:3px;"colspan=5><b><center>Attendance</center></b></td>
-                <td style ="font-size:3px;"colspan=3><b><center>Total Hours</center></b></td>
+                <td style ="background-color:#a4a8a8;font-size:6px;width:17%;" colspan="1"><b><center>Date</center></b></td>
+                <td style ="background-color:#a6a8a8;font-size:6px;" colspan="1"><b><center>In Time</center></b></td>
+                <td style ="background-color:#a6a8a8;font-size:6px;" colspan="1"><b><center>Out Time</center></b></td>
+                <td style ="background-color:#a6a8a8;font-size:6px;" colspan="1"><b><center>Status</center></b></td>
+                <td style ="background-color:#a6a8a8;font-size:6px;" colspan="4"><b><center>Applications</center></b></td>
             </tr>
+            {%for date in att_list %} 
             <tr>
-                <td style ="background-color:#a4a8a8;font-size:4px;"><b><center>Date</center></b></td>
-                <td style ="background-color:#a4a8a8;font-size:4px;"><b><center>Shift</center></b></td>
-                <td style ="background-color:#a4a8a8;font-size:4px;"><b><center>In Time</center></b></td>
-                <td style ="background-color:#a4a8a8;font-size:4px;"><b><center>Out Time</center></b></td>
-                <td style ="background-color:#a4a8a8;font-size:4px;"><b><center>Status</center></b></td>
-                <td style ="background-color:#a4a8a8;font-size:4px;"><b><center>TWH</center></b></td>
-                <td style ="background-color:#a4a8a8;font-size:4px;"><b><center>OT Hours</center></b></td>
-                <td style ="background-color:#a4a8a8;font-size:4px;"><b><center>Late</center></b></td>
-            </tr> 
-            {%for dates in att_list %} 
-                <tr>
-                    <td style ="font-size:3px;"><center>{{dates.attendance_date}}</center></td>
-                    <td style ="font-size:4px;"><center>{{dates.shift}}</center></td>
-                    <td style ="font-size:4px;"><center>{{dates.in_time}}</center></td>
-                    <td style ="font-size:4px;"><center>{{dates.out_time}}</center></td>
-                    {% if dates.status == 'Present' %}
-                    {% if dates.on_duty_marked %}
-                    <td style ="font-size:4px;"><center>OD</center></td>{% endif %}{% endif %}
-                    {% if dates.status == 'Present' %}
-                    {% if dates.permission_request %}
-                    <td style ="font-size:4px;"><center>P/P</center></td>{% endif %}{% endif %}
-                    {% if dates.status == 'Present' %} 
-                    {% if !dates.on_duty_marked %} 
-                    {% if !dates.permission_request %} 
-                    <td style ="font-size:4px;"><center>P</center></td>{% endif %}{% endif %}{% endif %}
-                    {% if dates.status == 'Absent' %}   
-                    <td style ="font-size:4px;"><center>A</center></td>{% endif %}
-                    {% if dates.status == 'Half Day' %}
-                    {% if dates.leave_type == 'Casual Leave' %}
-                    <td style ="font-size:4px;"><center>HD/CL</center></td>{% endif %}{% endif %}
-                    {% if dates.status == 'Half Day' %}
-                    {% if dates.leave_type == 'BEREAVEMENT LEAVE' %}
-                    <td style ="font-size:4px;"><center>HD/BL</center></td>{% endif %}{% endif %}
-                    {% if dates.status == 'Half Day' %}
-                    {% if dates.leave_type == 'Compensatory Off' %}
-                    <td style ="font-size:4px;"><center>HD/CoF</center></td>{% endif %}{% endif %}
-                    {% if dates.status == 'Half Day' %}
-                    {% if dates.leave_type == 'Emergency - 2' %}
-                    <td style ="font-size:4px;"><center>HD/E2</center></td>{% endif %}{% endif %}
-                    {% if dates.status == 'Half Day' %}
-                    {% if dates.leave_type == 'Emergency -1' %}
-                    <td style ="font-size:4px;"><center>HD/E1</center></td>{% endif %}{% endif %}
-                    {% if dates.status == 'Half Day' %}
-                    {% if dates.leave_type == 'Marriage Leave' %}
-                    <td style ="font-size:4px;"><center>HD/ML</center></td>{% endif %}{% endif %}
-                    {% if dates.status == 'Half Day' %}
-                    {% if dates.leave_type == 'Sick Leave' %}
-                    <td style ="font-size:4px;"><center>HD/SL</center></td>{% endif %}{% endif %}
-                    {% if dates.status == 'Half Day' %}
-                    {% if dates.leave_type == 'Earned Leave' %}
-                    <td style ="font-size:4px;"><center>HD/EL</center></td>{% endif %}{% endif %}
-                    {% if dates.status == 'Half Day' %}
-                    {% if dates.leave_type == 'Education Leave' %}
-                    <td style ="font-size:4px;"><center>HD/EL</center></td>{% endif %}{% endif %}
-                    {% if dates.status == 'Half Day' %}
-                    {% if dates.leave_type == 'Maternity Leave' %}
-                    <td style ="font-size:4px;"><center>HD/MyL</center></td>{% endif %}{% endif %}
-                    {% if dates.status == 'Half Day' %}
-                    {% if dates.leave_type == 'Paternal Leave' %}
-                    <td style ="font-size:4px;"><center>HD/PL</center></td>{% endif %}{% endif %}
-                    {% if dates.status == 'Half Day' %}
-                    {% if dates.leave_type == 'Paternity Leave' %}
-                    <td style ="font-size:4px;"><center>HD/PyL</center></td>{% endif %}{% endif %}
-                    {% if dates.status == 'Half Day' %}
-                    {% if dates.leave_type == 'Privilege Leave' %}
-                    <td style ="font-size:4px;"><center>HD/PgL</center></td>{% endif %}{% endif %}
-                    {% if dates.status == 'Half Day' %}
-                    {% if dates.leave_type == 'Leave Without Pay' %}
-                    <td style ="font-size:4px;"><center>HD/LOP</center></td>{% endif %}{% endif %}
-                    {% if dates.status == 'Half Day' %}
-                    {% if dates.leave_type == '' %}
-                    <td style ="font-size:4px;"><center>HD/A</center></td>{% endif %}{% endif %}
-                    {% if dates.status == 'On Leave' %}
-                    {% if dates.leave_type == 'Casual Leave' %}
-                    <td style ="font-size:4px;"><center>CL</center></td>{% endif %}{% endif %}
-                    {% if dates.status == 'On Leave' %}
-                    {% if dates.leave_type == 'BEREAVEMENT LEAVE' %}
-                    <td style ="font-size:4px;"><center>BL</center></td>{% endif %}{% endif %}
-                    {% if dates.status == 'On Leave' %}
-                    {% if dates.leave_type == 'Compensatory Off' %}
-                    <td style ="font-size:4px;"><center>CoF</center></td>{% endif %}{% endif %}
-                    {% if dates.status == 'On Leave' %}
-                    {% if dates.leave_type == 'Emergency - 2' %}
-                    <td style ="font-size:4px;"><center>E2</center></td>{% endif %}{% endif %}
-                    {% if dates.status == 'On Leave' %}
-                    {% if dates.leave_type == 'Emergency -1' %}
-                    <td style ="font-size:4px;"><center>E1</center></td>{% endif %}{% endif %}
-                    {% if dates.status == 'On Leave' %}
-                    {% if dates.leave_type == 'Marriage Leave' %}
-                    <td style ="font-size:4px;"><center>ML</center></td>{% endif %}{% endif %}
-                    {% if dates.status == 'On Leave' %}
-                    {% if dates.leave_type == 'Sick Leave' %}
-                    <td style ="font-size:4px;"><center>SL</center></td>{% endif %}{% endif %}
-                    {% if dates.status == 'On Leave' %}
-                    {% if dates.leave_type == 'Earned Leave' %}
-                    <td style ="font-size:4px;"><center>EL</center></td>{% endif %}{% endif %}
-                    {% if dates.status == 'On Leave' %}
-                    {% if dates.leave_type == 'Education Leave' %}
-                    <td style ="font-size:4px;"><center>EL</center></td>{% endif %}{% endif %}
-                    {% if dates.status == 'On Leave' %}
-                    {% if dates.leave_type == 'Maternity Leave' %}
-                    <td style ="font-size:4px;"><center>MyL</center></td>{% endif %}{% endif %}
-                    {% if dates.status == 'On Leave' %}
-                    {% if dates.leave_type == 'Paternal Leave' %}
-                    <td style ="font-size:4px;"><center>PL</center></td>{% endif %}{% endif %}
-                    {% if dates.status == 'On Leave' %}
-                    {% if dates.leave_type == 'Paternity Leave' %}
-                    <td style ="font-size:4px;"><center>PyL</center></td>{% endif %}{% endif %}
-                    {% if dates.status == 'On Leave' %}
-                    {% if dates.leave_type == 'Privilege Leave' %}
-                    <td style ="font-size:4px;"><center>PgL</center></td>{% endif %}{% endif %}
-                    {% if dates.status == 'On Leave' %}
-                    {% if dates.leave_type == 'Leave Without Pay' %}
-                    <td style ="font-size:4px;"><center>LOP</center></td>{% endif %}{% endif %}
-                    <td style ="font-size:4px;"><center>{{dates.total_wh}}</center></td>
-                    <td style ="font-size:4px;"><center>{{dates.ot_hrs}}</center></td>
-                    <td style ="font-size:4px;"><center>{{dates.late_deduct}}</center></td>
-                </tr> 
+                <td style ="font-size:6px;width:19%;" colspan="1"><center>{{date.attendance_date}}</center></td>
+                <td style ="font-size:6px;" colspan="1"><center>{{date.attendance_date}}</center></td>
+                <td style ="font-size:6px;" colspan="1"><center>{{date.attendance_date}}</center></td>
+                <td style ="font-size:6px;" colspan="1"><center>{{date.attendance_date}}</center></td>
+                <td style ="font-size:6px;" colspan="4"><center>{{date.attendance_date}}</center></td>
+            </tr>
             {% endfor %}
         </table>
     </div>
 </div>
+{% endblock %}

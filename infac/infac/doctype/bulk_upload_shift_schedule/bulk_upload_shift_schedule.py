@@ -22,7 +22,6 @@ class BulkUploadShiftSchedule(Document):
 
     def on_submit(self): 
         shift = self.name
-        frappe.log_error('Shift scheduele')
         enqueue(self.create_shift_assignment, queue='default', timeout=6000, event='create_shift_assignment',shift=shift) 
 
     

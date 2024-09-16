@@ -1,25 +1,27 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "field:route_info",
+ "autoname": "field:bus_route",
  "creation": "2022-09-15 17:35:54.420264",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "route_info"
+  "bus_route"
  ],
  "fields": [
   {
-   "fieldname": "route_info",
+   "fieldname": "bus_route",
    "fieldtype": "Data",
-   "label": "Route Info",
+   "in_list_view": 1,
+   "label": "Bus Route",
+   "reqd": 1,
    "unique": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2022-09-15 17:36:07.802102",
+ "modified": "2023-01-10 12:59:35.409423",
  "modified_by": "Administrator",
  "module": "Infac",
  "name": "Bus Route",

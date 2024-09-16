@@ -9,7 +9,7 @@ frappe.ui.form.on('Report Dashboard', {
 		//Attendance log
 		if(frm.doc.report == 'Attendance Log'){
 			var path = 'infac.infac.doctype.report_dashboard.attendance_log.download'
-			var args = 'from_date=%(from_date)s&to_date=%(to_date)s'
+			var args = 'date=%(date)s&from_date=%(from_date)s&to_date=%(to_date)s'
 
 		}
 		//Employee Grade excel report
@@ -22,9 +22,9 @@ frappe.ui.form.on('Report Dashboard', {
 				'?cmd=%(cmd)s&%(args)s',{
 					cmd:path,
 					args:args,
+					date:frm.doc.date,
 					from_date:frm.doc.from_date,
 					to_date:frm.doc.to_date
-
 				}
 				)
 

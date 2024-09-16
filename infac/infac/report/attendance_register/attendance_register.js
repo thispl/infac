@@ -22,12 +22,19 @@ frappe.query_reports["Attendance Register"] = {
 			"fieldtype": "Link",
 			"options": "Employee",
 		},
+		{
+			"fieldname": "employee_category",
+			"label": __("Employee Category"),
+			"fieldtype": "Link",
+			"options": "Employee Category",
+		},
 		
 	],
 	onload: function (report) {
 		var to_date = frappe.query_report.get_filter('to_date');
 		to_date.refresh();
-		to_date.set_input(frappe.datetime.add_days(frappe.datetime.month_start(), 19))
+		var c = frappe.datetime.add_months(frappe.datetime.month_start(), 0)
+		to_date.set_input(frappe.datetime.add_days(c, 19))
 		var from_date = frappe.query_report.get_filter('from_date');
 		from_date.refresh();
 		var d = frappe.datetime.add_months(frappe.datetime.month_start(), -1)
