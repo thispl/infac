@@ -473,28 +473,4 @@ def check_holiday(date):
             return "WW"
         else:
             return "HH"
-
-@frappe.whitelist()
-def cron_job_miss_punch():
-	job = frappe.db.exists('Scheduled Job Type', 'miss_punch_mail_alert')
-	if not job:
-		att = frappe.new_doc("Scheduled Job Type")
-		att.update({
-			"method": 'infac.utils.miss_punch_mail_alert',
-			"frequency": 'Cron',
-			"cron_format": '0 7 * * *'
-		})
-		att.save(ignore_permissions=True)
 	
-
-@frappe.whitelist()
-def cron_job_wrong_shift():
-	job = frappe.db.exists('Scheduled Job Type', 'wrong_shift_mail_alert')
-	if not job:
-		att = frappe.new_doc("Scheduled Job Type")
-		att.update({
-			"method": 'infac.utils.wrong_shift_mail_alert',
-			"frequency": 'Cron',
-			"cron_format": '0 7 * * *'
-		})
-		att.save(ignore_permissions=True)

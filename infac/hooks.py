@@ -140,6 +140,12 @@ scheduler_events = {
 		"*/20 * * * *" :[
 			'infac.shift_attendance.mark_att'
 		],
+        "0 7 * * *" :[
+			'infac.utils.miss_punch_mail_alert'
+		],
+        "0 7 * * *" :[
+			'infac.utils.wrong_shift_mail_alert'
+		],
 		"0 7 21 * *" :[
 			'infac.infac.doctype.payroll_dates_automatic.payroll_dates_automatic.payroll_date_automatic'
 		],

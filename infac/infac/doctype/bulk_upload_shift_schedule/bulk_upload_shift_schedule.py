@@ -48,15 +48,17 @@ class BulkUploadShiftSchedule(Document):
         filepath = get_file(self.attach)
         pps = read_csv_content(filepath[1])
         dates = self.get_dates()
+        shift_list = frappe.get_all('Shift Type', pluck='name')
         for date in dates:
             for pp in pps:
-                if pp[2] != 'Shift':
+                shift_type = pp[2].strip() if pp[2] else None
+                if shift_type and shift_type in shift_list:
                     if pp[1]:
                         get_shift = frappe.db.exists("Shift Assignment",{'employee':pp[0],'start_date':date,'end_date':date,'docstatus':['in',[0,1]]})
                         if not get_shift:
                             doc = frappe.new_doc('Shift Assignment')
                             doc.employee = pp[0]
-                            doc.shift_type = pp[2]
+                            doc.shift_type = shift_type
                             doc.department = pp[3]
                             doc.start_date = date
                             doc.end_date = date
@@ -65,7 +67,7 @@ class BulkUploadShiftSchedule(Document):
                             doc.submit()
                             frappe.db.commit()
                         else:
-                            frappe.db.set_value('Shift Assignment',get_shift,'shift_type',pp[2])    
+                            frappe.db.set_value('Shift Assignment',get_shift,'shift_type',shift_type)    
 
     def get_dates(self):
         no_of_days = date_diff(add_days(self.to_date, 1), self.from_date)

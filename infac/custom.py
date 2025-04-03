@@ -348,3 +348,7 @@ def mark_late_exit():
         #     frappe.db.set_value('Attendance',att.name,'early_exit',0)
     return "ok"
 
+@frappe.whitelist()
+def update_reg():
+    # frappe.db.set_value("Attendance",'HR-ATT-2025-20926','total_wh',0)
+    frappe.db.set_value("Attendance Regularize",'ATR134499','docstatus',0)

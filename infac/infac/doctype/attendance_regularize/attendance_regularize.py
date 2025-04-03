@@ -47,6 +47,7 @@ class AttendanceRegularize(Document):
             if att:
                 leave_application = frappe.db.get_value('Attendance',{'name':att,'docstatus':('!=','2')},['leave_application'])
                 if not leave_application:
+                    frappe.db.set_value('Attendance',att,'total_wh',0)
                     attendance = frappe.get_doc('Attendance',{'name':att})
                     attendance.status = att_status
                     attendance.in_time = self.corrected_in
@@ -67,6 +68,7 @@ class AttendanceRegularize(Document):
                     attendance.actual_out_time = self.corrected_out
                     attendance.save(ignore_permissions=True)
                     frappe.db.commit()
+                    # frappe.db.set_value('Attendance',att,'total_wh',total_wh)
                     frappe.db.set_value('Attendance',att,'matched_status','Matched')
                     frappe.db.set_value('Attendance',att,'attendance_regularize',self.name)
                 else:
@@ -82,6 +84,7 @@ class AttendanceRegularize(Document):
                 if wh > 0:
                     none_time =pd.to_datetime('00:00:00').time()
                     holiday_ot_hr = (math.floor(wh * 2) / 2) - 0.5
+                    frappe.db.set_value('Attendance',self.attendance_marked,'total_wh',0)
                     attendance = frappe.get_doc('Attendance',{'name':self.attendance_marked})
                     attendance.status = 'Present'
                     attendance.in_time = self.corrected_in
@@ -114,6 +117,7 @@ class AttendanceRegularize(Document):
                     if wh > 0:
                         none_time =pd.to_datetime('00:00:00').time()
                         holiday_ot_hr = (math.floor(wh * 2) / 2) - 0.5
+                        frappe.db.set_value('Holiday Attendance',holidat_att,'total_wh',0)
                         attendance = frappe.get_doc('Holiday Attendance',{'name':holidat_att})
                         attendance.status = 'Present'
                         attendance.in_time = self.corrected_in
@@ -364,15 +368,10 @@ class AttendanceRegularize(Document):
                         total_wh_method = self.validate_total_wh()
                         total_wh = total_wh_method[0]['total_wh']
                         if total_wh > total_shift_hours:
-                            frappe.errprint(att_out_time)
-                            frappe.errprint(shift_end_date_time)
                             extra_hrs = att_out_time - shift_end_date_time
                             hr = sum([a*b for a,b in zip(ftr, map(int,str(extra_hrs).split(':')))])
                             extras = round(hr/3600,1)
-                            # frappe.errprint(extra_hrs)
-                            # frappe.errprint(extras)
                             if extras >= 1:
-                                frappe.errprint(shift_end_date_time)
                                 ot_hr = math.floor(extras * 2) / 2
         else:
             shift_end_date_time = datetime.combine(str_out_date,shift_end_time)

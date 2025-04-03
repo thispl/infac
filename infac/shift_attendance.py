@@ -609,14 +609,3 @@ def mark_attendance_as_present_mark_holiday(from_date,to_date):
                         holiday_att.matched_status = ''
                         holiday_att.save(ignore_permissions=True)
                         frappe.db.commit()          
-
-def create_hooks_mark_ot():
-    job = frappe.db.exists('Scheduled Job Type', 'mark_att')
-    if not job:
-        sjt = frappe.new_doc("Scheduled Job Type")
-        sjt.update({
-            "method": 'infac.shift_attendance.mark_att',
-            "frequency": 'Cron',
-            "cron_format": '*/20 * * * *'
-        })
-        sjt.save(ignore_permissions=True)

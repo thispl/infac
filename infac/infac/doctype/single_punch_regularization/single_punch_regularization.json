@@ -107,7 +107,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-03-14 20:55:54.113376",
+ "modified": "2024-10-25 18:00:07.515837",
  "modified_by": "Administrator",
  "module": "Infac",
  "name": "Single Punch Regularization",
@@ -127,5 +127,6 @@
   }
  ],
  "sort_field": "modified",
- "sort_order": "DESC"
+ "sort_order": "DESC",
+ "track_changes": 1
 }
