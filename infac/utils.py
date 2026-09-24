@@ -323,7 +323,7 @@ def leave_application(doc,method):
 				leave.save(ignore_permissions=True)
 				leave.submit()
 				frappe.db.commit()
-
+	
 #Attendance Settings submit the whole attendance to pass the args of from date and to date
 @frappe.whitelist()
 def submit_attendance(emp_cate,from_date,to_date):

@@ -1,12 +1,13 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "field:route_name",
+ "autoname": "field:route_no",
  "creation": "2023-01-09 18:11:10.992314",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "route_no",
   "route_name"
  ],
  "fields": [
@@ -15,11 +16,17 @@
    "fieldtype": "Data",
    "label": "Route Name",
    "unique": 1
+  },
+  {
+   "fieldname": "route_no",
+   "fieldtype": "Data",
+   "label": "Route No",
+   "unique": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-01-09 18:11:39.031611",
+ "modified": "2025-12-10 14:18:28.239014",
  "modified_by": "Administrator",
  "module": "Infac",
  "name": "Route",

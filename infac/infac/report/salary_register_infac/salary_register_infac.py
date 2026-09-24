@@ -21,10 +21,10 @@ def get_columns():
         _('Designation') +':Data:100',_('DOJ') +':Data:100',_('DOB') +':Data:100',_('Start Date') +':Data:100',_('End Date') +':Data:100',
         _('Fixed ') +':Data:100',_('Basic') +':Data:100',_('HRA') +':Data:100',_('SPL') +':Data:100',_('Conveyance') +':Data:100',_('Medical') +':Data:100',
         _('Performance Allowancce') +':Data:100',_('Performance Incentive') +':Data:100',_('Supervisior Allowance') +':Data:100',_('Welfare Allowance') +':Data:100',
-        _('Washing Allowance') +':Data:100',_('Grade Allowance') +':Data:100',_("Higher Education Allowance"),_('Heat Allowance') +':Data:100',_('Attendance Bonus'),
+        _('Washing Allowance') +':Data:100',_('Grade Allowance') +':Data:100',_("Higher Education Allowance"),_('Other Allowance') +':Data:100',_('Incentive') +':Data:100',_('Heat Allowance') +':Data:100',_('Attendance Bonus'),
         _('Employer PF') +':Data:100',_('Employer ESI') +':Data:100',
-        _('OT Amount') +':Data:100',_('Night Shift Allowance'),_('Late Penality') +':Data:100',_('Gross') +':Data:100',_('Canteen') +':Data:100',_('EPF') +':Data:100',_('ESI') +':Data:100',
-        _('LWF') +':Data:100',_('TDS') +':Data:100',_('Advance Contribution') +':Data:100',
+        _('OT Amount') +':Data:100',_('Night Shift Allowance'),_('Gross') +':Data:100',_('Canteen') +':Data:100',_('EPF') +':Data:100',_('ESI') +':Data:100',_('Late Penality') +':Data:100',
+        _('LWF') +':Data:100',_('TDS') +':Data:100',_('CSR') +':Data:100',_('Salary Advance') +':Data:100',_('Event Contribution') +':Data:100',_('Advance Contribution') +':Data:100',
         _('Total Deduction') +':Data:100',_('Net Salary') +':Data:100',_('Working Days') +':Data:100',_('Payment Days') +':Data:100',_('Absent Days') +':Data:100',
         _('LOP Days') +':Data:100',_('Leave Days') +':Data:100'
     ]
@@ -64,6 +64,8 @@ def get_data(filters):
         late_penality = frappe.db.get_value('Salary Detail',{'abbr':'LP','parent':ss.name},'amount')
         ga = frappe.db.get_value('Salary Detail',{'abbr':'GA','parent':ss.name},'amount')
         hea = frappe.db.get_value('Salary Detail',{'abbr':'HEA','parent':ss.name},'amount')
+        oa = frappe.db.get_value('Salary Detail',{'abbr':'OA','parent':ss.name},'amount')
+        incentive = frappe.db.get_value('Salary Detail',{'abbr':'I','parent':ss.name},'amount')
         ea = frappe.db.get_value('Salary Detail',{'abbr':'HA','parent':ss.name},'amount')
         ab = frappe.db.get_value('Salary Detail',{'abbr':'AB','parent':ss.name},'amount')
         pf = frappe.db.get_value('Salary Detail',{'abbr':'EEPF','parent':ss.name},'amount')
@@ -76,10 +78,14 @@ def get_data(filters):
         lwf = frappe.db.get_value('Salary Detail',{'abbr':'LWF','parent':ss.name},'amount')
         tds = frappe.db.get_value('Salary Detail',{'abbr':'TDS','parent':ss.name},'amount')
         ac = frappe.db.get_value('Salary Detail',{'abbr':'AC','parent':ss.name},'amount')
+        sa_1 = frappe.db.get_value('Salary Detail',{'abbr':'sa_1','parent':ss.name},'amount')
+        ec = frappe.db.get_value('Salary Detail',{'abbr':'ec','parent':ss.name},'amount')
+        csr = frappe.db.get_value('Salary Detail',{'abbr':'csr','parent':ss.name},'amount')
+        
     
         row = [
         ss.employee,ss.employee_name,ss.employee_category,ss.department,ss.designation,emp.date_of_joining,emp.date_of_birth,
-        ss.start_date,ss.end_date,fixed,basic,hra,spl_all,convey,ma,pa,pi,sa,wla,wa,ga,hea,ea,ab,pf,eesi,ot,nsa,late_penality,ss.gross_pay,cat,epf,esi,lwf,tds,ac,
+        ss.start_date,ss.end_date,fixed,basic,hra,spl_all,convey,ma,pa,pi,sa,wla,wa,ga,hea,oa,incentive,ea,ab,pf,eesi,ot,nsa,ss.gross_pay,cat,epf,esi,late_penality,lwf,tds,csr,sa_1,ec,ac,
         ss.total_deduction,ss.net_pay,ss.total_working_days,ss.payment_days,ss.absent_days,ss.leave_without_pay,ss.leave_days
         ]
         data.append(row)

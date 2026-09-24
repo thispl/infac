@@ -1,0 +1,97 @@
+{
+ "actions": [],
+ "allow_copy": 1,
+ "allow_rename": 1,
+ "creation": "2025-12-04 17:37:04.043422",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_1",
+  "la_approval",
+  "section_break_3",
+  "mp_approval",
+  "section_break_5",
+  "pr_approval",
+  "section_break_7",
+  "od_approval",
+  "section_break_9",
+  "ot_approval"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_1",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "la_approval",
+   "fieldtype": "Table",
+   "label": "Leave Application Approval",
+   "options": "LA Approval"
+  },
+  {
+   "fieldname": "section_break_3",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "mp_approval",
+   "fieldtype": "Table",
+   "label": "Miss Punch Application Approval",
+   "options": "MP Child Approval"
+  },
+  {
+   "fieldname": "section_break_5",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "pr_approval",
+   "fieldtype": "Table",
+   "label": "Permission Request Approval",
+   "options": "PR Approval"
+  },
+  {
+   "fieldname": "section_break_7",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "od_approval",
+   "fieldtype": "Table",
+   "label": "On Duty Application Approval",
+   "options": "OD Approval Table"
+  },
+  {
+   "fieldname": "section_break_9",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "ot_approval",
+   "fieldtype": "Table",
+   "label": "Overtime Request Approval",
+   "options": "Overtime Approval"
+  }
+ ],
+ "hide_toolbar": 1,
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2025-12-05 18:17:18.231329",
+ "modified_by": "Administrator",
+ "module": "Infac",
+ "name": "Approval",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

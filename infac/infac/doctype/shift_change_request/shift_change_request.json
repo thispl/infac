@@ -19,7 +19,14 @@
   "assigned_shift",
   "column_break_10",
   "shift_change",
-  "amended_from"
+  "amended_from",
+  "section_break_13",
+  "incharge",
+  "created_by",
+  "created_on",
+  "column_break_17",
+  "level_1_approved_by",
+  "level_1_timing"
  ],
  "fields": [
   {
@@ -96,13 +103,56 @@
    "label": "Shift Change",
    "options": "Shift Type",
    "reqd": 1
+  },
+  {
+   "fetch_from": "employee.incharge",
+   "fetch_if_empty": 1,
+   "fieldname": "incharge",
+   "fieldtype": "Link",
+   "label": "Incharge",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_13",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "created_by",
+   "fieldtype": "Link",
+   "label": "Created By",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "created_on",
+   "fieldtype": "Datetime",
+   "label": "Created On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_17",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "level_1_approved_by",
+   "fieldtype": "Link",
+   "label": "Level 1 Approved By",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "level_1_timing",
+   "fieldtype": "Datetime",
+   "label": "Level 1 Timing",
+   "read_only": 1
   }
  ],
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-09-20 20:34:16.868717",
+ "modified": "2026-09-21 17:45:09.893629",
  "modified_by": "Administrator",
  "module": "Infac",
  "name": "Shift Change Request",

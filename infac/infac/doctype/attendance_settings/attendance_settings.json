@@ -9,11 +9,14 @@
   "all_settings_section",
   "shift_incetive_amount_settings",
   "holiday_attendance_settings",
+  "process_checkins",
   "column_break_3",
   "attendance_submit_settings",
   "deleted_attendance",
+  "cancel_attendance",
   "column_break_5",
   "ot_incentive_settings",
+  "process_attendance",
   "ot_incentive_process_section",
   "mark_ot",
   "employee_id",
@@ -51,7 +54,16 @@
   "employee",
   "delete_attendance",
   "column_break_40",
-  "attendance_date"
+  "section_break_47",
+  "employee_1",
+  "attendance_process_1",
+  "process_checkin",
+  "column_break_49",
+  "from_date",
+  "to_date",
+  "attendance_date",
+  "attendance_id",
+  "cancel_attendance1"
  ],
  "fields": [
   {
@@ -256,11 +268,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "attendance_date",
-   "fieldtype": "Date",
-   "label": "Attendance Date"
-  },
-  {
    "fieldname": "delete_attendance",
    "fieldtype": "Button",
    "label": "Delete Attendance"
@@ -293,13 +300,88 @@
    "fieldtype": "Link",
    "label": "Employee ID",
    "options": "Employee"
+  },
+  {
+   "default": "0",
+   "fieldname": "process_attendance",
+   "fieldtype": "Check",
+   "label": "Process Attendance"
+  },
+  {
+   "depends_on": "eval:doc.process_attendance == '1'",
+   "fieldname": "from_date",
+   "fieldtype": "Date",
+   "label": "From Date"
+  },
+  {
+   "depends_on": "eval: doc.process_attendance == '1'",
+   "fieldname": "to_date",
+   "fieldtype": "Date",
+   "label": "To Date"
+  },
+  {
+   "fieldname": "section_break_47",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_49",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.process_attendance == '1'",
+   "fieldname": "employee_1",
+   "fieldtype": "Link",
+   "label": "Employee",
+   "options": "Employee"
+  },
+  {
+   "depends_on": "eval:doc.process_attendance == '1'",
+   "fieldname": "attendance_process_1",
+   "fieldtype": "Button",
+   "label": "Attendance Process"
+  },
+  {
+   "fieldname": "attendance_date",
+   "fieldtype": "Date",
+   "hidden": 1,
+   "label": "Attendance Date"
+  },
+  {
+   "depends_on": "eval:doc.process_attendance == '1'",
+   "fieldname": "process_checkin",
+   "fieldtype": "Button",
+   "label": "Process Checkin"
+  },
+  {
+   "default": "0",
+   "fieldname": "process_checkins",
+   "fieldtype": "Check",
+   "label": "Process Checkins"
+  },
+  {
+   "default": "0",
+   "fieldname": "cancel_attendance",
+   "fieldtype": "Check",
+   "label": "Cancel Attendance"
+  },
+  {
+   "depends_on": "eval:doc.cancel_attendance == 1",
+   "fieldname": "attendance_id",
+   "fieldtype": "Data",
+   "label": "Attendance ID"
+  },
+  {
+   "depends_on": "eval:doc.cancel_attendance == 1",
+   "fieldname": "cancel_attendance1",
+   "fieldtype": "Button",
+   "label": "Cancel Attendance"
   }
  ],
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-01-23 15:53:07.461043",
+ "modified": "2025-12-29 12:46:19.477228",
  "modified_by": "Administrator",
  "module": "Infac",
  "name": "Attendance Settings",

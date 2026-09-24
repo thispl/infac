@@ -1,0 +1,107 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-08-14 11:01:00.406914",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "overtime_validation_dates",
+  "leave_validation_dates",
+  "on_duty_validation_dates",
+  "miss_punch_validation_dates",
+  "apply_permission_time_restriction_to_hr",
+  "permission_min_hours_before_shift",
+  "column_break_5",
+  "comp_off_validation_dates",
+  "permission_validation_dates",
+  "permission_days_allowed",
+  "incentive_validation_dates",
+  "employee_creation_limit"
+ ],
+ "fields": [
+  {
+   "fieldname": "overtime_validation_dates",
+   "fieldtype": "Int",
+   "label": "Overtime Validation Dates"
+  },
+  {
+   "fieldname": "leave_validation_dates",
+   "fieldtype": "Int",
+   "label": "Leave Validation Dates"
+  },
+  {
+   "fieldname": "on_duty_validation_dates",
+   "fieldtype": "Int",
+   "label": "On Duty Validation Dates"
+  },
+  {
+   "fieldname": "miss_punch_validation_dates",
+   "fieldtype": "Int",
+   "label": "Miss Punch Validation Dates"
+  },
+  {
+   "fieldname": "column_break_5",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "comp_off_validation_dates",
+   "fieldtype": "Int",
+   "label": "Comp Off Validation Dates"
+  },
+  {
+   "fieldname": "permission_validation_dates",
+   "fieldtype": "Int",
+   "label": "Permission Validation Dates"
+  },
+  {
+   "fieldname": "incentive_validation_dates",
+   "fieldtype": "Int",
+   "label": "Incentive Validation Dates"
+  },
+  {
+   "fieldname": "permission_days_allowed",
+   "fieldtype": "Int",
+   "label": "Permisison Days Allowed"
+  },
+  {
+   "fieldname": "employee_creation_limit",
+   "fieldtype": "Int",
+   "label": "Employee Creation Limit"
+  },
+  {
+   "default": "0",
+   "fieldname": "apply_permission_time_restriction_to_hr",
+   "fieldtype": "Check",
+   "label": "Apply Time Restriction to HR Users"
+  },
+  {
+   "fieldname": "permission_min_hours_before_shift",
+   "fieldtype": "Int",
+   "label": "Minimum Hours Before Shift Start"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-09-16 18:05:18.635584",
+ "modified_by": "Administrator",
+ "module": "Infac",
+ "name": "HR Time Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

@@ -4,6 +4,7 @@
 
 import frappe
 from frappe.model.document import Document
+from frappe.utils import now_datetime
 import datetime
 from datetime import datetime,timedelta
 import datetime as dt
@@ -19,7 +20,74 @@ import dateutil.relativedelta
 
 class PermissionRequest(Document):
 
+    # def after_insert(self):
+    #     user_roles = frappe.get_roles(frappe.session.user)
+    #     hr = "HR User" in user_roles
+    #     # admin = "Administrator" in user_roles
+    #     if (not hr):
+    #         allowed_days1 = frappe.db.get_value("HR Time Settings", None, "permission_validation_dates")
+    #         allowed_days = int(allowed_days1 or 0)
+    #         current_date = today()
+    #         if isinstance(current_date, str):
+    #             current_date = datetime.strptime(current_date, "%Y-%m-%d").date()
 
+    #         def is_working_day(check_date):
+    #             return not check_holiday(check_date,check_date, self.employee_id)
+
+    #         days_count = 0
+    #         earliest_allowed = current_date
+    #         while days_count < allowed_days:
+    #             earliest_allowed = add_days(earliest_allowed, -1)
+    #             if is_working_day(earliest_allowed):
+    #                 days_count += 1
+
+    #         if not self.permission_date:
+    #             return
+
+    #         if isinstance(self.permission_date, str):
+    #             miss_date = datetime.strptime(self.permission_date, "%Y-%m-%d").date()
+    #         else:
+    #             miss_date = self.permission_date
+
+    #         if miss_date < earliest_allowed:
+    #             frappe.throw(
+    #                 _("Permission are allowed only for up to the previous {0} working days.")
+    #                 .format(allowed_days)
+    #             )
+
+    def after_insert(self):
+        user_roles = frappe.get_roles(frappe.session.user)
+        hr = "HR User" in user_roles
+
+        # Should this restriction also apply to HR Users?
+        apply_to_hr = cint(frappe.db.get_single_value(
+            "HR Time Settings", "apply_permission_time_restriction_to_hr"
+        ))
+
+        if hr and not apply_to_hr:
+            return
+
+        if not self.permission_date or not self.shift:
+            return
+
+        shift_start_time = frappe.db.get_value("Shift Type", self.shift, "start_time")
+        if not shift_start_time:
+            return
+
+        shift_datetime = datetime.combine(getdate(self.permission_date), get_time(shift_start_time))
+
+        min_hours_before = flt(frappe.db.get_single_value(
+            "HR Time Settings", "permission_min_hours_before_shift"
+        )) or 4
+
+        cutoff_datetime = shift_datetime - timedelta(hours=min_hours_before)
+
+        if now_datetime() > cutoff_datetime:
+            frappe.throw(
+                _("Permission Request must be submitted at least {0} hour(s) before the Shift Start Time ({1}).")
+                .format(min_hours_before, shift_datetime.strftime("%d-%m-%Y %H:%M:%S"))
+            )
+            
     def on_submit(self):
         att = frappe.db.exists('Attendance',{'attendance_date':self.permission_date,'employee':self.employee_id})
         if att:
@@ -40,8 +108,8 @@ class PermissionRequest(Document):
             att.late_entry = late_check
             att.save(ignore_permissions=True)
             frappe.db.commit()
-        else:
-            frappe.throw(_('Employee %s have no attendance for that day'%(self.employee_id)))
+        # else:
+        #     frappe.throw(_('Employee %s have no attendance for that day'%(self.employee_id)))
 
     def late_hours(self):
         datalist = []
@@ -119,11 +187,22 @@ class PermissionRequest(Document):
                     })
                     datalist.append(data.copy())
                 #     frappe.throw(_('Employee %s have no Out Time to calculate the late Hours'%(self.employee_id)))  
-        else:
-            frappe.throw(_('Employee %s have no Attendance for that Day'%(self.employee_id)) )         
+        # else:
+        #     frappe.throw(_('Employee %s have no Attendance for that Day'%(self.employee_id)) )         
         return datalist             
 
-
+    @frappe.whitelist()
+    def get_endtime1(Self,start_time):
+        time = datetime.strptime(start_time, "%H:%M:%S")
+        end_time = timedelta(hours=2) + time
+        return str(end_time.time())
+    
+    @frappe.whitelist()
+    def get_endtime2(Self,end_time):
+        time = datetime.strptime(end_time, "%H:%M:%S")
+        start_time = time - timedelta(hours=2)
+        return str(start_time.time())
+    
     def late_dedcut_calculate(self):
         datalist = []
         data = {}
@@ -176,15 +255,69 @@ class PermissionRequest(Document):
             return datalist 
         return datalist
    
+    # def validate(self):
+    #     payroll_start_day = frappe.db.get_value('Payroll Dates Automatic',{'name':'PAYDATE0001'},['payroll_start_date'])
+    #     payroll_end_day = frappe.db.get_value('Payroll Dates Automatic',{'name':'PAYDATE0001'},['payroll_end_date'])
+    #     per_count = frappe.db.sql(""" select count(*) from  `tabPermission Request` where employee_id = '%s' and permission_date  between '%s' and '%s' and "docstatus": ["in", [0, 1]] """%(self.employee_id,payroll_start_day,payroll_end_day),as_dict=True)[0]
+    #     for per in per_count.values():
+    #         if per >= 2:
+    #             frappe.throw("Only 2 permissions are allowed for a month")
+    #         # else:
+    #         #     frappe.log_error('Less than Permission for a month')    
+    #     self.validate_one_permission_per_day()
+
     def validate(self):
         payroll_start_day = frappe.db.get_value('Payroll Dates Automatic',{'name':'PAYDATE0001'},['payroll_start_date'])
         payroll_end_day = frappe.db.get_value('Payroll Dates Automatic',{'name':'PAYDATE0001'},['payroll_end_date'])
-        per_count = frappe.db.sql(""" select count(*) from  `tabPermission Request` where employee_id = '%s' and permission_date  between '%s' and '%s' and docstatus = '1' """%(self.employee_id,payroll_start_day,payroll_end_day),as_dict=True)[0]
-        for per in per_count.values():
-            if per >= 2:
-                frappe.throw("Only 2 permissions are allowed for a month")
-            else:
-                frappe.log_error('Less than Permission for a month')    
+   
+        # Get allowed limit from HR Time Setting
+        allowed_count = frappe.db.get_single_value("HR Time Settings", "permission_days_allowed" ) or 0
+
+        if self.is_new():
+            # Count existing permissions
+            per_count = frappe.db.sql("""
+                SELECT COUNT(*) as count
+                FROM `tabPermission Request`
+                WHERE employee_id = %s
+                AND permission_date BETWEEN %s AND %s
+                AND docstatus IN (0, 1)
+            """, (self.employee_id, payroll_start_day, payroll_end_day), as_dict=True)[0]["count"]
+
+            if per_count >= allowed_count:
+                frappe.throw(f"Only {allowed_count} permissions are allowed for this period")
+
+        self.validate_one_permission_per_day()
+
+
+        # If workflow_state didn't change, do nothing
+        if not self.has_value_changed("workflow_state"):
+            return
+
+        user = frappe.session.user
+        time = now_datetime()
+        if self.has_value_changed("workflow_state") and self.workflow_state == "Superior Pending":
+            self.level_1_timing=now_datetime()
+            self.level_1_approved_by=frappe.session.user
+        if self.has_value_changed("workflow_state") and self.workflow_state == "Approved":
+            self.level_2_timing=now_datetime()
+            self.level_2_approved_by=frappe.session.user
+        # if self.has_value_changed("workflow_state") and self.workflow_state == "Approved":
+        #     self.approved_timing=now_datetime()
+        #     self.approved=frappe.session.user
+        if self.has_value_changed("workflow_state") and self.workflow_state == "Rejected":
+            self.rejected_timing=now_datetime()
+            self.rejected=frappe.session.user
+
+    def before_insert(self):
+        current_user = frappe.session.user
+        current_time = now_datetime()
+        self.created_by = current_user  
+        self.created_on= current_time 
+         
+    def validate_one_permission_per_day(self):
+        if frappe.db.exists("Permission Request", { "employee_id": self.employee_id, "permission_date": self.permission_date, "session": self.session,
+                            "docstatus": ["!=", 2],"workflow_state": ["!=", "Rejected"], "name": ["!=", self.name]}):
+            frappe.throw("You are already applied Permission for the same day")
 
     def on_cancel(self):
         if self.docstatus == 2:
@@ -192,6 +325,69 @@ class PermissionRequest(Document):
             if att:
                 frappe.db.set_value('Attendance',att,'permission_request','')   
 
+    # def on_update(self):
+    #     frappe.errprint("Level")
+    #     # If workflow_state didn't change, do nothing
+    #     if not self.has_value_changed("workflow_state"):
+    #         return
+
+    #     user = frappe.session.user
+    #     time = now_datetime()
+
+    #     # LEVEL 1 → LEVEL 2
+    #     if self.workflow_state == "Superior Pending" and not self.level_1_timing:
+    #         frappe.errprint("Level 2")
+    #         self.level_1_timing = f"{user} at {time}"
+
+    #     # LEVEL 2 → LEVEL 3
+    #     elif self.workflow_state == "Approved" and not self.level_2_timing:
+    #         self.level_2_timing = f"{user} at {time}"
+
+    #     # FINAL APPROVAL
+    #     elif self.workflow_state == "Approved" and not self.approved_timing:
+    #         self.approved_timing = f" {user} at {time}"
+
+    #     # REJECTION (from any level)
+    #     elif self.workflow_state == "Rejected" and not self.rejected_timing:
+    #         self.rejected_timing = f"{user} at {time}"
+
+
+    # def on_update(self):
+    #     frappe.errprint("Level")
+
+    #     # If workflow_state didn't change, do nothing
+    #     if not self.has_value_changed("workflow_state"):
+    #         return
+
+    #     user = frappe.session.user
+    #     time = now_datetime()
+
+    #     updated = False  # 👈 add this
+
+    #     # LEVEL 1 → LEVEL 2
+    #     if self.workflow_state == "Superior Pending" and not self.level_1_timing:
+    #         frappe.errprint("Level 2")
+    #         self.level_1_timing = f"{user} at {time}"
+    #         updated = True
+
+    #     # LEVEL 2 → LEVEL 3
+    #     elif self.workflow_state == "Approved" and not self.level_2_timing:
+    #         self.level_2_timing = f"{user} at {time}"
+    #         updated = True
+
+    #     # FINAL APPROVAL
+    #     elif self.workflow_state == "Approved" and not self.approved_timing:
+    #         self.approved_timing = f"{user} at {time}"
+    #         updated = True
+
+    #     # REJECTION
+    #     elif self.workflow_state == "Rejected" and not self.rejected_timing:
+    #         self.rejected_timing = f"{user} at {time}"
+    #         updated = True
+
+    #     # 🔥 THIS is the magic line
+    #     if updated:
+    #         self.save(ignore_permissions=True)
     
     #session automactically marked based on from_time
     @frappe.whitelist()
@@ -201,6 +397,7 @@ class PermissionRequest(Document):
             session  = self.get_session_based_on_time(from_time)
             return session
         
+
 
     def is_between(self,time, time_range):
         if time_range[1] < time_range[0]:
@@ -230,6 +427,11 @@ class PermissionRequest(Document):
         if self.is_between(from_time,sh_session):
             session = 'Second Half'
         return session 
+    
+    @frappe.whitelist()
+    def show_html(self):
+        html = "<h2><center>PERMISSION REQUEST</center></h2><table class='table table-bordered'><tr><th style=font-size:16px;>From Date</th><th style=font-size:16px;>To Date</th></tr><tr><td><h3>%s</h3></td><td><h3>%s</h3></td></tr><tr><th style=font-size:16px;>From Time</th><th style=font-size:16px;>To Time</th></tr><tr><td><h3>%s</h3></td><td><h3>%s</h3></td></tr></table>"%(frappe.utils.format_date(self.permission_date),frappe.utils.format_date(self.permission_date),frappe.utils.format_time(self.from_time), frappe.utils.format_time(self.to_time))
+        return html
                         
     
 @frappe.whitelist()
@@ -280,18 +482,58 @@ def validate_time(from_time,hour):
             
 
 #This is the time difference between from and to time
+# @frappe.whitelist()
+# def get_time_difference(permission_date,from_time,to_time):
+#     permission_date = datetime.strptime(permission_date,'%Y-%m-%d')
+#     try:
+#         from_time_obj = datetime.strptime(from_time, '%H:%M:%S').time()
+#     except ValueError:
+#         from_time_obj = datetime.strptime(from_time, '%H:%M').time()
+
+#     try:
+#         to_time_obj = datetime.strptime(to_time, '%H:%M:%S').time()
+#     except ValueError:
+#         to_time_obj = datetime.strptime(to_time, '%H:%M').time()
+
+#     # from_time = datetime.strptime(from_time,'%H:%M').time()
+#     # to_time = datetime.strptime(to_time,'%H:%M').time()
+#     # from_time = datetime.combine(permission_date, from_time)
+#     # to_time = datetime.combine(permission_date, to_time)
+#     from_time = datetime.combine(permission_date, from_time_obj)
+#     to_time = datetime.combine(permission_date, to_time_obj)
+#     total_hours = to_time - from_time
+#     ftr = [3600,60,1]
+#     hr = sum([a*b for a,b in zip(ftr, map(int,str(total_hours).split(':')))])
+#     perm_hr = round(hr/3600,1)
+#     return total_hours, perm_hr
+
 @frappe.whitelist()
-def get_time_difference(permission_date,from_time,to_time):
-    permission_date = datetime.strptime(permission_date,'%Y-%m-%d')
-    from_time = datetime.strptime(from_time,'%H:%M:%S').time()
-    to_time = datetime.strptime(to_time,'%H:%M:%S').time()
-    from_time = datetime.combine(permission_date, from_time)
-    to_time = datetime.combine(permission_date, to_time)
-    total_hours = to_time - from_time
-    ftr = [3600,60,1]
-    hr = sum([a*b for a,b in zip(ftr, map(int,str(total_hours).split(':')))])
-    perm_hr = round(hr/3600,1)
-    return total_hours, perm_hr
+def get_time_difference(permission_date, from_time, to_time):
+    permission_date = datetime.strptime(permission_date, '%Y-%m-%d')
+
+    # Handle both HH:MM and HH:MM:SS formats
+    def parse_time(time_str):
+        try:
+            return datetime.strptime(time_str, '%H:%M:%S').time()
+        except ValueError:
+            return datetime.strptime(time_str, '%H:%M').time()
+
+    from_time_obj = parse_time(from_time)
+    to_time_obj = parse_time(to_time)
+
+    # Combine date and time
+    from_dt = datetime.combine(permission_date, from_time_obj)
+    to_dt = datetime.combine(permission_date, to_time_obj)
+
+    # Calculate total hours
+    total_delta = to_dt - from_dt
+    total_seconds = total_delta.total_seconds()
+    perm_hr = round(total_seconds / 3600, 1)
+
+    return {
+        "total_hours": str(total_delta),   # "1:30:00"
+        "perm_hr": perm_hr                 # 1.5
+    }
 
 #employee validation for permission_application
 # @frappe.whitelist()
@@ -300,3 +542,29 @@ def get_time_difference(permission_date,from_time,to_time):
 #     if employee != 'STAFF':
 #         frappe.throw(_('Permission Application Only Apply for STAFF Employees'))
 #     return "Not Allowed"   
+
+
+def check_holiday(from_date,to_date,emp):
+    holiday_list = frappe.db.get_value('Employee',emp,'holiday_list')
+    holiday = frappe.db.sql("""select `tabHoliday`.holiday_date,`tabHoliday`.weekly_off from `tabHoliday List` 
+    left join `tabHoliday` on `tabHoliday`.parent = `tabHoliday List`.name where `tabHoliday List`.name = '%s' and holiday_date between '%s' and '%s' """%(holiday_list,from_date,to_date),as_dict=True)
+    if holiday:
+        if holiday[0].weekly_off == 1:
+            return "WW"
+        else:
+            return "HH"
+        
+def on_update(doc, method):
+    pass 
+
+import frappe
+from frappe import _
+from frappe.model.workflow import apply_workflow
+
+@frappe.whitelist()
+def incharge_approve(docname, approved_through):
+    doc = frappe.get_doc("Permission Request", docname)
+    doc.db_set("approved_through", approved_through, update_modified=True)
+    apply_workflow(doc, "Approve")
+    frappe.db.commit()
+    return {"status": "success"}

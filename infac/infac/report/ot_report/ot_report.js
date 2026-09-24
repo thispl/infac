@@ -23,6 +23,12 @@ frappe.query_reports["OT Report"] = {
 			"label": __("Employee"),
 			"fieldtype": "Link",
 			"options": "Employee",
+		},
+		{
+			"fieldname":"shift",
+			"label": __("Shift"),
+			"fieldtype": "Link",
+			"options": "Shift Type",
 		}
 	],
 	onload: function (report) {

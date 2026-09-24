@@ -57,7 +57,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2022-07-18 10:04:41.047089",
+ "modified": "2025-08-05 16:13:19.209826",
  "modified_by": "Administrator",
  "module": "Infac",
  "name": "Attendance Summary",
@@ -70,6 +70,14 @@
    "print": 1,
    "read": 1,
    "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Employee",
    "share": 1,
    "write": 1
   }

@@ -1,0 +1,212 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-07-27 17:49:54.646631",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "amended_from",
+  "employee",
+  "employee_name",
+  "department",
+  "company",
+  "column_break_6",
+  "date",
+  "designation",
+  "section_break_9",
+  "purpose",
+  "section_break_11",
+  "check_in",
+  "in_time",
+  "check_in_latitude",
+  "check_in_longitude",
+  "checkin_address",
+  "column_break_17",
+  "check_out",
+  "out_time",
+  "check_out_latitude",
+  "check_out_longitude",
+  "check_out_address",
+  "checkbox"
+ ],
+ "fields": [
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Mark Attendance",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "in_standard_filter": 1,
+   "label": "Employee",
+   "options": "Employee"
+  },
+  {
+   "fetch_from": "employee.employee_name",
+   "fetch_if_empty": 1,
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "in_standard_filter": 1,
+   "label": "Employee Name",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "employee.department",
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "label": "Department",
+   "options": "Department",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "employee.company",
+   "fetch_if_empty": 1,
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Today",
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Date",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fetch_from": "employee.designation",
+   "fetch_if_empty": 1,
+   "fieldname": "designation",
+   "fieldtype": "Link",
+   "label": "Designation",
+   "options": "Designation",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_9",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "purpose",
+   "fieldtype": "Small Text",
+   "label": "Purpose"
+  },
+  {
+   "fieldname": "section_break_11",
+   "fieldtype": "Section Break"
+  },
+  {
+   "depends_on": "eval:!(doc.in_time) && doc.purpose",
+   "fieldname": "check_in",
+   "fieldtype": "Button",
+   "label": "Check in"
+  },
+  {
+   "fieldname": "in_time",
+   "fieldtype": "Datetime",
+   "label": "In Time"
+  },
+  {
+   "fieldname": "check_in_latitude",
+   "fieldtype": "Data",
+   "label": "Check in Latitude",
+   "read_only": 1
+  },
+  {
+   "fieldname": "check_in_longitude",
+   "fieldtype": "Data",
+   "label": "Check in Longitude",
+   "read_only": 1
+  },
+  {
+   "fieldname": "checkin_address",
+   "fieldtype": "Small Text",
+   "label": "Checkin Address",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_17",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "check_out",
+   "fieldtype": "Button",
+   "label": "Check Out"
+  },
+  {
+   "fieldname": "out_time",
+   "fieldtype": "Datetime",
+   "label": "Out Time",
+   "read_only": 1
+  },
+  {
+   "fieldname": "check_out_latitude",
+   "fieldtype": "Data",
+   "label": "Check out Latitude",
+   "read_only": 1
+  },
+  {
+   "fieldname": "check_out_longitude",
+   "fieldtype": "Data",
+   "label": "Check out Longitude",
+   "read_only": 1
+  },
+  {
+   "fieldname": "check_out_address",
+   "fieldtype": "Small Text",
+   "label": "Check out Address",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "0",
+   "fieldname": "checkbox",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "checkbox"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2026-07-27 18:57:06.924525",
+ "modified_by": "Administrator",
+ "module": "Infac",
+ "name": "Mark Attendance",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

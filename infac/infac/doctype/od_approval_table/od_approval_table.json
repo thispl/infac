@@ -1,0 +1,164 @@
+{
+ "actions": [],
+ "creation": "2025-12-05 18:05:37.521662",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "on_duty_application",
+  "employee",
+  "employee_name",
+  "department",
+  "workflow_state",
+  "approver_name",
+  "from_date",
+  "to_date",
+  "od_time",
+  "travel",
+  "column_break_8",
+  "from_time",
+  "to_time",
+  "session",
+  "total_number_of_days",
+  "place",
+  "person_to_meet",
+  "company_name",
+  "purpose"
+ ],
+ "fields": [
+  {
+   "fieldname": "on_duty_application",
+   "fieldtype": "Link",
+   "label": "On Duty Application",
+   "options": "On Duty Application",
+   "read_only": 1
+  },
+  {
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Employee ID",
+   "options": "Employee",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "employee_id.employee_name",
+   "fieldname": "employee_name",
+   "fieldtype": "Read Only",
+   "in_filter": 1,
+   "in_standard_filter": 1,
+   "label": "Employee Name"
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Department",
+   "read_only": 1
+  },
+  {
+   "fieldname": "workflow_state",
+   "fieldtype": "Data",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approver_name",
+   "fieldtype": "Data",
+   "label": "Approver Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "from_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "OD Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "to_date",
+   "fieldtype": "Date",
+   "label": "To Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "od_time",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "OD Time",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_8",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "from_time",
+   "fieldtype": "Time",
+   "label": "From Time",
+   "read_only": 1
+  },
+  {
+   "fieldname": "to_time",
+   "fieldtype": "Time",
+   "label": "To Time",
+   "read_only": 1
+  },
+  {
+   "fieldname": "session",
+   "fieldtype": "Data",
+   "label": "Session",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_number_of_days",
+   "fieldtype": "Data",
+   "label": "Total Number of Days",
+   "read_only": 1
+  },
+  {
+   "fieldname": "person_to_meet",
+   "fieldtype": "Data",
+   "label": "Person to Meet",
+   "read_only": 1
+  },
+  {
+   "fieldname": "company_name",
+   "fieldtype": "Data",
+   "label": "Company Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "purpose",
+   "fieldtype": "Small Text",
+   "label": "Purpose",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "travel",
+   "fieldtype": "Check",
+   "label": "Travel",
+   "read_only": 1
+  },
+  {
+   "fieldname": "place",
+   "fieldtype": "Data",
+   "label": "Place",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-12-18 12:23:17.226903",
+ "modified_by": "Administrator",
+ "module": "Infac",
+ "name": "OD Approval Table",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

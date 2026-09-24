@@ -31,10 +31,10 @@ frappe.query_reports["Daily Attendance Register"] = {
 			"options": "Department",
 		},
 		{
-			"fieldname": "employee_category",
-			"label": __("Employe Category"),
+			"fieldname": "employment_type",
+			"label": __("Employment Type"),
 			"fieldtype": "Link",
-			"options": "Employee Category",
+			"options": "Employment Type",
 		},
 	]
 };

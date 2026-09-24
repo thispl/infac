@@ -9,6 +9,11 @@ app_color = "grey"
 app_email = "jagadeesan.a@groupteampro.com"
 app_license = "MIT"
 
+
+app_include_js = [
+		"https://maps.googleapis.com/maps/api/js?sensor=false&libraries=places&key=AIzaSyAdaNNXhTh13TRLiZjSa9YYp66gNNj9aZ8",
+			]
+
 # Includes in <head>
 # ------------------
 
@@ -102,10 +107,35 @@ override_doctype_class = {
 
 doc_events = {
 	"Leave Application":{
-		"on_submit":"infac.utils.leave_application"
+		"on_submit":["infac.utils.leave_application"],
+        "after_insert":"infac.leave_custom.validate_leave",
+        "before_insert":"infac.leave_custom.creation_update",
+        "on_cancel":"infac.leave_custom.while_cancel",
+        "on_update": "infac.leave_custom.on_update",
+        "on_change": "infac.custom.leave_workflow_notification",
+        "validate":["infac.leave_custom.update_status_on_workflow","infac.leave_custom.validate_halfday_leave", "infac.leave_custom.leave_approval_tracking"]
 	},
 	"Employee":{
-		"validate": "infac.custom.inactive_employee"
+		"validate": ["infac.employee_custom.inactive_employee","infac.employee_custom.add_salary_history","infac.employee_custom.validate_employee_creation"],
+        # "before_save":"infac.custom.add_salary_history"
+        "after_insert": ["infac.employee_custom.create_initial_attendance_and_shift"],
+        "on_update": ["infac.employee_custom.cancel_shift_assignment_on_left"]
+	},
+	"Attendance":{
+		"validate": "infac.attendance_custom.update_actual_shift"
+	},
+    "Compensatory Leave Request":{
+        "after_insert":"infac.comp_off_custom.validate_comp_off",
+	},
+    "Permisison Request":{
+        "on_update": "infac.infac.permission_request.permission_request.on_update"
+	},
+    # "Employee Checkin":{
+    #     # "after_insert":"infac.custom.update_shift_in_checkin",
+    #     "after_insert":"infac.custom.update_shift_in_checkin",
+	# },
+    "Additional Salary":{
+        "validate":"infac.additional_sal_custom.additional_salary_validation",
 	},
 	# "Attendance": {
 	# 	'before_save':'infac.utils.get_attendance',
@@ -140,6 +170,9 @@ scheduler_events = {
 		"*/20 * * * *" :[
 			'infac.shift_attendance.mark_att'
 		],
+        "0 * * * *" :[
+			'infac.shift_attendance.mark_att1'
+		],
         "0 7 * * *" :[
 			'infac.utils.miss_punch_mail_alert'
 		],
@@ -151,6 +184,21 @@ scheduler_events = {
 		],
 		"0 12 * * *" :[
 			'infac.doctype.payroll_process_settings.payroll_process_settings.payroll_date_change_automatic'
+		],
+		"0 1 28 * *": [
+            "infac.custom.el_allocation"
+        ],
+        "25 12 * * *" : [
+            "infac.mail_alerts_custom.permission_approval_12_25"
+		],
+        "55 20 * * *" : [
+            "infac.mail_alerts_custom.permission_approval_20_55"
+		],
+        "15 3 * * *" : [
+            "infac.mail_alerts_custom.permission_approval_03_15"
+		],
+        "50 14 * * *" :[
+            "infac.mail_alerts_custom.auto_approve_permission"
 		]
 
 	}

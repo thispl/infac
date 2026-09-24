@@ -18,7 +18,7 @@
    "fieldname": "report",
    "fieldtype": "Select",
    "label": "Report",
-   "options": "\nAttendance Log\nEmployee Grade\nMonthly Attendance Report"
+   "options": "\nAttendance Log\nEmployee Grade\nMonthly Attendance Report\nForm 12\nForm 25\nMigrant Employee Attendance\nNew Joinee Attendance\nPermission Report\nShift Deviation Report\nAttendance Comparison Sheet\nShift Continue Report"
   },
   {
    "fieldname": "download",
@@ -31,16 +31,19 @@
   },
   {
    "default": "Today",
+   "depends_on": "eval:doc.report != 'Form 25' && doc.report != 'Migrant Employee Attendance' && doc.report != 'Permission Report' && doc.report != 'Shift Deviation Report' && doc.report!= 'New Joinee Attendance'",
    "fieldname": "date",
    "fieldtype": "Date",
    "label": "Date"
   },
   {
+   "depends_on": "eval:doc.report !=\"Attendance Comparison Sheet\" && doc.report!=\"Shift Continue Report\"",
    "fieldname": "from_date",
    "fieldtype": "Date",
    "label": "From Date"
   },
   {
+   "depends_on": "eval:doc.report != \"Attendance Comparison Sheet\" && doc.report != \"Shift Continue Report\"",
    "fieldname": "to_date",
    "fieldtype": "Date",
    "label": "To Date"
@@ -50,7 +53,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-01-03 12:07:49.911612",
+ "modified": "2026-02-24 12:51:38.511604",
  "modified_by": "Administrator",
  "module": "Infac",
  "name": "Report Dashboard",

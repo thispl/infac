@@ -20,28 +20,28 @@ from erpnext.hr.utils import validate_dates, validate_overlap, get_leave_period,
 from frappe.utils import today    
 
 class CustomEmployee(Employee):
-    def before_save(self):
-        # self.emp_before_att_mark_doj()
-        # if self.employee_category == 'Master Staff':
-        #     self.proposed_salary = self.gross_salary - (self.welfare_allowance_amount + self.attendance_bonus + self.higher_education_allowance_amount + self.supr_allowance + self.other_allowances)
-        #     perf_percent = frappe.db.get_single_value('Payroll Process Settings','performance_allowance_calculation')
-        #     self.performance_allowance = round(self.proposed_salary * perf_percent)
-        #     self.fixed_salary = round(self.proposed_salary - self.performance_allowance)
+    # def before_save(self):
+    #     # self.emp_before_att_mark_doj()
+    #     # if self.employee_category == 'Master Staff':
+    #     #     self.proposed_salary = self.gross_salary - (self.welfare_allowance_amount + self.attendance_bonus + self.higher_education_allowance_amount + self.supr_allowance + self.other_allowances)
+    #     #     perf_percent = frappe.db.get_single_value('Payroll Process Settings','performance_allowance_calculation')
+    #     #     self.performance_allowance = round(self.proposed_salary * perf_percent)
+    #     #     self.fixed_salary = round(self.proposed_salary - self.performance_allowance)
 
-        if self.employee_category == 'Master Worker' or self.employee_category == 'Workers Grade 2':
-            self.fixed_salary = round(self.gross_salary -(self.medical_allowance + self.special_allowance + self.washing_allowance + self.heat_allowance + self.welfare_allowance_amount + self.grade_allowance + self.attendance_bonus + self.higher_education_allowance_amount + self.other_allowances))
+    #     if self.employee_category == 'Master Worker' or self.employee_category == 'Workers Grade 2':
+    #         self.fixed_salary = round(self.gross_salary -(self.medical_allowance + self.special_allowance + self.washing_allowance + self.heat_allowance + self.welfare_allowance_amount + self.grade_allowance + self.attendance_bonus + self.higher_education_allowance_amount + self.other_allowances))
 
-        elif self.employee_category == 'Operating Staff':
-            self.proposed_salary = self.gross_salary - (self.attendance_bonus + self.welfare_allowance_amount  + self.supr_allowance)
-            perf_percent = frappe.db.get_single_value('Payroll Process Settings','performance_allowance_calculation')
-            self.performance_allowance = round(self.proposed_salary * perf_percent)
-            self.fixed_salary = round(self.proposed_salary - self.performance_allowance)
+    #     elif self.employee_category == 'Operating Staff':
+    #         self.proposed_salary = self.gross_salary - (self.attendance_bonus + self.welfare_allowance_amount  + self.supr_allowance)
+    #         perf_percent = frappe.db.get_single_value('Payroll Process Settings','performance_allowance_calculation')
+    #         self.performance_allowance = round(self.proposed_salary * perf_percent)
+    #         self.fixed_salary = round(self.proposed_salary - self.performance_allowance)
         
-        # elif self.employee_category == 'Supporting Staff':
-        #     self.proposed_salary = self.gross_salary - (self.attendance_bonus + self.welfare_allowance_amount  + self.supr_allowance)
-        #     perf_percent = frappe.db.get_single_value('Payroll Process Settings','performance_allowance_calculation')
-        #     self.performance_allowance = round(self.proposed_salary * perf_percent)
-        #     self.fixed_salary = round(self.proposed_salary - self.performance_allowance)
+    #     # elif self.employee_category == 'Supporting Staff':
+    #     #     self.proposed_salary = self.gross_salary - (self.attendance_bonus + self.welfare_allowance_amount  + self.supr_allowance)
+    #     #     perf_percent = frappe.db.get_single_value('Payroll Process Settings','performance_allowance_calculation')
+    #     #     self.performance_allowance = round(self.proposed_salary * perf_percent)
+    #     #     self.fixed_salary = round(self.proposed_salary - self.performance_allowance)
 
     def after_insert(self):
         self.emp_before_att_mark_doj()
@@ -61,16 +61,164 @@ class CustomEmployee(Employee):
         return date    
                                              
 class CustomSalarySlip(SalarySlip):
-    def before_save(self):
-        absent_days = frappe.db.sql(""" select count(*) as count from `tabAttendance` where employee='%s' and status = 'Absent' and attendance_date between '%s' and '%s' and docstatus = '1'""" % (self.employee,self.start_date,self.end_date),as_dict=True)[0]
-        paid_leave = frappe.db.sql(""" select count(*) as count from `tabAttendance` where employee='%s' and status = 'On Leave'  and leave_type in ('Casual Leave','Earned Leave','Sick Leave','Marriage Leave','Maternity Leave','Medical Leave','Paternity Leave') and  attendance_date between '%s' and '%s' and docstatus = '1'""" % (self.employee,self.start_date,self.end_date),as_dict=True)[0]
-        # lop_leave = frappe.db.sql(""" select count(*) as count from `tabAttendance` where employee='%s' and status = 'On Leave'  and leave_type = 'Leave Without Pay' and  attendance_date between '%s' and '%s' and docstatus = '1'""" % (self.employee,self.start_date,self.end_date),as_dict=True)[0]
-        paid_half_day_leave = frappe.db.sql(""" select count(*) as count from `tabAttendance` where employee='%s' and status = 'Half Day'  and leave_type in ('Casual Leave','Earned Leave','Sick Leave','Marriage Leave','Maternity Leave','Medical Leave','Paternity Leave') and  attendance_date between '%s' and '%s' and docstatus = '1'""" % (self.employee,self.start_date,self.end_date),as_dict=True)[0]
-        # lop_half_day = frappe.db.sql(""" select count(*) as count from `tabAttendance` where employee='%s' and status = 'Half Day'  and leave_type = 'Leave Without Pay' and  attendance_date between '%s' and '%s' and docstatus = '1'""" % (self.employee,self.start_date,self.end_date),as_dict=True)[0]
-        self.absent_days = absent_days['count']
-        self.paid_leaves = paid_leave['count'] + (paid_half_day_leave['count']/2)
-        self.leave_days = paid_leave['count'] + (paid_half_day_leave['count']/2) + absent_days['count'] + self.leave_without_pay 
-        frappe.db.set_value("Employee",self.employee,"non_present_days",self.leave_days)
+    def get_date_details(self):
+        # absent_days = frappe.db.sql(""" select count(*) as count from `tabAttendance` where employee='%s' and status = 'Absent' and attendance_date between '%s' and '%s' and docstatus = '1'""" % (self.employee,self.start_date,self.end_date),as_dict=True)[0]
+        # paid_leave = frappe.db.sql(""" select count(*) as count from `tabAttendance` where employee='%s' and status = 'On Leave'  and leave_type in ('Casual Leave','Earned Leave','Sick Leave','Marriage Leave','Maternity Leave','Medical Leave','Paternity Leave') and  attendance_date between '%s' and '%s' and docstatus = '1'""" % (self.employee,self.start_date,self.end_date),as_dict=True)[0]
+        # # lop_leave = frappe.db.sql(""" select count(*) as count from `tabAttendance` where employee='%s' and status = 'On Leave'  and leave_type = 'Leave Without Pay' and  attendance_date between '%s' and '%s' and docstatus = '1'""" % (self.employee,self.start_date,self.end_date),as_dict=True)[0]
+        # paid_half_day_leave = frappe.db.sql(""" select count(*) as count from `tabAttendance` where employee='%s' and status = 'Half Day'  and leave_type in ('Casual Leave','Earned Leave','Sick Leave','Marriage Leave','Maternity Leave','Medical Leave','Paternity Leave') and  attendance_date between '%s' and '%s' and docstatus = '1'""" % (self.employee,self.start_date,self.end_date),as_dict=True)[0]
+        # # lop_half_day = frappe.db.sql(""" select count(*) as count from `tabAttendance` where employee='%s' and status = 'Half Day'  and leave_type = 'Leave Without Pay' and  attendance_date between '%s' and '%s' and docstatus = '1'""" % (self.employee,self.start_date,self.end_date),as_dict=True)[0]
+        # self.absent_days = absent_days['count'] or 0
+        # # frappe.errprint("HI L")
+        # # frappe.errprint(paid_leave)
+        # # frappe.errprint(paid_half_day_leave)
+        # self.paid_leaves = (paid_leave['count'] or 0) + ((paid_half_day_leave['count'] or 0) / 2)
+        # self.leave_days = (
+        #     (paid_leave['count'] or 0) + 
+        #     ((paid_half_day_leave['count'] or 0) / 2) + 
+        #     (absent_days['count'] or 0) + 
+        #     (self.leave_without_pay or 0)
+        # )
+
+        # frappe.db.set_value("Employee",self.employee,"non_present_days",self.leave_days)
+
+        paid_leave_types = frappe.db.get_all( "Leave Type", filters={"is_lwp": 0},pluck="name")
+        paid_leave_types = tuple(paid_leave_types) or ("",)
+        paid_leave_types = [lt for lt in paid_leave_types if lt != "Compensatory Off"]
+        absent_days = frappe.db.sql("""
+            SELECT COUNT(*) AS count
+            FROM `tabAttendance`
+            WHERE employee = %(employee)s
+            AND status = 'Absent'
+            AND attendance_date BETWEEN %(from_date)s AND %(to_date)s
+            AND docstatus = 1
+        """, {
+            "employee": self.employee,
+            "from_date": self.start_date,
+            "to_date": self.end_date
+        }, as_dict=True)[0]
+
+        paid_leave = frappe.db.sql("""
+            SELECT COUNT(*) AS count
+            FROM `tabAttendance`
+            WHERE employee = %(employee)s
+            AND status = 'On Leave'
+            AND leave_type IN %(leave_types)s
+            AND attendance_date BETWEEN %(from_date)s AND %(to_date)s
+            AND docstatus = 1
+        """, {
+            "employee": self.employee,
+            "leave_types": paid_leave_types,
+            "from_date": self.start_date,
+            "to_date": self.end_date
+        }, as_dict=True)[0]
+
+        paid_half_day_leave = frappe.db.sql("""
+            SELECT COUNT(*) AS count
+            FROM `tabAttendance`
+            WHERE employee = %(employee)s
+            AND status = 'Half Day'
+            AND leave_type IN %(leave_types)s
+            AND attendance_date BETWEEN %(from_date)s AND %(to_date)s
+            AND docstatus = 1
+        """, {
+            "employee": self.employee,
+            "leave_types": paid_leave_types,
+            "from_date": self.start_date,
+            "to_date": self.end_date
+        }, as_dict=True)[0]
+
+        self.absent_days = absent_days["count"] or 0
+        self.paid_leaves = ((paid_leave["count"] or 0) + ((paid_half_day_leave["count"] or 0) / 2))
+        self.leave_days = (self.paid_leaves + self.absent_days +(self.leave_without_pay or 0) )
+
+        # frappe.db.set_value("Employee", self.employee,"non_present_days", self.leave_days )
+        self.get_incentive_amount()
+        self.set_leave_summary()
+
+
+    def get_incentive_amount(self):
+        total_incentive = 0
+        if self.employee and self.start_date and self.end_date:
+            incentive_list = frappe.db.get_all(
+                "Incentive Request",
+                filters={
+                    "employee": self.employee,
+                    "ot_date": ["between", [self.start_date, self.end_date]],
+                    "workflow_state": "Approved" 
+                },
+                pluck="incentive_amount"
+            )
+            # frappe.errprint("HI")
+            # frappe.errprint(incentive_list)
+            total_incentive = sum(flt(x) for x in incentive_list)
+        self.shift_incentive = total_incentive
+
+    # def validate(self):
+    #     # super().validate()
+    #     self.get_incentive_amount()
+
+    def before_submit(self):
+        self.set_leave_summary()
+
+    def set_leave_summary(self):
+        leave_types = ['Sick Leave','Casual Leave','Earned Leave']
+
+        self.leave_summary = []
+
+        for leave_type in leave_types:
+
+            allocation = frappe.db.sql("""
+                SELECT 
+                    SUM(total_leaves_allocated),
+                    MIN(from_date)
+                FROM `tabLeave Allocation`
+                WHERE employee=%s
+                AND leave_type=%s
+                AND docstatus=1
+                AND from_date <= %s
+                AND to_date >= %s
+            """, (self.employee, leave_type, self.end_date, self.start_date), as_list=1)
+
+            total_allocated = allocation[0][0] if allocation and allocation[0][0] else 0
+            alloc_from = allocation[0][1] if allocation and allocation[0][1] else self.start_date
+
+            used_before = frappe.db.sql("""
+                SELECT SUM(total_leave_days)
+                FROM `tabLeave Application`
+                WHERE employee=%s
+                AND leave_type=%s
+                AND status='Approved'
+                AND from_date >= %s
+                AND to_date < %s
+            """, (self.employee, leave_type, alloc_from, self.start_date), as_list=1)
+
+            total_used_before = used_before[0][0] if used_before and used_before[0][0] else 0
+
+            opening_balance = total_allocated - total_used_before
+
+            used_current = frappe.db.sql("""
+                SELECT SUM(total_leave_days)
+                FROM `tabLeave Application`
+                WHERE employee=%s
+                AND leave_type=%s
+                AND status='Approved'
+                AND from_date >= %s
+                AND to_date <= %s
+            """, (self.employee, leave_type, self.start_date, self.end_date), as_list=1)
+
+            total_used_current = used_current[0][0] if used_current and used_current[0][0] else 0
+
+            balance = opening_balance - total_used_current
+
+            self.append("leave_summary", {
+                "leave_type": leave_type,
+                "total_allocated": total_allocated,
+                "opening_balance": opening_balance,
+                "used": total_used_current,
+                "balance": balance
+            })
+
+
         
 class CustomPayrollEntry(PayrollEntry):
     def before_save(self):

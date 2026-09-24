@@ -3,26 +3,62 @@
 
 frappe.ui.form.on('Shift Schedule', {
     refresh(frm) {
-        frm.fields_dict['employee_details'].grid.wrapper.find('.grid-add-row').remove(); 
-        if (frm.doc.docstatus == 0) {
-            frm.add_custom_button(__('Get Employees'), function (){
-                frm.call('get_employees').then((r)=>{
-                    frm.clear_table('employee_details')
-                    var c = 0
-                    $.each(r.message,function(i,v){
-                        c = c+1
-                        frm.add_child('employee_details',{
-                            'employee':v.employee,
-                            'employee_name':v.employee_name, 
-                            'shift':v.shift
-                        })
-                    })
-                    frm.refresh_field('employee_details')
-                    frm.set_value('number_of_employees',c)
-                })
-            })    
-        }
+        frm.trigger('show_csv_data')
+        frm.trigger('show_summary')
+        // frm.fields_dict['employee_details'].grid.wrapper.find('.grid-add-row').remove(); 
+        // if (frm.doc.docstatus == 0) {
+        //     frm.add_custom_button(__('Get Employees'), function (){
+        //         frm.call('get_employees').then((r)=>{
+        //             frm.clear_table('employee_details')
+        //             var c = 0
+        //             $.each(r.message,function(i,v){
+        //                 c = c+1
+        //                 frm.add_child('employee_details',{
+        //                     'employee':v.employee,
+        //                     'employee_name':v.employee_name, 
+        //                     'shift':v.shift
+        //                 })
+        //             })
+        //             frm.refresh_field('employee_details')
+        //             frm.set_value('number_of_employees',c)
+        //         })
+        //     })    
+        // }
     },
+
+    get_template: function (frm) {
+		window.location.href = repl(frappe.request.url +
+			'?cmd=%(cmd)s&from_date=%(from_date)s&to_date=%(to_date)s&department=%(department)s', {
+			cmd: "infac.infac.doctype.shift_schedule.shift_schedule.get_template",
+			from_date: frm.doc.from_date,
+			to_date: frm.doc.to_date,
+			department: frm.doc.department
+		});
+	},
+
+    show_csv_data(frm) {
+		if (frm.doc.upload) {
+			frm.fields_dict.csv_preview.$wrapper.empty()
+			frm.call('show_csv_data').then(r => {
+				if (r.message) {
+					frm.fields_dict.csv_preview.$wrapper.empty().append("<h2>Upload Preview</h2><table class='table table-bordered'>" + r.message + "</table>")
+				}
+			})
+		}
+	},
+    show_summary(frm) {
+		if (frm.doc.upload) {
+			frm.fields_dict.summary.$wrapper.empty()
+			frm.call('show_summary').then(r => {
+				
+				if (r.message) {
+					frm.fields_dict.summary.$wrapper.empty().append("<h2>Summary</h2><table class='table table-bordered'>" + r.message + "</table>")
+				}
+			})
+		}
+	}
+
+
     // department_line(frm){
     //     frappe.call({
     //         method:"infac.infac.doctype.shift_schedule.shift_schedule.department_line",

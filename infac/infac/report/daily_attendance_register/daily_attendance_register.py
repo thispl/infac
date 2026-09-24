@@ -40,7 +40,7 @@ def get_data(filters):
     for date in dates:
         employees = get_employees(filters)
         for emp in employees:
-            row = [emp.name,emp.employee_name,emp.employee_category,emp.department,emp.date_of_joining]
+            row = [emp.name,emp.employee_name,emp.employment_type,emp.department,emp.date_of_joining]
             row.append(date)
             hh = check_holiday(date,emp.name)
             if not hh:
@@ -98,13 +98,13 @@ def get_employees(filters):
     conditions = ''
     if filters.department:
         conditions += "and department = '%s' " % filters.department
-    if filters.employee_category:
-        conditions += "and employee_category = '%s' "%filters.employee_category
+    if filters.employment_type:
+        conditions += "and employment_type = '%s' "%filters.employment_type
     if filters.department:
         conditions += " and department = '%s' "%filters.department   
     if filters.employee:
         conditions += "and employee = '%s' " % filters.employee
-    employees = frappe.db.sql("""select name, employee_name,employee_category, department, date_of_joining from `tabEmployee` where status = 'Active' %s"""%(conditions),as_dict=True)
+    employees = frappe.db.sql("""select name, employee_name,employment_type, department, date_of_joining from `tabEmployee` where status = 'Active' %s"""%(conditions),as_dict=True)
     return employees
 
 

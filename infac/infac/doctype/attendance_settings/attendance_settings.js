@@ -6,7 +6,7 @@ frappe.ui.form.on('Attendance Settings', {
 		frm.add_custom_button(__('Refresh'), function (){
 			if(frm.doc.deleted_attendance == 1){
 				frm.set_value('employee','')
-				frm.set_value('attendance_date','')
+				// frm.set_value('attendance_date','')
 			}
 			else{
 				frm.reload_doc()
@@ -20,6 +20,84 @@ frappe.ui.form.on('Attendance Settings', {
 		document.querySelectorAll("[data-fieldname='delete_attendance']")[1].style.backgroundColor = "#F4D03F "
 		
 	},
+	process_attendance(frm){
+		if (frm.doc.process_attendance == 1){
+			cur_frm.set_df_property("from_date", "hidden", 0)
+			cur_frm.set_df_property("to_date", "hidden", 0)
+			cur_frm.set_df_property("employee_1", "hidden", 0)
+			cur_frm.set_df_property("attendance_process", "hidden", 0)
+		}
+		else{
+			cur_frm.set_df_property("from_date", "hidden", 1)
+			cur_frm.set_df_property("to_date", "hidden", 1)
+			cur_frm.set_df_property("employee_1", "hidden", 1)
+			cur_frm.set_df_property("attendance_process", "hidden", 1)
+		}
+	},
+
+	attendance_process_1(frm) {
+		if (!frm.doc.from_date || !frm.doc.to_date) {
+			frappe.msgprint(__('Please select From Date and To Date'));
+			return;
+		}
+		if (frm.doc.employee_1) {
+			frappe.call({
+				method: 'infac.shift_attendance.mark_att_for_att_setting_emp',
+				args: {
+					employee: frm.doc.employee_1,
+					from_date: frm.doc.from_date,
+					to_date: frm.doc.to_date
+				},
+				freeze: true,
+				freeze_message: 'Processing Attendance for selected employee...',
+				callback(r) {
+					if (r.message === 'Completed') {
+						frappe.msgprint(__('Attendance Marked Successfully for ' + frm.doc.employee_1));
+					}
+				}
+			});
+		} 
+		else {
+			frappe.call({
+				method: 'infac.shift_attendance.run_attendance_process',
+				args: {
+					from_date: frm.doc.from_date,
+					to_date: frm.doc.to_date
+				},
+				freeze: true,
+				freeze_message: 'Queuing Attendance Process...',
+				callback(r) {
+					console.log(r);
+					if (r.message === 'Queued') {
+						frappe.msgprint(__('Process started in background'));
+					}
+				}
+			});
+		}
+	},
+	cancel_attendance1(frm) {
+		console.log("HI Cancel")
+		if (!frm.doc.attendance_id) {
+			frappe.msgprint(__('Please fill the attendance id'));
+			return;
+		}
+		if (frm.doc.attendance_id) {
+			frappe.call({
+				method: 'infac.custom.delete_attendance_settings',
+				args: {
+					attendance_id: frm.doc.attendance_id,
+				},
+				freeze: true,
+				freeze_message: 'Processing Attendance for selected employee...',
+				callback(r) {
+                            if (!r.exc) {
+                                frappe.msgprint(r.message);
+                            }
+                        }
+			});
+		}
+	},
+
 	ot_incentive_settings(frm){
 		if (frm.doc.ot_incentive_settings == 1){
 			cur_frm.set_df_property("payroll_start_date", "reqd", (frm.doc.ot_incentive_settings == 1))
@@ -110,7 +188,7 @@ frappe.ui.form.on('Attendance Settings', {
 	deleted_attendance(frm){
 		if(frm.doc.deleted_attendance ==1){
 			cur_frm.set_df_property("employee", "reqd", (frm.doc.deleted_attendance == 1))
-			cur_frm.set_df_property("attendance_date", "reqd", (frm.doc.deleted_attendance == 1))
+			// cur_frm.set_df_property("attendance_date", "reqd", (frm.doc.deleted_attendance == 1))
 			cur_frm.set_df_property("shift_incetive_amount_settings", "hidden", 1)
 			cur_frm.set_df_property("attendance_submit_settings", "hidden", 1)
 			cur_frm.set_df_property("ot_incentive_settings", "hidden", 1)
@@ -246,6 +324,25 @@ frappe.ui.form.on('Attendance Settings', {
 				}
 			}	
 		})
-	}
+	},
+	process_checkin(frm) {
+        if (!frm.doc.from_date || !frm.doc.to_date) {
+            frappe.msgprint("Please select From Date and To Date before processing.");
+            return;
+        }
+
+        frappe.call({
+            method: "infac.push_checkins.process_checkin_from_easytimepro",
+            args: {
+                from_date: frm.doc.from_date,
+                to_date: frm.doc.to_date
+            },
+            freeze: true,
+            freeze_message: "Processing check-ins from EasyTimePro...",
+            callback: function(r) {
+                frappe.msgprint(r.message || "Process completed");
+            }
+        });
+    }
 	
 });
